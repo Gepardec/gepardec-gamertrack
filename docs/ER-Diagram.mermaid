@@ -1,0 +1,25 @@
+classDiagram
+    namespace BaseShapes {
+        class User{
+            -String firstname
+            -String lastname
+            -List<Score> gameScores
+        }
+
+        class Game{
+            +String name
+            +String rules
+        }
+        class GameOutcome{
+            +Game game
+            +List<User> users
+        }
+        class Score{
+            +Game game
+            +int gamescore
+        }
+    }
+    Score "0..n" --* "1"User
+    User "n" *--|> "0..m" GameOutcome
+    GameOutcome "0..n" --* "1" Game
+    Game "1" *-- "0..n" Score
