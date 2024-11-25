@@ -1,14 +1,11 @@
 package com.gepardec.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
-@Entity
+@Entity()
 @Table(name = "users")
 public class User extends AbstractEntity{
 
