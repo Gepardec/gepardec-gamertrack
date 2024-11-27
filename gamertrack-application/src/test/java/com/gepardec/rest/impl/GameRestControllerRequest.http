@@ -12,7 +12,7 @@ Accept: application/json
   "rules": "TestRules"
 }
 ###
-GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/2
+GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/1
 Accept: application/json
 
 ###
@@ -20,12 +20,12 @@ Accept: application/json
 DELETE http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/1
 
 ###
-PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/3
+PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/1
 Content-Type: application/json
 Accept: application/json
 
 {
-  "id": "3",
+  "id": "1",
   "title": "UpdatedTitle",
   "rules": "New Rules"
 }

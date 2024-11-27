@@ -36,8 +36,18 @@ public class GameServiceImpl implements GameService, Serializable {
   }
 
   @Override
-  public Optional<Game> updateGame(Game game) {
-    return gameRepository.updateGame(game);
+  public Optional<Game> updateGame(Long gameId, Game gameNew) {
+
+    Optional<Game> gameOld = gameRepository.findGameById(gameId);
+
+    if (gameOld.isPresent()) {
+      Game game = gameOld.get();
+      game.setName(gameNew.getName());
+      game.setRules(gameNew.getRules());
+      return gameRepository.saveGame(game);
+    }
+
+    return Optional.empty();
   }
 
   @Override
