@@ -9,7 +9,7 @@ import org.jboss.jdeparser.FormatPreferences.Opt;
 
 public interface GameService {
   Optional<Game> saveGame(Game game);
-  void deleteGame(Game game);
+  void deleteGame(Long gameId);
   Optional<Game> updateGame(Game game);
   Optional<Game> findGameById(long id);
   List<Game> findAll();

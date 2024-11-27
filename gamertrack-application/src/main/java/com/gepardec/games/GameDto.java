@@ -1,4 +1,4 @@
-package com.gepardec.dtos;
+package com.gepardec.games;
 
 import com.gepardec.model.Game;
 

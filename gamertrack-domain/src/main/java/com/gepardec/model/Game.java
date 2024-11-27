@@ -18,6 +18,10 @@ public class Game extends AbstractEntity {
     this.rules = rules;
   }
 
+  public Game() {
+
+  }
+
   public String getName() {
     return name;
   }

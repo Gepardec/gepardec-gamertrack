@@ -2,22 +2,20 @@ package com.gepardec.adapters.output.persistence.repository;
 
 import com.gepardec.interfaces.repository.GameRepository;
 import com.gepardec.model.Game;
-import jakarta.data.repository.Query;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-@SessionScoped
+@ApplicationScoped
 public class GameRepositoryImpl implements GameRepository, Serializable {
 
-  @PersistenceContext
-  @Produces
-  private final EntityManager em;
+
+  @Inject
+  private EntityManager em;
 
   @Override
   public Optional<Game> saveGame(Game game) {
@@ -27,13 +25,13 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   }
 
   @Override
-  public void deleteGame(Game game) {
-    em.remove(em.find(Game.class, game.getId()));
+  public void deleteGame(Long gameId) {
+    em.remove(em.find(Game.class, gameId));
   }
 
   @Override
   public Optional<Game> updateGame(Game game) {
-    return Optional.ofNullable(em.merge(game));
+    return saveGame(game);
   }
 
   @Override
@@ -44,12 +42,14 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
 
   @Override
   public List<Game> findAll() {
-    return em.createQuery("select g from Game ", Game.class).getResultList();
+    return em.createQuery("select g from Game g", Game.class).getResultList();
   }
 
   @Override
-  public Boolean existsByGameName(Game name) {
-    return !em.createQuery("select s from Game s where s.name = :name", Game.class).getResultList()
-        .isEmpty();
+  public Boolean existsByGameName(String gameName) {
+     Query query = em.createQuery("select g from Game g where g.name = :gameName", Game.class);
+     query.setParameter("gameName", gameName);
+
+     return !query.getResultList().isEmpty();
   }
 }
