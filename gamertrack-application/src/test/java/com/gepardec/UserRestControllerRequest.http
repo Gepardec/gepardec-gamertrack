@@ -1,0 +1,46 @@
+POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/new
+Content-Type:application/json
+
+{
+  "firstname": "Test",
+  "lastname": "Hallo"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+
+###
+PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/2
+Content-Type:application/json
+
+{
+  "firstname": "NEUER NAME",
+  "lastname": "Hallo"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+
+###
+DELETE http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/3
+Content-Type:application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}

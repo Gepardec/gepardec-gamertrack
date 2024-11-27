@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<User> saveUser(User user);
-    Optional<User> updateUser(User user);
-    void deleteUser(User user);
-    Optional<List<User>> findAllUsers();
+    Optional<User> updateUser(Long id, User user);
+    Optional<User> deleteUser(Long id);
+    List<User> findAllUsers();
     Optional<User> findUserById(long id);
 }

@@ -2,8 +2,7 @@ package com.gepardec.adapters.output.persistence.repository;
 
 import com.gepardec.interfaces.repository.UserRepository;
 import com.gepardec.model.User;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -12,12 +11,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-@SessionScoped
+@ApplicationScoped
 public class UserRepositoryImpl implements UserRepository, Serializable {
 
-    @Produces
-    @PersistenceContext
-    EntityManager entityManager;
+    @PersistenceContext()
+    protected EntityManager entityManager;
 
     @Override
     public Optional<User> saveUser(User user) {
@@ -27,8 +25,8 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
         return  Optional.ofNullable(userSaved);
     }
 
-    @Override
-    public Optional<User> updateUser(User user) {
+
+    public Optional<User> updateUser(Long id, User user) {
         entityManager.merge(user);
         User userMerged = entityManager.find(User.class, user.getId());
 
@@ -41,9 +39,9 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
     }
 
     @Override
-    public Optional<List<User>> findAllUsers() {
-        return Optional.ofNullable(entityManager.createQuery("SELECT u FROM User u", User.class)
-                .getResultList());
+    public List<User> findAllUsers() {
+        return entityManager.createQuery("SELECT u FROM User u", User.class)
+                .getResultList();
     }
 
     @Override

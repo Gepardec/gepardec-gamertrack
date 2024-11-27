@@ -16,6 +16,13 @@ public class User extends AbstractEntity{
 
     public List<Score> scores;
 
+    public User(String firstname, String lastname) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+    }
+
+    public User() {}
+
     public String getFirstname() {
         return firstname;
     }

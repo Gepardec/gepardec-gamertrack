@@ -1,6 +1,8 @@
 package com.gepardec.interfaces.repository;
 
 import com.gepardec.model.User;
+import jakarta.data.repository.Repository;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,8 +10,8 @@ import java.util.Optional;
 
 public interface UserRepository{
     Optional<User> saveUser(User user);
-    Optional<User> updateUser(User user);
+    Optional<User> updateUser(Long id, User user);
     void deleteUser(User user);
-    Optional<List<User>> findAllUsers();
+    List<User> findAllUsers();
     Optional<User> findUserById( long id);
 }
