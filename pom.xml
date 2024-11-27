@@ -12,7 +12,8 @@
     <modules>
         <module>gamertrack-domain</module>
         <module>gamertrack-application</module>
-        <module>gamertrack-infrastructure</module>
+        <module>gamertrack-db</module>
+        <module>gamertrack-service</module>
     </modules>
 
 
