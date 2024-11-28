@@ -2,56 +2,51 @@ package com.gepardec.rest.impl;
 
 import com.gepardec.interfaces.services.UserService;
 import com.gepardec.model.User;
+import com.gepardec.rest.api.UserResource;
 import com.gepardec.rest.model.command.CreateUserCommand;
+import com.gepardec.rest.model.command.UpdateGameCommand;
+import com.gepardec.rest.model.command.UpdateUserCommand;
 import com.gepardec.rest.model.dto.UserDto;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@Path("user")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class UserResourceImpl {
+@RequestScoped
+public class UserResourceImpl implements UserResource {
     @Inject
     private UserService userService;
 
-    @Path("new")
-    @POST
+    @Override
     public Response createUser(CreateUserCommand userCommand) {
-
-        return userService.saveUser(new User(userCommand.getFirstname(),userCommand.getLastname())).map(UserDto::new).map(Response::ok)
+        return userService.saveUser(new User(userCommand.firstname(),userCommand.lastname())).map(UserDto::new).map(Response::ok)
                 .orElseGet(() ->  Response.status(Status.NOT_FOUND)).build();
 
     }
 
-
-    @Path("{id}")
-    @PUT
-    public Response updateUser(@PathParam("id") Long id, User user){
-        return userService.updateUser(id, user).map(UserDto::new).map(Response::ok)
+    @Override
+    public Response updateUser(Long id, UpdateUserCommand updateUserCommand){
+        return userService.updateUser(id, new User(updateUserCommand.firstname(),updateUserCommand.lastname())).map(UserDto::new).map(Response::ok)
                 .orElseGet(() ->  Response.status(Status.NOT_FOUND)).build();
     }
 
 
-    @Path("{id}")
-    @GET
-    public Response getUser(@PathParam("id") Long id){
+    @Override
+    public Response getUser(Long id){
         return userService.findUserById(id).map(UserDto::new).map(Response::ok)
                 .orElseGet(() ->  Response.status(Status.NOT_FOUND)).build();
     }
 
 
-    @Path("list")
-    @GET
+    @Override
     public Response getUsers(){
         return Response.ok().entity(userService.findAllUsers().stream().map(UserDto::new).toList()).build();
     }
 
-    @Path("{id}")
-    @DELETE
-    public Response deleteUser(@PathParam("id") Long id){
+    @Override
+    public Response deleteUser(Long id){
         userService.deleteUser(id);
         return Response.ok().build();
     }

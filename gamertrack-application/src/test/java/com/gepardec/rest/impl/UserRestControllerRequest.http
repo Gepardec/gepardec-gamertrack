@@ -1,4 +1,4 @@
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/new
+POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users/
 Content-Type:application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type:application/json
 %}
 
 ###
-PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/2
+PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users/2
 Content-Type:application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type:application/json
 %}
 
 ###
-DELETE http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/3
+DELETE http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users/3
 Content-Type:application/json
 
 > {%
