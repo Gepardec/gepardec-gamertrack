@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService, Serializable {
             user.setLastname(userEdit.getLastname());
             return userRepository.saveUser(user);
         }
-        throw new IllegalStateException("Cannot find user with id" + id);
+        return Optional.empty();
     }
 
     @Override
@@ -45,10 +45,9 @@ public class UserServiceImpl implements UserService, Serializable {
             if(entity.isPresent()){
                 user=entity.get();
                 userRepository.deleteUser(user);
+                return Optional.of(user);
             }
-
-        throw new IllegalStateException("Cannot find user with id" + id);
-
+            return Optional.empty();
     }
 
     @Override

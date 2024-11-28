@@ -47,8 +47,8 @@ public class UserResourceImpl implements UserResource {
 
     @Override
     public Response deleteUser(Long id){
-        userService.deleteUser(id);
-        return Response.ok().build();
+        return userService.deleteUser(id).map(UserDto::new).map(Response::ok)
+                .orElseGet(() ->  Response.status(Status.NOT_FOUND)).build();
     }
 
 }
