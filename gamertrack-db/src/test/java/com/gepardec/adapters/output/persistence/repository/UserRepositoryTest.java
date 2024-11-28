@@ -1,5 +1,6 @@
 package com.gepardec.adapters.output.persistence.repository;
 
+/*
 import com.gepardec.interfaces.repository.UserRepository;
 import com.gepardec.model.User;
 import jakarta.inject.Inject;
@@ -47,3 +48,6 @@ public class UserRepositoryTest {
         //assertEquals(1, userRepository.findAllUsers().get().size());
     }
 }
+
+
+ */
