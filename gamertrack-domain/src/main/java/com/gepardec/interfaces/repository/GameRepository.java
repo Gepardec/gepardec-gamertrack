@@ -10,7 +10,7 @@ public interface GameRepository {
   void deleteGame(Long gameId);
   Optional<Game> updateGame(Game game);
   Optional<Game> findGameById(long id);
-  List<Game> findAll();
-  Boolean existsByGameName(String name);
+  List<Game> findAllGames();
+  Boolean GameExistsByGameName(String name);
 
 }

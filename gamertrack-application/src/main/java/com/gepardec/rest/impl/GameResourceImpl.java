@@ -1,7 +1,5 @@
 package com.gepardec.rest.impl;
 
-import static com.gepardec.rest.impl.GameResourceImpl.BASE_PATH;
-
 import com.gepardec.interfaces.services.GameService;
 import com.gepardec.model.Game;
 import com.gepardec.rest.api.GameResource;
@@ -10,17 +8,7 @@ import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameDto;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Link;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.Optional;
@@ -36,7 +24,7 @@ public class GameResourceImpl implements GameResource {
   @Override
   public Response getGames() {
     //Return 200 with empty list with no games if none are in the db instead of other Statuscodes
-    return Response.ok().entity(gameService.findAll().stream().map(GameDto::new).toList()).build();
+    return Response.ok().entity(gameService.findAllGames().stream().map(GameDto::new).toList()).build();
   }
 
   @Override
@@ -74,7 +62,6 @@ public class GameResourceImpl implements GameResource {
   @Override
   @DELETE
   public Response deleteGame(Long id) {
-    gameService.deleteGame(id);
-    return Response.status(Status.OK).build();
+    return gameService.deleteGame(id).map(GameDto::new).map(Response::ok).orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 }
