@@ -19,20 +19,22 @@ public class GameServiceImpl implements GameService, Serializable {
 
   @Override
   public Optional<Game> saveGame(Game game) {
-    if (gameRepository.existsByGameName(game.getName())) {
-  /*    throw new GameAlreadyExistsException(
-          "Game with Name %s already exists and considered as duplicate".formatted(game.getName()));*/
+    if (gameRepository.GameExistsByGameName(game.getName())) {
       return Optional.empty();
     }
         return gameRepository.saveGame(game);
   }
 
   @Override
-  public void deleteGame(Long gameId) {
-    if (gameRepository.findGameById(gameId).isEmpty()) {
-      throw new GameDoesNotExistException("Game with id %s does not exist".formatted(gameId));
+  public Optional<Game> deleteGame(Long gameId) {
+    Optional<Game> game = gameRepository.findGameById(gameId);
+    if (game.isEmpty()) {
+      return Optional.empty();
     }
-      gameRepository.deleteGame(gameId);
+
+    gameRepository.deleteGame(gameId);
+
+    return game;
   }
 
   @Override
@@ -56,8 +58,8 @@ public class GameServiceImpl implements GameService, Serializable {
   }
 
   @Override
-  public List<Game> findAll() {
-    return gameRepository.findAll();
+  public List<Game> findAllGames() {
+    return gameRepository.findAllGames();
   }
 }
 

@@ -41,12 +41,12 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   }
 
   @Override
-  public List<Game> findAll() {
+  public List<Game> findAllGames() {
     return em.createQuery("select g from Game g", Game.class).getResultList();
   }
 
   @Override
-  public Boolean existsByGameName(String gameName) {
+  public Boolean GameExistsByGameName(String gameName) {
      Query query = em.createQuery("select g from Game g where g.name = :gameName", Game.class);
      query.setParameter("gameName", gameName);
 
