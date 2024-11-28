@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ScoreService {
-    Optional<Score> saveScore(Score score);
-    void deleteScore(Score score);
     List<Score> findAllScores();
+    Optional<Score> findById(Long id);
     List<Score> findByUser(Long userId);
     List<Score> findByGame(Long gameId);
-    List<Score> findByScorePoints(Long id);
+    List<Score> findByScorePoints(double scorePoints);
+    Optional<Score> saveScore(Score score);
+    Optional<Score> updateScore(Long id, Score scoreEdit);
+    Optional<Score> deleteScore(Long id);
+
 }
