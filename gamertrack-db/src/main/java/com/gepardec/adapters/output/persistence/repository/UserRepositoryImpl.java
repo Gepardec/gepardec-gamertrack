@@ -46,8 +46,10 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
 
     @Override
     public Optional<User> findUserById(long id) {
-        return Optional.ofNullable(entityManager.createQuery("SELECT u FROM User u WHERE u.id = :id", User.class)
+        List<User> resultList = entityManager.createQuery("SELECT u FROM User u WHERE u.id = :id", User.class)
                 .setParameter("id", id)
-                .getResultList().getFirst());
+                .getResultList();
+
+        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.get(0));
     }
 }

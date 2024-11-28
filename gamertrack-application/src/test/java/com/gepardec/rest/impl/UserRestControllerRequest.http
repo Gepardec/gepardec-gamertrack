@@ -1,3 +1,6 @@
+GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users/
+###
+
 POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users/
 Content-Type:application/json
 
