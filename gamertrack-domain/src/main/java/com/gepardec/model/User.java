@@ -14,6 +14,7 @@ public class User extends AbstractEntity{
     @NotEmpty(message = "Lastname must be set")
     public String lastname;
 
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL,orphanRemoval = true)
     public List<Score> scores;
 
     public User(String firstname, String lastname) {
