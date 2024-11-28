@@ -4,6 +4,7 @@ import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -25,11 +26,11 @@ public interface UserResource {
     public Response getUser(@PathParam("id") Long id);
 
     @POST
-    Response createUser(CreateUserCommand userCommand);
+    Response createUser(@Valid CreateUserCommand userCommand);
 
     @Path("{id}")
     @PUT
-    public Response updateUser(@PathParam("id") Long id, UpdateUserCommand updateUserCommand);
+    public Response updateUser(@PathParam("id") Long id, @Valid UpdateUserCommand updateUserCommand);
 
     @Path("{id}")
     @DELETE
