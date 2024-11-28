@@ -21,7 +21,6 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
     public Optional<User> saveUser(User user) {
         entityManager.persist(user);
         User userSaved = entityManager.find(User.class, user.getId());
-
         return  Optional.ofNullable(userSaved);
     }
 
@@ -50,6 +49,6 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
                 .setParameter("id", id)
                 .getResultList();
 
-        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.get(0));
+        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.getFirst());
     }
 }

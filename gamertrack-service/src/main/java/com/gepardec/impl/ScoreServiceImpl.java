@@ -61,17 +61,4 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
         }
         return Optional.empty();
     }
-
-    @Override
-    public Optional<Score> deleteScore(Long id) {
-        Score score=null;
-        Optional<Score> entity = scoreRepository.findById(id);
-
-        if(entity.isPresent()){
-            score=entity.get();
-            scoreRepository.deleteScore(score);
-            return Optional.of(score);
-        }
-        return Optional.empty();
-    }
 }

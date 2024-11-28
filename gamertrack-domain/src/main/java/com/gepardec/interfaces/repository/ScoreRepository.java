@@ -12,6 +12,4 @@ public interface ScoreRepository {
     List<Score> findByGame(Long gameId);
     List<Score> findByScorePoints(double scorePoints);
     Optional<Score> saveScore(Score score);
-    void deleteScore(Score score);
-
 }
