@@ -13,6 +13,5 @@ public interface ScoreService {
     List<Score> findByScorePoints(double scorePoints);
     Optional<Score> saveScore(Score score);
     Optional<Score> updateScore(Long id, Score scoreEdit);
-    Optional<Score> deleteScore(Long id);
 
 }

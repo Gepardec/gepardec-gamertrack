@@ -21,7 +21,8 @@ public class UserResourceImpl implements UserResource {
 
     @Override
     public Response createUser(CreateUserCommand userCommand) {
-        return userService.saveUser(new User(userCommand.firstname(),userCommand.lastname())).map(UserDto::new).map(Response::ok)
+        return userService.saveUser(new User(userCommand.firstname(),userCommand.lastname())).map(UserDto::new)
+                .map(userDto -> Response.status(Status.CREATED).entity(userDto))
                 .orElseGet(() ->  Response.status(Status.NOT_FOUND)).build();
 
     }
