@@ -57,10 +57,6 @@ public class UserServiceImpl implements UserService, Serializable {
 
     @Override
     public Optional<User> findUserById(long id) {
-        Optional<User> entity = userRepository.findUserById(id);
-        if(entity.isPresent()){
             return userRepository.findUserById(id);
-        }
-        return Optional.empty();
     }
 }
