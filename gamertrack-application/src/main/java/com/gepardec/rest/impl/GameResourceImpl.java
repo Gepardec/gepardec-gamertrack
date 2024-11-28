@@ -42,15 +42,20 @@ public class GameResourceImpl implements GameResource {
   @Override
   public Response getGame(Long id) {
     //Return 200 ok with found game or not found if it does not exist
-    return gameService.findGameById(id).map(GameDto::new).map(Response::ok)
-        .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
+    return gameService.findGameById(id)
+        .map(GameDto::new).map(Response::ok)
+        .orElseGet(() -> Response.status(Status.NOT_FOUND))
+        .build();
   }
 
   @Override
   public Response createGame(CreateGameCommand gameCmd) {
     //Return saved Game if it was persisted or Else return Bad Request
-    return gameService.saveGame(new Game(gameCmd.title(), gameCmd.rules())).map(GameDto::new).map(Response::ok)
-        .orElseGet(() -> Response.status(Status.BAD_REQUEST)).build();
+    return gameService.saveGame(new Game(gameCmd.title(), gameCmd.rules()))
+        .map(GameDto::new)
+        .map( gameDto -> Response.status(Status.CREATED).entity(gameDto))
+        .orElseGet(() -> Response.status(Status.BAD_REQUEST))
+        .build();
 
   }
 
@@ -60,8 +65,10 @@ public class GameResourceImpl implements GameResource {
 
     //Returns updated 200OK with updated Entity if it exists or if it does not exist the same object provided on request
     return gameService.updateGame(id, new Game(gameCmd.title(), gameCmd.rules()))
-        .map(GameDto::new).map(Response::ok)
-        .orElseGet(() -> Response.status(Status.NOT_FOUND).entity(gameCmd)).build();
+        .map(GameDto::new)
+        .map(Response::ok)
+        .orElseGet(() -> Response.status(Status.NOT_FOUND).entity(gameCmd))
+        .build();
   }
 
   @Override
