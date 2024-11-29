@@ -57,13 +57,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     @Override
     public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
 
-        List<Score> entity = entityManager.createQuery(
-                "SELECT s FROM Score s " +
-                        "WHERE s.game.id = :gameId and s.user.id =:userId ", Score.class)
-                .setParameter("gameId", gameId)
-                .setParameter("userId", userId)
-                        .getResultList();
-        if(entity.isEmpty()) {
+        if(!scoreExists(userId, gameId)) {
             Score score = new Score();
             score.setUser(entityManager.getReference(User.class, userId));
             score.setGame(entityManager.getReference(Game.class, gameId));
@@ -75,4 +69,16 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
         }
         return Optional.empty();
     }
+
+    @Override
+    public boolean scoreExists(Long userId, Long gameId) {
+        List<Score> entity = entityManager.createQuery(
+                        "SELECT s FROM Score s " +
+                                "WHERE s.game.id = :gameId and s.user.id =:userId ", Score.class)
+                .setParameter("gameId", gameId)
+                .setParameter("userId", userId)
+                .getResultList();
+        return !entity.isEmpty();
+    }
+
 }
