@@ -9,14 +9,14 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import static com.gepardec.rest.api.UserResource.BASE_PATH;
+import static com.gepardec.rest.api.UserResource.BASE_USER_PATH;
 
-@Path(BASE_PATH)
+@Path(BASE_USER_PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public interface UserResource {
 
-    public static final String BASE_PATH = "users";
+    public static final String BASE_USER_PATH = "users";
 
     @GET
     public Response getUsers();
