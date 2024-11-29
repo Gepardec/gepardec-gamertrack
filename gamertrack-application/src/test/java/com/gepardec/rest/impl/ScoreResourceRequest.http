@@ -1,0 +1,8 @@
+POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 1,
+  "gameId": 1,
+  "scorePoints": 10
+}

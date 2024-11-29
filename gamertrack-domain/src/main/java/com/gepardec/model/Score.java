@@ -18,6 +18,16 @@ public class Score extends AbstractEntity{
     @NotNull
     public double scorePoints;
 
+    public Score(User user, Game game, double scorePoints) {
+        this.user = user;
+        this.game = game;
+        this.scorePoints = scorePoints;
+    }
+
+    public Score() {
+
+    }
+
     public User getUser() {
         return user;
     }

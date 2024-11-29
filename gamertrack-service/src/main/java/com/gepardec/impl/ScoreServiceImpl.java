@@ -1,7 +1,9 @@
 package com.gepardec.impl;
 
 import com.gepardec.interfaces.repository.ScoreRepository;
+import com.gepardec.interfaces.services.GameService;
 import com.gepardec.interfaces.services.ScoreService;
+import com.gepardec.interfaces.services.UserService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
@@ -18,6 +20,13 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
 
     @Inject
     private ScoreRepository scoreRepository;
+
+    //Only temporary for testing
+    @Inject
+    private UserService userService;
+    //Only temporary for testing
+    @Inject
+    private GameService gameService;
 
     @Override
     public List<Score> findAllScores() {
@@ -45,8 +54,8 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public Optional<Score> saveScore(Score score) {
-        return scoreRepository.saveScore(score);
+    public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
+        return scoreRepository.saveScore(userId,gameId,scorePoints);
     }
 
     @Override
@@ -54,11 +63,13 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
         Optional<Score> entity = scoreRepository.findById(id);
         if(entity.isPresent()) {
             Score score = entity.get();
-            score.setUser(scoreEdit.getUser());
-            score.setGame(scoreEdit.getGame());
+            score.setUser(userService.findUserById(scoreEdit.user.getId()).get());
+            score.setGame(gameService.findGameById(scoreEdit.game.getId()).get());
             score.setScorePoints(scoreEdit.getScorePoints());
-            return scoreRepository.saveScore(score);
+            return scoreRepository.saveScore(
+                    scoreEdit.user.getId(),scoreEdit.game.getId(),scoreEdit.getScorePoints());
         }
         return Optional.empty();
     }
+
 }
