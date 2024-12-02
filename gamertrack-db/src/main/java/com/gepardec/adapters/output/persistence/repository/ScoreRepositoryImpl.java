@@ -25,7 +25,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
-    public Optional<Score> findById(Long id) {
+    public Optional<Score> findScoreById(Long id) {
         List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.id = :id", Score.class)
                 .setParameter("id", id)
                 .getResultList();
@@ -34,21 +34,21 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
-    public List<Score> findByUser(Long userId) {
+    public List<Score> findScoreByUser(Long userId) {
         return entityManager.createQuery("SELECT s FROM Score s WHERE s.user.id = :userId", Score.class)
                 .setParameter("userId", userId)
                 .getResultList();
     }
 
     @Override
-    public List<Score> findByGame(Long gameId) {
+    public List<Score> findScoreByGame(Long gameId) {
         return entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId", Score.class)
                 .setParameter("gameId", gameId)
                 .getResultList();
     }
 
     @Override
-    public List<Score> findByScorePoints(double scorePoints) {
+    public List<Score> findScoreByScorePoints(double scorePoints) {
         return entityManager.createQuery("SELECT s FROM Score s WHERE s.scorePoints = :scorePoints", Score.class)
                 .setParameter("scorePoints", scorePoints)
                 .getResultList();

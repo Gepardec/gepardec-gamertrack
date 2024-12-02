@@ -1,12 +1,9 @@
 package com.gepardec.rest.impl;
 
 import com.gepardec.interfaces.services.ScoreService;
-import com.gepardec.model.Score;
-import com.gepardec.model.User;
 import com.gepardec.rest.api.ScoreResource;
 import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.dto.ScoreDto;
-import com.gepardec.rest.model.dto.UserDto;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -24,25 +21,25 @@ public class ScoreResourceImpl implements ScoreResource {
 
     @Override
     public Response getScoreById(Long id) {
-        return Response.ok().entity(scoreService.findById(id).stream().map(ScoreDto::new).toList()).build();
+        return Response.ok().entity(scoreService.findScoreById(id).stream().map(ScoreDto::new).toList()).build();
 
     }
 
     @Override
     public Response getScoreByUser(Long userId) {
-        return Response.ok().entity(scoreService.findByUser(userId).stream().map(ScoreDto::new).toList()).build();
+        return Response.ok().entity(scoreService.findScoreByUser(userId).stream().map(ScoreDto::new).toList()).build();
 
     }
 
     @Override
     public Response getScoreByGame(Long gameId) {
-        return Response.ok().entity(scoreService.findByGame(gameId).stream().map(ScoreDto::new).toList()).build();
+        return Response.ok().entity(scoreService.findScoreByGame(gameId).stream().map(ScoreDto::new).toList()).build();
 
     }
 
     @Override
     public Response getScoreByScorePoints(double points) {
-            return Response.ok().entity(scoreService.findByScorePoints(points).stream().map(ScoreDto::new).toList()).build();
+            return Response.ok().entity(scoreService.findScoreByScorePoints(points).stream().map(ScoreDto::new).toList()).build();
     }
 
     //Only temporary for testing

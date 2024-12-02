@@ -5,7 +5,6 @@ import com.gepardec.interfaces.services.GameService;
 import com.gepardec.interfaces.services.ScoreService;
 import com.gepardec.interfaces.services.UserService;
 import com.gepardec.model.Score;
-import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -34,23 +33,23 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public Optional<Score> findById(Long id) {
-        return scoreRepository.findById(id);
+    public Optional<Score> findScoreById(Long id) {
+        return scoreRepository.findScoreById(id);
     }
 
     @Override
-    public List<Score> findByUser(Long userId) {
-        return scoreRepository.findByUser(userId);
+    public List<Score> findScoreByUser(Long userId) {
+        return scoreRepository.findScoreByUser(userId);
     }
 
     @Override
-    public List<Score> findByGame(Long gameId) {
-        return scoreRepository.findByGame(gameId);
+    public List<Score> findScoreByGame(Long gameId) {
+        return scoreRepository.findScoreByGame(gameId);
     }
 
     @Override
-    public List<Score> findByScorePoints(double scorePoints) {
-        return scoreRepository.findByScorePoints(scorePoints);
+    public List<Score> findScoreByScorePoints(double scorePoints) {
+        return scoreRepository.findScoreByScorePoints(scorePoints);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
 
     @Override
     public Optional<Score> updateScore(Long id, Score scoreEdit){
-        Optional<Score> entity = scoreRepository.findById(id);
+        Optional<Score> entity = scoreRepository.findScoreById(id);
         if(entity.isPresent()) {
             Score score = entity.get();
             score.setUser(userService.findUserById(scoreEdit.user.getId()).get());
