@@ -7,21 +7,28 @@ import com.gepardec.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
 public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
+    private static final Logger log = LoggerFactory.getLogger(ScoreRepositoryImpl.class);
     @PersistenceContext()
     protected EntityManager entityManager;
 
     @Override
     public List<Score> findAllScores() {
-        return entityManager.createQuery("SELECT s FROM Score s", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s", Score.class)
                 .getResultList();
+
+        log.info("Finding all scores. Returned list of size:{}", resultList.size());
+        return resultList;
     }
 
     @Override
@@ -29,38 +36,50 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
         List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.id = :id", Score.class)
                 .setParameter("id", id)
                 .getResultList();
+        log.info("Find score with id: {}. Returned list of size:{}", id, resultList.size());
 
         return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.getFirst());
     }
 
     @Override
     public List<Score> findScoreByUser(Long userId) {
-        return entityManager.createQuery("SELECT s FROM Score s WHERE s.user.id = :userId", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.user.id = :userId", Score.class)
                 .setParameter("userId", userId)
                 .getResultList();
+        log.info("Find score with userId: {}. Returned list of size:{}", userId, resultList.size());
+
+        return resultList;
     }
 
     @Override
     public List<Score> findScoreByGame(Long gameId) {
-        return entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId", Score.class)
                 .setParameter("gameId", gameId)
                 .getResultList();
+        log.info("Find score with gameId: {}. Returned list of size:{}", gameId, resultList.size());
+
+        return resultList;
     }
 
     @Override
     public List<Score> findScoreByScorePoints(double scorePoints) {
-        return entityManager.createQuery("SELECT s FROM Score s WHERE s.scorePoints = :scorePoints", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.scorePoints = :scorePoints", Score.class)
                 .setParameter("scorePoints", scorePoints)
                 .getResultList();
+        log.info("Find score with {} ScorePoints. Returned list of size:{}", scorePoints, resultList.size());
+
+        return resultList;
     }
 
     @Override
     public List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints) {
-        return entityManager.createQuery("SELECT s FROM Score s WHERE :minPoints <= s.scorePoints AND " +
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE :minPoints <= s.scorePoints AND " +
                         "s.scorePoints <= :maxPoints order by s.scorePoints", Score.class)
                 .setParameter("minPoints", minPoints)
                 .setParameter("maxPoints", maxPoints)
                 .getResultList();
+        log.info("Find score with scorePoints between {} and {}. Returned list of size:{}", minPoints,maxPoints, resultList);
+        return resultList;
     }
 
     @Override
@@ -74,8 +93,10 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
             entityManager.persist(score);
             Score scoreSaved = entityManager.find(Score.class, score.getId());
+            log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", userId, gameId, scorePoints);
             return Optional.of(scoreSaved);
         }
+        log.error("Score with userId: {} and gameId: {} already exists!", userId, gameId);
         return Optional.empty();
     }
 
@@ -87,6 +108,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .setParameter("gameId", gameId)
                 .setParameter("userId", userId)
                 .getResultList();
+        log.info("Score with userId: {} and gameId: {} exists: {}", userId, gameId, !entity.isEmpty());
         return !entity.isEmpty();
     }
 

@@ -8,6 +8,8 @@ import com.gepardec.model.Score;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,15 +19,9 @@ import java.util.Optional;
 @Stateless
 public class ScoreServiceImpl implements ScoreService, Serializable {
 
+    private static final Logger log = LoggerFactory.getLogger(ScoreServiceImpl.class);
     @Inject
     private ScoreRepository scoreRepository;
-
-    //Only temporary for testing
-    @Inject
-    private UserService userService;
-    //Only temporary for testing
-    @Inject
-    private GameService gameService;
 
     @Override
     public List<Score> findAllScores() {
@@ -58,6 +54,7 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
             double tmp = maxPoints;
             maxPoints = minPoints;
             minPoints = tmp;
+            log.info("switched minPoints with maxPoint because minPoints was greater than maxPoints");
         }
         return scoreRepository.findScoreByMinMaxScorePoints(minPoints, maxPoints);
     }
@@ -71,13 +68,11 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     public Optional<Score> updateScore(Long id, Score scoreEdit){
         Optional<Score> entity = scoreRepository.findScoreById(id);
         if(entity.isPresent()) {
-            Score score = entity.get();
-            score.setUser(userService.findUserById(scoreEdit.user.getId()).get());
-            score.setGame(gameService.findGameById(scoreEdit.game.getId()).get());
-            score.setScorePoints(scoreEdit.getScorePoints());
+            log.info("Score with the id {} is present", id);
             return scoreRepository.saveScore(
                     scoreEdit.user.getId(),scoreEdit.game.getId(),scoreEdit.getScorePoints());
         }
+        log.error("Could not find score with id {}. Score was not updated", id);
         return Optional.empty();
     }
 
