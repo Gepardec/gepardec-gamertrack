@@ -26,8 +26,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     public List<Score> findAllScores() {
         List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s", Score.class)
                 .getResultList();
+        log.info("Find all scores. Returned list of size:{}", resultList.size());
 
-        log.info("Finding all scores. Returned list of size:{}", resultList.size());
         return resultList;
     }
 
@@ -79,6 +79,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .setParameter("maxPoints", maxPoints)
                 .getResultList();
         log.info("Find score with scorePoints between {} and {}. Returned list of size:{}", minPoints,maxPoints, resultList);
+
         return resultList;
     }
 
@@ -97,6 +98,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
             return Optional.of(scoreSaved);
         }
         log.error("Score with userId: {} and gameId: {} already exists!", userId, gameId);
+
         return Optional.empty();
     }
 
@@ -109,6 +111,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .setParameter("userId", userId)
                 .getResultList();
         log.info("Score with userId: {} and gameId: {} exists: {}", userId, gameId, !entity.isEmpty());
+
         return !entity.isEmpty();
     }
 
