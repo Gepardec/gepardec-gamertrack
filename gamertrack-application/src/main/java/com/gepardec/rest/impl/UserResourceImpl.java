@@ -47,6 +47,11 @@ public class UserResourceImpl implements UserResource {
     }
 
     @Override
+    public Response getUsersIncludeDeleted() {
+        return Response.ok().entity(userService.findAllUsersIncludeDeleted().stream().map(UserDto::new).toList()).build();
+    }
+
+    @Override
     public Response deleteUser(Long id){
         return userService.deleteUser(id).map(UserDto::new).map(Response::ok)
                 .orElseGet(() ->  Response.status(Status.NOT_FOUND)).build();
