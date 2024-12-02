@@ -10,18 +10,22 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RequestScoped
 public class GameOutcomeResourceImpl implements GameOutcomeResource {
+
+  private final Logger logger = LoggerFactory.getLogger(GameOutcomeResourceImpl.class);
 
   @Inject
   private GameOutcomeService gameOutcomeService;
 
   @Override
   public Response getGameOutcomes(Optional<Long> gameId, Optional<Long> userId) {
-    System.out.println("executing getGameOutcomes Controller");
+
     if (gameId.isPresent()) {
-      System.out.println("gameId: " + gameId);
+      logger.info("Getting all GameOutcomes with GameID: %s".formatted(gameId.get()));
       return Response.ok()
           .entity(gameOutcomeService.findGameOutcomesByGameId(gameId.get())
               .stream()
@@ -31,7 +35,7 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
     }
 
     if (userId.isPresent()) {
-      System.out.println("userId: " + userId);
+      logger.info("Getting all GameOutcomes with UserID: %s".formatted(userId.get()));
       return Response.ok().
           entity(gameOutcomeService.findGameOutcomeByUserId(userId.get())
               .stream().map(GameOutcomeDto::new)
@@ -39,6 +43,7 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
           .build();
     }
 
+    logger.info("Getting all existing GameOutcomes");
     return Response.ok().entity(gameOutcomeService.findAllGameOutcomes().stream()
         .map(GameOutcomeDto::new).toList()).build();
   }
@@ -46,6 +51,7 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
 
   @Override
   public Response getGameOutcomeById(Long id) {
+    logger.info("Getting GameOutcome with ID: %s".formatted(id));
     return Response.ok()
         .entity(gameOutcomeService.findGameOutcomeById(id).map(GameOutcomeDto::new))
         .build();
@@ -54,6 +60,7 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
 
   @Override
   public Response createGameOutcome(CreateGameOutcomeCommand gameOutcomeCmd) {
+    logger.info("Creating GameOutcome: %s".formatted(gameOutcomeCmd));
     return gameOutcomeService.saveGameOutcome(gameOutcomeCmd.gameId(), gameOutcomeCmd.userIds())
         .map(GameOutcomeDto::new)
         .map(go -> Response.status(Status.CREATED).entity(go))
@@ -62,6 +69,7 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
 
   @Override
   public Response updateGameOutcome(Long id, UpdateGameOutcomeCommand gameOutcomeCommand) {
+    logger.info("Updating GameOutcome with ID: %s".formatted(id));
     if (gameOutcomeCommand == null) {
       return Response.status(Status.BAD_REQUEST).build();
     }
@@ -74,6 +82,7 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
 
   @Override
   public Response deleteGameOutcome(Long id) {
+    logger.info("Deleting GameOutcome with ID: %s".formatted(id));
     return Response.ok(gameOutcomeService.deleteGameOutcome(id)).build();
   }
 }

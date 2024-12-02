@@ -12,10 +12,14 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @Transactional
 public class GameOutcomeServiceImpl implements GameOutcomeService {
+
+  private final Logger logger = LoggerFactory.getLogger(GameOutcomeServiceImpl.class);
 
   @Inject
   private GameOutcomeRepository gameOutcomeRepository;
@@ -29,6 +33,8 @@ public class GameOutcomeServiceImpl implements GameOutcomeService {
 
   @Override
   public Optional<GameOutcome> saveGameOutcome(Long gameId, List<Long> userIds) {
+    logger.info(
+        "Saving Gameoutcome containing GameID: %s and UserIDs: %s".formatted(gameId, userIds));
     List<User> users = userIds.stream()
         .map(userId -> userRepository.findUserReferencesById(userId))
         .flatMap(Optional::stream)
@@ -36,20 +42,15 @@ public class GameOutcomeServiceImpl implements GameOutcomeService {
 
     Optional<Game> game = gameRepository.findGameReferenceByGameId(gameId);
 
-    return users.size() == userIds.size() && game.isPresent()
+    return ((users.size() == userIds.size()) && game.isPresent())
         ? gameOutcomeRepository.saveGameOutcome(new GameOutcome(game.get(), users))
         : Optional.empty();
   }
 
   @Override
   public List<GameOutcome> findAllGameOutcomes() {
-    var gameOutcomes =  gameOutcomeRepository.findAllGameOutcomes();
-
-    for (GameOutcome gameOutcome : gameOutcomes) {
-      System.out.println(gameOutcome);
-    }
-
-    return gameOutcomes;
+    logger.info("Getting all existing gameoutcomes");
+    return gameOutcomeRepository.findAllGameOutcomes();
   }
 
   @Override
@@ -59,9 +60,12 @@ public class GameOutcomeServiceImpl implements GameOutcomeService {
 
   @Override
   public Optional<GameOutcome> deleteGameOutcome(Long gameOutcomeId) {
+    logger.info("Removing gameoutcome with ID: %s".formatted(gameOutcomeId));
     Optional<GameOutcome> gameOutcome = gameOutcomeRepository.findGameOutcomeById(gameOutcomeId);
 
     if (gameOutcome.isEmpty()) {
+      logger.error(
+          "Could not find gameOutcome with ID: %s when delete attempted".formatted(gameOutcomeId));
       return Optional.empty();
     }
 
@@ -72,7 +76,10 @@ public class GameOutcomeServiceImpl implements GameOutcomeService {
   }
 
   @Override
-  public Optional<GameOutcome> updateGameOutcome(Long gameOutcomeId, Long gameId, List<Long> userIds) {
+  public Optional<GameOutcome> updateGameOutcome(Long gameOutcomeId, Long gameId,
+      List<Long> userIds) {
+
+    logger.info("Updating gameoutcome with ID: %s");
 
     List<User> users = userIds.stream().map(id -> userRepository.findUserReferencesById(id))
         .flatMap(Optional::stream)
@@ -82,25 +89,33 @@ public class GameOutcomeServiceImpl implements GameOutcomeService {
 
     Optional<GameOutcome> gameOutcomeOld = gameOutcomeRepository.findGameOutcomeById(gameOutcomeId);
 
-    if ( users.size() == userIds.size() && game.isPresent() && gameOutcomeOld.isPresent()) {
+    if (users.size() == userIds.size() && game.isPresent() && gameOutcomeOld.isPresent()) {
+      logger.info(
+          "Saving updated gameoutcome with ID: %s having the following attributes: \n %s %s".formatted(
+              gameOutcomeId, gameId, userIds));
       GameOutcome gameOutcomeNew = gameOutcomeOld.get();
       gameOutcomeNew.setGame(game.get());
       gameOutcomeNew.setUsers(users);
-      System.out.println("usertosave");
-      System.out.println(gameOutcomeNew);
       return gameOutcomeRepository.saveGameOutcome(gameOutcomeNew);
     }
+
+    logger.info(
+        "Saving updated gameoutcome with ID: %s aborted due to provided ID not existing".formatted(
+            gameOutcomeId));
     return Optional.empty();
   }
 
   @Override
   public List<GameOutcome> findGameOutcomeByUserId(Long userId) {
-    System.out.println("Excecuting findbyuserId");
-    return  gameOutcomeRepository.findGameOutcomeByUserId(userId);
+    logger.info(
+        "Getting all existing gameoutcomes that reference user with UserID: %s".formatted(userId));
+    return gameOutcomeRepository.findGameOutcomeByUserId(userId);
   }
 
   @Override
   public List<GameOutcome> findGameOutcomesByGameId(Long gameId) {
+    logger.info(
+        "Getting all existing gameoutcomes that reference game with GameID: %s".formatted(gameId));
     return gameOutcomeRepository.findGameOutcomeByGameId(gameId);
   }
 }
