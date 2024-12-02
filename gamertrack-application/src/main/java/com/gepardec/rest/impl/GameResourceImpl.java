@@ -15,15 +15,14 @@ import java.util.Optional;
 @RequestScoped
 public class GameResourceImpl implements GameResource {
 
-  public static final String BASE_PATH = "games";
-
   @Inject
   private GameService gameService;
 
   @Override
   public Response getGames() {
     //Return 200 with empty list with no games if none are in the db instead of other Statuscodes
-    return Response.ok().entity(gameService.findAllGames().stream().map(GameDto::new).toList()).build();
+    return Response.ok().entity(gameService.findAllGames().stream().map(GameDto::new).toList())
+        .build();
   }
 
   @Override
@@ -40,7 +39,7 @@ public class GameResourceImpl implements GameResource {
     //Return saved Game if it was persisted or Else return Bad Request
     return gameService.saveGame(new Game(gameCmd.title(), gameCmd.rules()))
         .map(GameDto::new)
-        .map( gameDto -> Response.status(Status.CREATED).entity(gameDto))
+        .map(gameDto -> Response.status(Status.CREATED).entity(gameDto))
         .orElseGet(() -> Response.status(Status.BAD_REQUEST))
         .build();
   }
@@ -59,6 +58,7 @@ public class GameResourceImpl implements GameResource {
 
   @Override
   public Response deleteGame(Long id) {
-    return gameService.deleteGame(id).map(GameDto::new).map(Response::ok).orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
+    return gameService.deleteGame(id).map(GameDto::new).map(Response::ok)
+        .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 }

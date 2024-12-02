@@ -1,9 +1,6 @@
 package com.gepardec.model;
 
-import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
@@ -11,11 +8,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapKeyJoinColumn;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "tables")
@@ -34,6 +28,7 @@ public class GameOutcome extends AbstractEntity {
   public GameOutcome() {
 
   }
+
   public GameOutcome(Game game, List<User> users) {
     this.game = game;
     this.users = users;
