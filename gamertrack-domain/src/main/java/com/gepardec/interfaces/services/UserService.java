@@ -12,4 +12,5 @@ public interface UserService {
     List<User> findAllUsers();
     List<User> findAllUsersIncludeDeleted();
     Optional<User> findUserById(long id);
+    Optional<User> findUserByIdIncludeDeleted(long id);
 }
