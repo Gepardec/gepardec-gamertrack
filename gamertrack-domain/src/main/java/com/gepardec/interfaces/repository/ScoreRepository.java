@@ -11,6 +11,7 @@ public interface ScoreRepository {
     List<Score> findScoreByUser(Long userId);
     List<Score> findScoreByGame(Long gameId);
     List<Score> findScoreByScorePoints(double scorePoints);
+    List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints);
     Optional<Score> saveScore(Long userId, Long gameId, double scorePoints);
     boolean scoreExists(Long userId, Long gameId);
 }

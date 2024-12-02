@@ -53,6 +53,16 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
+    public List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints) {
+        if(minPoints > maxPoints) {
+            double tmp = maxPoints;
+            maxPoints = minPoints;
+            minPoints = tmp;
+        }
+        return scoreRepository.findScoreByMinMaxScorePoints(minPoints, maxPoints);
+    }
+
+    @Override
     public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
         return scoreRepository.saveScore(userId,gameId,scorePoints);
     }

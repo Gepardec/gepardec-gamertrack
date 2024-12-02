@@ -6,3 +6,25 @@ Content-Type:application/json
   "gameId": 1,
   "scorePoints": 10
 }
+
+###
+POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 2,
+  "gameId": 1,
+  "scorePoints": 100
+}
+
+###
+POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 3,
+  "gameId": 1,
+  "scorePoints": 1000
+}
+
+###

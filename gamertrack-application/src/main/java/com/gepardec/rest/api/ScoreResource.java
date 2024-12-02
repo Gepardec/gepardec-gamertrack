@@ -23,7 +23,8 @@ public interface ScoreResource {
     public static final String SCOREPOINTS_PATH = "scorepoints/{points}";
 
     @GET()
-    public Response getScores();
+    public Response getScores(@QueryParam("min") @DefaultValue("0") double minScore,
+                              @QueryParam("max") @DefaultValue("0") double maxScore);
 
     @Path(ID_PATH)
     @GET

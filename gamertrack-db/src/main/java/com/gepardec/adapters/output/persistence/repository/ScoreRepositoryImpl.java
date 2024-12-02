@@ -55,6 +55,15 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
+    public List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints) {
+        return entityManager.createQuery("SELECT s FROM Score s WHERE :minPoints <= s.scorePoints AND " +
+                        "s.scorePoints <= :maxPoints order by s.scorePoints", Score.class)
+                .setParameter("minPoints", minPoints)
+                .setParameter("maxPoints", maxPoints)
+                .getResultList();
+    }
+
+    @Override
     public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
 
         if(!scoreExists(userId, gameId)) {
