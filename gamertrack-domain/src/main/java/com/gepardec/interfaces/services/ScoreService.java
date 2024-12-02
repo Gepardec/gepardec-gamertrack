@@ -13,4 +13,5 @@ public interface ScoreService {
     List<Score> findByScorePoints(double scorePoints);
     Optional<Score> saveScore(Long userId, Long gameId, double scorePoints);
     Optional<Score> updateScore(Long id, Score scoreEdit);
+    boolean scoreExists(Long userId, Long gameId);
 }
