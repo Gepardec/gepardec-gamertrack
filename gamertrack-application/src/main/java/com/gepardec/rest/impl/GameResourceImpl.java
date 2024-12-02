@@ -8,7 +8,6 @@ import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameDto;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.Optional;
@@ -44,7 +43,6 @@ public class GameResourceImpl implements GameResource {
         .map( gameDto -> Response.status(Status.CREATED).entity(gameDto))
         .orElseGet(() -> Response.status(Status.BAD_REQUEST))
         .build();
-
   }
 
   @Override
@@ -60,7 +58,6 @@ public class GameResourceImpl implements GameResource {
   }
 
   @Override
-  @DELETE
   public Response deleteGame(Long id) {
     return gameService.deleteGame(id).map(GameDto::new).map(Response::ok).orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
