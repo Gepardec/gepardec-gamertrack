@@ -24,7 +24,7 @@ public interface ScoreResource {
 
     @GET()
     public Response getScores(@QueryParam("min") @DefaultValue("0") double minScore,
-                              @QueryParam("max") @DefaultValue("0") double maxScore);
+                              @QueryParam("max") @DefaultValue("1.7976931348623157E308") double maxScore);
 
     @Path(ID_PATH)
     @GET

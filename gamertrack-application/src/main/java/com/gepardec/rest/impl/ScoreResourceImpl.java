@@ -16,7 +16,7 @@ public class ScoreResourceImpl implements ScoreResource {
 
     @Override
     public Response getScores(double minScore, double maxScore) {
-        if (minScore == 0 && maxScore == 0) {
+        if (minScore == 0 && maxScore == 1.7976931348623157E308) {
             return Response.ok().entity(scoreService.findAllScores().stream().map(ScoreDto::new).toList()).build();
         } else {
             return Response.ok().entity(scoreService.findScoreByMinMaxScorePoints(minScore,maxScore).stream().map(ScoreDto::new).toList()).build();
