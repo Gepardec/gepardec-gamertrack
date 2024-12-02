@@ -72,4 +72,9 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
         return Optional.empty();
     }
 
+    @Override
+    public boolean scoreExists(Long userId, Long gameId) {
+        return scoreRepository.scoreExists(userId,gameId);
+    }
+
 }
