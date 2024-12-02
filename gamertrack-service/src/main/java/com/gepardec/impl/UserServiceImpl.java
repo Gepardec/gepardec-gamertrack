@@ -1,6 +1,7 @@
 package com.gepardec.impl;
 
 import com.gepardec.interfaces.repository.UserRepository;
+import com.gepardec.interfaces.services.ScoreService;
 import com.gepardec.interfaces.services.UserService;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateful;
@@ -18,6 +19,9 @@ public class UserServiceImpl implements UserService, Serializable {
 
     @Inject
     private UserRepository userRepository;
+
+    @Inject
+    private ScoreService scoreService;
 
     @Override
     public Optional<User> saveUser(User user) {
@@ -43,8 +47,16 @@ public class UserServiceImpl implements UserService, Serializable {
         Optional<User> entity = userRepository.findUserById(id);
 
             if(entity.isPresent()){
-                user=entity.get();
-                userRepository.deleteUser(user);
+                if(scoreService.findScoreByUser(entity.get().getId()).isEmpty()){
+                    user=entity.get();
+                    userRepository.deleteUser(user);
+                }
+                else {
+                    user=entity.get();
+                    user.setFirstname("DELETED");
+                    user.setLastname("U$ER");
+                    userRepository.updateUser(entity.get().getId(),user);
+                }
                 return Optional.of(user);
             }
             return Optional.empty();
