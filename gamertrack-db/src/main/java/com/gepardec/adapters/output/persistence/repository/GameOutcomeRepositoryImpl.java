@@ -2,15 +2,13 @@ package com.gepardec.adapters.output.persistence.repository;
 
 import com.gepardec.interfaces.repository.GameOutcomeRepository;
 import com.gepardec.model.GameOutcome;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Stateless
-@Transactional
+@ApplicationScoped
 public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
 
   @Inject
@@ -20,22 +18,30 @@ public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
   public Optional<GameOutcome> saveGameOutcome(GameOutcome gameOutcome) {
     em.persist(gameOutcome);
 
-    return findById(gameOutcome.getId());
+    return findGameOutcomeById(gameOutcome.getId());
   }
 
   @Override
-  public List<GameOutcome> findAll() {
-    return em.createQuery("select go from GameOutcome go", GameOutcome.class).getResultList();
+  public List<GameOutcome> findAllGameOutcomes() {
+    var list = em.createQuery("select go from GameOutcome go", GameOutcome.class).getResultList();
+
+    for (GameOutcome gameOutcome : list) {
+      System.out.println(gameOutcome);
+    }
+
+    return list;
   }
 
   @Override
-  public Optional<GameOutcome> findById(Long id) {
+  public Optional<GameOutcome> findGameOutcomeById(Long id) {
     return Optional.of(em.find(GameOutcome.class, id));
   }
 
   @Override
   public void deleteGameOutcome(Long gameOutcomeId) {
-    em.remove(findGameOutcomeByUserId(gameOutcomeId));
+    Optional<GameOutcome> gameOutcomeToDelete = findGameOutcomeById(gameOutcomeId);
+
+    gameOutcomeToDelete.ifPresent(gameOutcome -> em.remove(gameOutcome));
   }
 
   @Override
@@ -45,11 +51,18 @@ public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
 
   @Override
   public List<GameOutcome> findGameOutcomeByUserId(Long userId) {
-    return em.createQuery("select go from GameOutcome go join go.users u where u.id = :userId ", GameOutcome.class).getResultList();
+    var query = em.createQuery("select go from GameOutcome go inner join go.users u where u.id = :userId ", GameOutcome.class);
+
+    query.setParameter("userId", userId);
+    return query.getResultList();
   }
 
   @Override
   public List<GameOutcome> findGameOutcomeByGameId(Long gameId) {
-    return em.createQuery("select go from GameOutcome go where go.game.id = :gameId ", GameOutcome.class).getResultList();
+    var query = em.createQuery("select go from GameOutcome go where go.game.id = :gameId ",
+        GameOutcome.class);
+
+    query.setParameter("gameId", gameId);
+    return query.getResultList();
   }
 }
