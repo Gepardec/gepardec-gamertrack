@@ -47,9 +47,14 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
 
   @Override
   public Boolean GameExistsByGameName(String gameName) {
-     Query query = em.createQuery("select g from Game g where g.name = :gameName", Game.class);
-     query.setParameter("gameName", gameName);
+    Query query = em.createQuery("select g from Game g where g.name = :gameName", Game.class);
+    query.setParameter("gameName", gameName);
 
-     return !query.getResultList().isEmpty();
+    return !query.getResultList().isEmpty();
+  }
+
+  @Override
+  public Optional<Game> findGameReferenceByGameId(Long gameId) {
+    return Optional.of(em.getReference(Game.class, gameId));
   }
 }

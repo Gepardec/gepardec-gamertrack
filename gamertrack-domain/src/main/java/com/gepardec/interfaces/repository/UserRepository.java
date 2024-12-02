@@ -14,4 +14,5 @@ public interface UserRepository{
     void deleteUser(User user);
     List<User> findAllUsers();
     Optional<User> findUserById( long id);
+    Optional<User> findUserReferencesById(Long userId);
 }

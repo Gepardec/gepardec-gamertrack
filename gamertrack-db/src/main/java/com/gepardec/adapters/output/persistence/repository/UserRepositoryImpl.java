@@ -50,4 +50,9 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
                 .setParameter("id", id)
                 .getResultList().getFirst());
     }
+
+    @Override
+    public Optional<User> findUserReferencesById(Long userId) {
+        return Optional.of(entityManager.getReference(User.class, userId));
+    }
 }
