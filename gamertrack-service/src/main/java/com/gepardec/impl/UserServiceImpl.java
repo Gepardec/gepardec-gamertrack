@@ -68,6 +68,11 @@ public class UserServiceImpl implements UserService, Serializable {
     }
 
     @Override
+    public List<User> findAllUsersIncludeDeleted() {
+        return userRepository.findAllUsersIncludeDeleted();
+    }
+
+    @Override
     public Optional<User> findUserById(long id) {
             return userRepository.findUserById(id);
     }

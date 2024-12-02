@@ -20,6 +20,9 @@ public interface UserResource {
 
     @GET
     public Response getUsers();
+    @Path("/includeDeleted")
+    @GET
+    public Response getUsersIncludeDeleted();
 
     @Path("{id}")
     @GET

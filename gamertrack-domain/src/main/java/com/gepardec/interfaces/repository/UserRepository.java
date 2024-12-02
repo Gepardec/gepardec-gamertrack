@@ -13,5 +13,6 @@ public interface UserRepository{
     Optional<User> updateUser(Long id, User user);
     void deleteUser(User user);
     List<User> findAllUsers();
+    List<User> findAllUsersIncludeDeleted();
     Optional<User> findUserById( long id);
 }

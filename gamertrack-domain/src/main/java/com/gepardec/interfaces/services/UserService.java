@@ -10,5 +10,6 @@ public interface UserService {
     Optional<User> updateUser(Long id, User user);
     Optional<User> deleteUser(Long id);
     List<User> findAllUsers();
+    List<User> findAllUsersIncludeDeleted();
     Optional<User> findUserById(long id);
 }

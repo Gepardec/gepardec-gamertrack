@@ -38,8 +38,13 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
     }
 
     @Override
-    public List<User> findAllUsers() {
+    public List<User> findAllUsersIncludeDeleted() {
         return entityManager.createQuery("SELECT u FROM User u", User.class)
+                .getResultList();
+    }
+    @Override
+    public List<User> findAllUsers() {
+        return entityManager.createQuery("SELECT u FROM User u Where u.firstname <> 'DELETED' And u.lastname <> 'U$ER' ", User.class)
                 .getResultList();
     }
 
