@@ -40,12 +40,22 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
 
     @Override
     public Optional<User> findUserById(long id) {
-        List<User> resultList = entityManager.createQuery("SELECT u FROM User u WHERE u.id = :id", User.class)
+        List<User> resultList = entityManager.createQuery("SELECT u FROM User u WHERE u.id = :id And u.firstname <> 'DELETED' And u.lastname <> 'U$ER'", User.class)
                 .setParameter("id", id)
                 .getResultList();
         log.info("Find user with id: {}. Returned list of size:{}", id, resultList.size());
         return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.getFirst());
     }
+
+    @Override
+    public Optional<User> findUserByIdIncludeDeleted(long id) {
+        List<User> resultList = entityManager.createQuery("SELECT u FROM User u WHERE u.id = :id", User.class)
+                .setParameter("id", id)
+                .getResultList();
+        log.info("Find user including deleted with id: {}. Returned list of size:{}", id, resultList.size());
+        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.getFirst());
+    }
+
     @Override
     public Optional<User> saveUser(User user) {
         entityManager.persist(user);

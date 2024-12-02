@@ -12,6 +12,7 @@ public interface UserRepository{
     List<User> findAllUsers();
     List<User> findAllUsersIncludeDeleted();
     Optional<User> findUserById( long id);
+    Optional<User> findUserByIdIncludeDeleted( long id);
     Optional<User> saveUser(User user);
     void deleteUser(User user);
 
