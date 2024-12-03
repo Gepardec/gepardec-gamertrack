@@ -9,10 +9,7 @@ import java.util.List;
 public class TestFixtures {
 
   public static Game game() {
-    Game game = new Game("Game Fixture", "Game Fixture Rules");
-    game.setId(1L);
-
-    return game;
+    return game(1L);
   }
 
   public static Game game(Long id) {
@@ -31,16 +28,52 @@ public class TestFixtures {
   }
 
   public static GameOutcome gameOutcome() {
-    return new GameOutcome(TestFixtures.game(), List.of(TestFixtures.user()));
+    return gameOutcome(1L, TestFixtures.game(), TestFixtures.users(10));
   }
 
   public static User user() {
-    return new User("User", "Testfixture");
+    return user(1L);
   }
 
-  public static GameOutcome gameOutcome(Game game, User... user) {
-    return new GameOutcome(game, List.of(user));
+  public static User user(Long id) {
+    User user = new User("User", "Testfixture");
+    user.setId(id);
+    return user;
   }
 
+  public static GameOutcome gameOutcome(Long gameOutComeId) {
+    GameOutcome gameOutcome = gameOutcome();
+    gameOutcome.setId(gameOutComeId);
+
+    return gameOutcome;
+  }
+
+  public static GameOutcome gameOutcome(Long id, Game game, List<User> users) {
+    GameOutcome gameOutcome = new GameOutcome(game, users);
+    gameOutcome.setId(id);
+    return gameOutcome;
+  }
+
+  public static List<GameOutcome> gameOutcomes(int gameOutcomeCount) {
+    List<GameOutcome> gameOutcomes = new ArrayList<>();
+    for (int i = 0; i < gameOutcomeCount; i++) {
+      gameOutcomes.add(gameOutcome((long) i++));
+    }
+    return gameOutcomes;
+  }
+
+  public static List<User> users(int userCount) {
+    List<User> users = new ArrayList<>();
+
+    for (int i = 0; i < userCount; i++) {
+      users.add(TestFixtures.user((long) i++));
+    }
+
+    return users;
+  }
+
+  public static List<Long> userIds(int userCount) {
+    return users(userCount).stream().map(User::getId).toList();
+  }
 
 }
