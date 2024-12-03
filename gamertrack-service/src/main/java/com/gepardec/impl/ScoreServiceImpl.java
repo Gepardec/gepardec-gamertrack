@@ -24,6 +24,23 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     private ScoreRepository scoreRepository;
 
     @Override
+    public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
+        return scoreRepository.saveScore(userId,gameId,scorePoints);
+    }
+
+    @Override
+    public Optional<Score> updateScore(Long id, Score scoreEdit){
+        Optional<Score> entity = scoreRepository.findScoreById(id);
+        if(entity.isPresent()) {
+            log.info("Score with the id {} is present", id);
+            return scoreRepository.saveScore(
+                    scoreEdit.user.getId(),scoreEdit.game.getId(),scoreEdit.getScorePoints());
+        }
+        log.error("Could not find score with id {}. Score was not updated", id);
+        return Optional.empty();
+    }
+
+    @Override
     public List<Score> findAllScores() {
         return scoreRepository.findAllScores();
     }
@@ -57,23 +74,6 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
             log.info("switched minPoints with maxPoint because minPoints was greater than maxPoints");
         }
         return scoreRepository.findScoreByMinMaxScorePoints(minPoints, maxPoints);
-    }
-
-    @Override
-    public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
-        return scoreRepository.saveScore(userId,gameId,scorePoints);
-    }
-
-    @Override
-    public Optional<Score> updateScore(Long id, Score scoreEdit){
-        Optional<Score> entity = scoreRepository.findScoreById(id);
-        if(entity.isPresent()) {
-            log.info("Score with the id {} is present", id);
-            return scoreRepository.saveScore(
-                    scoreEdit.user.getId(),scoreEdit.game.getId(),scoreEdit.getScorePoints());
-        }
-        log.error("Could not find score with id {}. Score was not updated", id);
-        return Optional.empty();
     }
 
     @Override
