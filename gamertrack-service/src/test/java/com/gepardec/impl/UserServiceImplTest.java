@@ -133,9 +133,9 @@ public class UserServiceImplTest {
         User user2 = new User("Paul","Meyer");
         User user3 = new User("DELETED","U$ER");
 
-        when(userRepository.findAllUsers()).thenReturn(List.of(user1, user2, user3));
+        when(userRepository.findAllUsersIncludeDeleted()).thenReturn(List.of(user1, user2, user3));
 
-        assertEquals(3, userService.findAllUsers().size());
+        assertEquals(3, userService.findAllUsersIncludeDeleted().size());
     }
     @Test
     void ensureFindUserByIdWorks() {
