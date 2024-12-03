@@ -16,7 +16,7 @@ import java.util.List;
 public class GameOutcome extends AbstractEntity {
 
   @ManyToOne()
-  @JoinColumn(name = "fk_game", foreignKey = @ForeignKey(name = "fk_game"))
+  @JoinColumn(name = "fk_game_gameoutcome", foreignKey = @ForeignKey(name = "fk_game_gameoutcome"))
   private Game game;
 
   @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)

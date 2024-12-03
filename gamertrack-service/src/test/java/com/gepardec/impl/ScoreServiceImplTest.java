@@ -1,8 +1,6 @@
-package com.gepradec.impl;
+package com.gepardec.impl;
 
 import com.gepardec.adapters.output.persistence.repository.ScoreRepositoryImpl;
-import com.gepardec.impl.ScoreServiceImpl;
-import com.gepardec.interfaces.services.ScoreService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;

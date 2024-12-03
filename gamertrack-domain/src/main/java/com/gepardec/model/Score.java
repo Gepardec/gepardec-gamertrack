@@ -12,7 +12,7 @@ public class Score extends AbstractEntity{
 
     @NotNull
     @ManyToOne()
-    @JoinColumn(name = "fk_game", foreignKey = @ForeignKey(name = "fk_game"))
+    @JoinColumn(name = "fk_game_score", foreignKey = @ForeignKey(name = "fk_game_score"))
     public Game game;
 
     @NotNull

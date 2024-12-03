@@ -1,10 +1,6 @@
-package com.gepradec.impl;
+package com.gepardec.impl;
 
-import com.gepardec.adapters.output.persistence.repository.GameRepositoryImpl;
 import com.gepardec.adapters.output.persistence.repository.UserRepositoryImpl;
-import com.gepardec.impl.GameServiceImpl;
-import com.gepardec.impl.UserServiceImpl;
-import com.gepardec.model.Game;
 import com.gepardec.model.User;
 import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
