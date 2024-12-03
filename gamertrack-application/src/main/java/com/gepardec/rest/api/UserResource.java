@@ -32,7 +32,7 @@ public interface UserResource {
     @Operation(summary = "Updated user by id", description = "Returns the updated user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "404", description = "Not Found - The user was not be found")
+            @ApiResponse(responseCode = "404", description = "Not Found - The user was not found")
     })
     @Path("{id}")
     @PUT
@@ -41,7 +41,7 @@ public interface UserResource {
     @Operation(summary = "Delete User by id", description = "Returns the deleted user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "404", description = "Not Found - The user was not be found")
+            @ApiResponse(responseCode = "404", description = "Not Found - The user was not found")
     })
     @Path("{id}")
     @DELETE
@@ -61,7 +61,7 @@ public interface UserResource {
     @Operation(summary = "Get User by id", description = "Returns user by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "404", description = "Not Found - The user was not be found")
+            @ApiResponse(responseCode = "404", description = "Not Found - The user was not found")
     })
     @Path("{id}")
     @GET
