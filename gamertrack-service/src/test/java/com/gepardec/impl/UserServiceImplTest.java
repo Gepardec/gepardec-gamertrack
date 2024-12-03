@@ -52,7 +52,7 @@ public class UserServiceImplTest {
         //User was found
         when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.of(userEdit));
 
-        when(userRepository.saveUser(eq(userEdit))).thenReturn(Optional.of(userEdit));
+        when(userRepository.saveUser(userEdit)).thenReturn(Optional.of(userEdit));
 
         Optional<User> updatedUser = userService.updateUser(userEdit.getId(), userEdit);
 
