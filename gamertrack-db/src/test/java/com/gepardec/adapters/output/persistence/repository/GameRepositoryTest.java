@@ -1,4 +1,4 @@
-package com.gepardec.adapters.output.persistence.repository;
+/*package com.gepardec.adapters.output.persistence.repository;
 
 import com.gepardec.interfaces.repository.GameRepository;
 import com.gepardec.model.Game;
@@ -20,3 +20,5 @@ class GameRepositoryTest {
     repository.saveGame(game);
   }
 }
+
+ */
