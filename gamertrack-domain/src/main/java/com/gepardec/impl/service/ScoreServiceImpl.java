@@ -1,9 +1,7 @@
-package com.gepardec.impl;
+package com.gepardec.impl.service;
 
 import com.gepardec.interfaces.repository.ScoreRepository;
-import com.gepardec.interfaces.services.GameService;
 import com.gepardec.interfaces.services.ScoreService;
-import com.gepardec.interfaces.services.UserService;
 import com.gepardec.model.Score;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;

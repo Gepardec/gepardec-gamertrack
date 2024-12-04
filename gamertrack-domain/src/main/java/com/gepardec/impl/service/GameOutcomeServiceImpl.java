@@ -1,4 +1,4 @@
-package com.gepardec.impl;
+package com.gepardec.impl.service;
 
 import com.gepardec.interfaces.repository.GameOutcomeRepository;
 import com.gepardec.interfaces.repository.GameRepository;

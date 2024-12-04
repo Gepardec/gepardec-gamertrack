@@ -1,11 +1,10 @@
-package com.gepardec.impl;
+package com.gepardec.impl.service;
 
 import com.gepardec.interfaces.repository.UserRepository;
 import com.gepardec.interfaces.services.ScoreService;
 import com.gepardec.interfaces.services.UserService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import jakarta.ejb.Stateful;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

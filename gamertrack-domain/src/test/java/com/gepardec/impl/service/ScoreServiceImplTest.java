@@ -1,6 +1,6 @@
-package com.gepardec.impl;
+package com.gepardec.impl.service;
 
-import com.gepardec.adapters.output.persistence.repository.ScoreRepositoryImpl;
+import com.gepardec.interfaces.repository.ScoreRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
@@ -26,7 +26,7 @@ public class ScoreServiceImplTest {
     EntityManager entityManager;
 
     @Mock
-    ScoreRepositoryImpl scoreRepository;
+    ScoreRepository scoreRepository;
 
     @InjectMocks
     ScoreServiceImpl scoreService;

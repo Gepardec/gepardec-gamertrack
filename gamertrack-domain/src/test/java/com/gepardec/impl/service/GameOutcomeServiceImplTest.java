@@ -1,4 +1,4 @@
-package com.gepardec.impl;
+package com.gepardec.impl.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -7,10 +7,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+
 import com.gepardec.TestFixtures;
-import com.gepardec.adapters.output.persistence.repository.GameOutcomeRepositoryImpl;
-import com.gepardec.adapters.output.persistence.repository.GameRepositoryImpl;
-import com.gepardec.adapters.output.persistence.repository.UserRepositoryImpl;
+import com.gepardec.interfaces.repository.GameOutcomeRepository;
+import com.gepardec.interfaces.repository.GameRepository;
+import com.gepardec.interfaces.repository.UserRepository;
 import com.gepardec.model.GameOutcome;
 import com.gepardec.model.User;
 import java.util.ArrayList;
@@ -26,12 +27,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class GameOutcomeServiceImplTest {
 
   @Mock
-  GameOutcomeRepositoryImpl gameOutcomeRepository;
+  GameOutcomeRepository gameOutcomeRepository;
 
   @Mock
-  UserRepositoryImpl userRepository;
+  UserRepository userRepository;
   @Mock
-  GameRepositoryImpl gameRepository;
+  GameRepository gameRepository;
 
   @InjectMocks
   GameOutcomeServiceImpl gameOutcomeService;
