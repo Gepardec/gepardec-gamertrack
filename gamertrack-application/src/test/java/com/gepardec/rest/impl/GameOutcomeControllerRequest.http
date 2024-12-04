@@ -19,23 +19,25 @@ GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games
 
 ### (2) Create users
 
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/new
+POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users
 Content-Type:application/json
 
 {
   "firstname": "User1",
   "lastname": "User1"
 }
+
 ###
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/new
+POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users
 Content-Type:application/json
 
 {
   "firstname": "User1",
   "lastname": "User1"
 }
+
 ####
-GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/user/list
+GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/users
 
 
 
@@ -46,12 +48,15 @@ Accept: application/json
 
 {
   "gameId": 1,
-  "userIds": [1,2]
+  "userIds": [
+    1,
+    2
+  ]
 }
 
 
 ###
-GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/gameoutcomes
+GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/gameoutcomes/1
 
 ####
 
@@ -61,13 +66,13 @@ GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/gameoutcome
 
 ###
 
-PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/gameoutcomes/1
+PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/gameoutcomes/2
 Content-Type: application/json
 Accept: application/json
 
 {
   "gameId": 1,
-  "id": 1,
+  "gameOutcomeId": 1,
   "userIds": [
     1
   ]
@@ -75,4 +80,4 @@ Accept: application/json
 
 ####
 
-###DELETE http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/gameoutcomes/1
+DELETE http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/gameoutcomes/1
