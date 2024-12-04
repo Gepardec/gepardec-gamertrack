@@ -52,10 +52,9 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
   @Override
   public Response getGameOutcomeById(Long id) {
     logger.info("Getting GameOutcome with ID: %s".formatted(id));
-    return Response.ok()
-        .entity(gameOutcomeService.findGameOutcomeById(id).map(GameOutcomeDto::new))
-        .build();
 
+    return gameOutcomeService.findGameOutcomeById(id).map(GameOutcomeDto::new).map(Response::ok)
+        .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 
   @Override
@@ -83,6 +82,7 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
   @Override
   public Response deleteGameOutcome(Long id) {
     logger.info("Deleting GameOutcome with ID: %s".formatted(id));
-    return Response.ok(gameOutcomeService.deleteGameOutcome(id)).build();
+    return gameOutcomeService.deleteGameOutcome(id).map(GameOutcomeDto::new).map(Response::ok)
+        .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 }
