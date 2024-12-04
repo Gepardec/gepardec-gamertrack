@@ -25,8 +25,8 @@
                 <artifactId>swagger-maven-plugin-jakarta</artifactId>
                 <version>2.2.26</version>
                 <configuration>
-                    <outputFileName>openapi</outputFileName>
-                    <outputPath>${project.build.directory}/generatedApiDocumentation</outputPath>
+                    <outputFileName>openapi-spec</outputFileName>
+                    <outputPath>docs</outputPath>
                     <outputFormat>JSONANDYAML</outputFormat>
                     <readAllResources>true</readAllResources>
                     <prettyPrint>true</prettyPrint>

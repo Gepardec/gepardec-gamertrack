@@ -52,7 +52,7 @@ public interface UserResource {
     @GET
     public Response getUsers();
 
-    @Operation(summary = "Get all users including the deleted User", description = "Returns a list of users including")
+    @Operation(summary = "Get all users including the deleted User", description = "Returns a list of users including deleted users")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
     @Path("/includeDeleted")
     @GET
