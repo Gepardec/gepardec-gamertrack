@@ -24,7 +24,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public List<Score> findAllScores() {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s where s.user.deactivated = false", Score.class)
                 .getResultList();
         log.info("Find all scores. Returned list of size:{}", resultList.size());
 
@@ -33,7 +33,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public Optional<Score> findScoreById(Long id) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.id = :id", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.id = :id " +
+                        "AND s.user.deactivated = false ", Score.class)
                 .setParameter("id", id)
                 .getResultList();
         log.info("Find score with id: {}. Returned list of size:{}", id, resultList.size());
@@ -43,7 +44,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public List<Score> findScoreByUser(Long userId) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.user.id = :userId", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.user.id = :userId " +
+                        "AND s.user.deactivated = false", Score.class)
                 .setParameter("userId", userId)
                 .getResultList();
         log.info("Find score with userId: {}. Returned list of size:{}", userId, resultList.size());
@@ -53,7 +55,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public List<Score> findScoreByGame(Long gameId) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId " +
+                        "AND s.user.deactivated = false", Score.class)
                 .setParameter("gameId", gameId)
                 .getResultList();
         log.info("Find score with gameId: {}. Returned list of size:{}", gameId, resultList.size());
@@ -63,7 +66,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public List<Score> findScoreByScorePoints(double scorePoints) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.scorePoints = :scorePoints", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.scorePoints = :scorePoints " +
+                        "AND s.user.deactivated = false", Score.class)
                 .setParameter("scorePoints", scorePoints)
                 .getResultList();
         log.info("Find score with {} ScorePoints. Returned list of size:{}", scorePoints, resultList.size());
@@ -73,8 +77,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE :minPoints <= s.scorePoints AND " +
-                        "s.scorePoints <= :maxPoints order by s.scorePoints", Score.class)
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE :minPoints <= s.scorePoints " +
+                        "AND s.scorePoints <= :maxPoints AND s.user.deactivated = false order by s.scorePoints", Score.class)
                 .setParameter("minPoints", minPoints)
                 .setParameter("maxPoints", maxPoints)
                 .getResultList();
