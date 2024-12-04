@@ -48,12 +48,17 @@ public interface UserResource {
     public Response deleteUser(@PathParam("id") Long id);
 
     @Operation(summary = "Get all users", description = "Returns a list of users")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
-    @GET
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "204", description = "No Content - No users were found")
+    })    @GET
     public Response getUsers();
 
     @Operation(summary = "Get all users including the deleted User", description = "Returns a list of users including deleted users")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "204", description = "No Content - No users were found")
+    })
     @Path("/includeDeleted")
     @GET
     public Response getUsersIncludeDeleted();
@@ -61,7 +66,7 @@ public interface UserResource {
     @Operation(summary = "Get User by id", description = "Returns user by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "404", description = "Not Found - The user was not found")
+            @ApiResponse(responseCode = "204", description = "No Content - The user was not found")
     })
     @Path("{id}")
     @GET
