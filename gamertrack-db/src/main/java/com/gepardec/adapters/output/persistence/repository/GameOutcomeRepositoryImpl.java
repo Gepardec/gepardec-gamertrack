@@ -35,7 +35,7 @@ public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
   @Override
   public Optional<GameOutcome> findGameOutcomeById(Long id) {
     logger.info("Finding game outcome by id: %s".formatted(id));
-    return Optional.of(em.find(GameOutcome.class, id));
+    return Optional.ofNullable(em.find(GameOutcome.class, id));
   }
 
   @Override
@@ -43,7 +43,7 @@ public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
     logger.info("Looking up game outcome by id: %s in order to delet".formatted(gameOutcomeId));
     Optional<GameOutcome> gameOutcomeToDelete = findGameOutcomeById(gameOutcomeId);
 
-    if (!gameOutcomeToDelete.isPresent()) {
+    if (gameOutcomeToDelete.isEmpty()) {
       logger.info(
           "Could not find gameoutcome with ID %s".formatted(gameOutcomeId));
     }
