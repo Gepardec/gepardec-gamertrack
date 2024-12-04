@@ -17,6 +17,8 @@ public class User extends AbstractEntity{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     public List<Score> scores;
 
+    public boolean deactivated;
+
     public User(String firstname, String lastname) {
         this.firstname = firstname;
         this.lastname = lastname;
@@ -47,5 +49,13 @@ public class User extends AbstractEntity{
 
     public void setScores(List<Score> scores) {
         this.scores = scores;
+    }
+
+    public boolean isDeactivated() {
+        return deactivated;
+    }
+
+    public void setDeactivated(boolean deactivated) {
+        this.deactivated = deactivated;
     }
 }

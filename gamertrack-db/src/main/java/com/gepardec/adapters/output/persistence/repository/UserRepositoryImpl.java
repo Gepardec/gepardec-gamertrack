@@ -31,7 +31,7 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   @Override
   public List<User> findAllUsers() {
     List<User> resultList = entityManager.createQuery(
-            "SELECT u FROM User u Where u.firstname <> 'DELETED' And u.lastname <> 'U$ER' ", User.class)
+            "SELECT u FROM User u Where u.deactivated = false", User.class)
         .getResultList();
     log.info("Find all users. Returned list of size:{}", resultList.size());
     return resultList;
@@ -41,7 +41,7 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   @Override
   public Optional<User> findUserById(long id) {
     List<User> resultList = entityManager.createQuery(
-            "SELECT u FROM User u WHERE u.id = :id And u.firstname <> 'DELETED' And u.lastname <> 'U$ER'",
+            "SELECT u FROM User u WHERE u.id = :id AND u.deactivated = false",
             User.class)
         .setParameter("id", id)
         .getResultList();

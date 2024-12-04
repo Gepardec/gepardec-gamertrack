@@ -65,6 +65,7 @@ public class UserServiceImpl implements UserService, Serializable {
                     user=entity.get();
                     user.setFirstname("DELETED");
                     user.setLastname("U$ER");
+                    user.setDeactivated(true);
                     log.info("user with the id {} has {} scores stored. user was deactivated", id, scoresByUser.size());
                     userRepository.saveUser(user);
                 }
