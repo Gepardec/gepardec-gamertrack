@@ -37,31 +37,46 @@ public interface ScoreResource {
     //-------------------------------
 
     @Operation(summary = "Get all Scores (optional: MinMax ScorePoints)", description = "Returns list of scores")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
+    })
     @GET()
     public Response getScores(@QueryParam("min") @DefaultValue("0") double minScore,
                               @QueryParam("max") @DefaultValue("1.7976931348623157E308") double maxScore);
 
     @Operation(summary = "Get Scores by id", description = "Returns list of scores")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
+    })
     @Path(ID_PATH)
     @GET
     public Response getScoreById(@PathParam("id") Long id);
 
     @Operation(summary = "Get Scores by userId", description = "Returns list of scores")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
+    })
     @Path(USER_ID_PATH )
     @GET
     public Response getScoreByUser(@PathParam("id") Long id);
 
     @Operation(summary = "Get Scores by gameId", description = "Returns list of scores")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
+    })
     @Path(GAME_ID_PATH)
     @GET
     public Response getScoreByGame(@PathParam("id") Long gameId);
 
     @Operation(summary = "Get Scores by Scorepoints", description = "Returns list of scores")
-    @ApiResponses(@ApiResponse(responseCode = "200", description = "Successfully retrieved"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
+            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
+    })
     @Path( SCOREPOINTS_PATH)
     @GET
     public Response getScoreByScorePoints(@PathParam("points") double points);
