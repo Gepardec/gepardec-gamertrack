@@ -13,8 +13,7 @@
     <module>gamertrack-domain</module>
     <module>gamertrack-application</module>
     <module>gamertrack-db</module>
-    <module>gamertrack-service</module>
-      <module>gamertrack-war</module>
+    <module>gamertrack-war</module>
   </modules>
 
 
