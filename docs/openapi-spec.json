@@ -45,7 +45,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -76,7 +76,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -114,7 +114,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -143,7 +143,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -183,7 +183,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -214,7 +214,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -252,7 +252,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -262,7 +262,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -288,7 +288,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/GameDto"
+                  "$ref" : "#/components/schemas/GameRestDto"
                 }
               }
             }
@@ -597,7 +597,7 @@
           }
         }
       },
-      "GameDto" : {
+      "GameRestDto" : {
         "type" : "object",
         "properties" : {
           "id" : {
@@ -615,10 +615,6 @@
       "UpdateGameOutcomeCommand" : {
         "type" : "object",
         "properties" : {
-          "gameOutcomeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "gameId" : {
             "type" : "integer",
             "format" : "int64"
@@ -647,10 +643,6 @@
       "UpdateGameCommand" : {
         "type" : "object",
         "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "title" : {
             "type" : "string"
           },

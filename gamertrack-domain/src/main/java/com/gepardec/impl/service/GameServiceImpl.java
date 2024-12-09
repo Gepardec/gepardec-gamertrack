@@ -3,6 +3,7 @@ package com.gepardec.impl.service;
 import com.gepardec.interfaces.repository.GameRepository;
 import com.gepardec.interfaces.services.GameService;
 import com.gepardec.model.Game;
+import com.gepardec.model.dtos.GameDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -18,11 +19,11 @@ public class GameServiceImpl implements GameService, Serializable {
   private GameRepository gameRepository;
 
   @Override
-  public Optional<Game> saveGame(Game game) {
-    if (gameRepository.GameExistsByGameName(game.getName())) {
+  public Optional<Game> saveGame(GameDto gameDto) {
+    if (gameRepository.GameExistsByGameName(gameDto.title())) {
       return Optional.empty();
     }
-        return gameRepository.saveGame(game);
+    return gameRepository.saveGame(gameDto);
   }
 
   @Override
@@ -38,15 +39,10 @@ public class GameServiceImpl implements GameService, Serializable {
   }
 
   @Override
-  public Optional<Game> updateGame(Long gameId, Game gameNew) {
+  public Optional<Game> updateGame(GameDto gameDto) {
 
-    Optional<Game> gameOld = gameRepository.findGameById(gameId);
-
-    if (gameOld.isPresent()) {
-      Game game = gameOld.get();
-      game.setName(gameNew.getName());
-      game.setRules(gameNew.getRules());
-      return gameRepository.saveGame(game);
+    if (gameDto != null) {
+      return gameRepository.updateGame(gameDto);
     }
 
     return Optional.empty();

@@ -1,19 +1,17 @@
 package com.gepardec.impl.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-
 
 import com.gepardec.TestFixtures;
 import com.gepardec.interfaces.repository.GameOutcomeRepository;
 import com.gepardec.interfaces.repository.GameRepository;
 import com.gepardec.interfaces.repository.UserRepository;
 import com.gepardec.model.GameOutcome;
-import com.gepardec.model.User;
+import com.gepardec.model.dtos.GameOutcomeDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,28 +38,25 @@ class GameOutcomeServiceImplTest {
 
   @Test
   void ensureSavingValidGameOutcomeReturnsOptionalGameOutcome() {
-    GameOutcome gameOutcome = TestFixtures.gameOutcome();
+    GameOutcomeDto gameOutcomeDto = TestFixtures.gameOutcometoGameOutcomeDto(
+        TestFixtures.gameOutcome());
 
-    when(gameOutcomeRepository.saveGameOutcome(any())).thenReturn(Optional.of(gameOutcome));
-    when(userRepository.findUserReferencesById(any())).thenReturn(Optional.of(TestFixtures.user()));
-    when(gameRepository.findGameReferenceByGameId(any())).thenReturn(
-        Optional.of(TestFixtures.game()));
+    when(gameOutcomeRepository.saveGameOutcome(any())).thenReturn(
+        Optional.of(TestFixtures.gameOutcome()));
 
-    assertEquals(gameOutcomeService.saveGameOutcome(gameOutcome.getGame().getId(),
-            gameOutcome.getUsers().stream().map(
-                User::getId).toList()),
-        Optional.of(gameOutcome));
+    assertEquals(gameOutcomeService.saveGameOutcome(gameOutcomeDto).get().getId(),
+        Optional.of(TestFixtures.gameOutcome()).get().getId());
   }
 
   @Test
   void ensureSavingInvalidGameOutcomeReferencingNotExistingGameReturnsEmptyOptional() {
     //Given
     GameOutcome gameOutcome = TestFixtures.gameOutcome();
+    gameOutcome.setUsers(TestFixtures.users(10));
 
     //When
-    when(gameRepository.findGameReferenceByGameId(any())).thenReturn(Optional.empty());
-    var savedGameOutcome = gameOutcomeService.saveGameOutcome(gameOutcome.getId(),
-        TestFixtures.userIds(10));
+    var savedGameOutcome = gameOutcomeService.saveGameOutcome(
+        TestFixtures.gameOutcometoGameOutcomeDto(gameOutcome));
 
     //Then
     assertEquals(Optional.empty(), savedGameOutcome);
@@ -73,8 +68,8 @@ class GameOutcomeServiceImplTest {
     GameOutcome gameOutcome = TestFixtures.gameOutcome();
 
     //When
-    var savedGameOutcome = gameOutcomeService.saveGameOutcome(gameOutcome.getGame().getId(),
-        new ArrayList<>(1));
+    var savedGameOutcome = gameOutcomeService.saveGameOutcome(
+        TestFixtures.gameOutcometoGameOutcomeDto(gameOutcome));
 
     //Then
     assertEquals(Optional.empty(), savedGameOutcome);
@@ -140,31 +135,17 @@ class GameOutcomeServiceImplTest {
   void ensureUpdateGameOutcomeReturnsUpdatedGameOutcomeForExistingGameOutcome() {
     //Given
     GameOutcome gameOutcomeOld = TestFixtures.gameOutcome();
-    GameOutcome gameOutcomeNew = TestFixtures.gameOutcome();
+    GameOutcome gameOutcomeNew = TestFixtures.gameOutcome(1L);
+    GameOutcomeDto gameOutcomeNewDto = TestFixtures.gameOutcometoGameOutcomeDto(gameOutcomeNew);
 
     //When
-    when(gameOutcomeRepository.findGameOutcomeById(anyLong())).thenReturn(
-        Optional.of(gameOutcomeOld));
 
-    when(userRepository.findUserReferencesById(anyLong()))
-        .thenAnswer(param -> gameOutcomeNew.getUsers()
-            .stream()
-            .filter(u -> param.getArgument(0, Long.class).equals(u.getId()))
-            .findFirst());
+    when(gameOutcomeRepository.updateGameOutcome(any())).thenReturn(Optional.of(gameOutcomeNew));
 
-    when(gameRepository.findGameReferenceByGameId(anyLong())).thenReturn(
-        Optional.of(gameOutcomeNew.getGame()));
-
-    when(gameOutcomeRepository.saveGameOutcome(any())).thenReturn(Optional.of(gameOutcomeNew));
-
-    var updatedGameOutcome = gameOutcomeService.updateGameOutcome(
-        gameOutcomeNew.getId(),
-        gameOutcomeNew.getGame().getId(),
-        gameOutcomeNew.getUsers().stream().map(User::getId).toList());
+    var updatedGameOutcome = gameOutcomeService.updateGameOutcome(gameOutcomeNewDto);
 
     //Then
-    assertNotEquals(gameOutcomeOld, updatedGameOutcome.get());
-    assertEquals(gameOutcomeNew, updatedGameOutcome.get());
+    assertEquals(gameOutcomeNew.getId(), updatedGameOutcome.get().getId());
   }
 
   @Test

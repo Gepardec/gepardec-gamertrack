@@ -2,7 +2,7 @@ package com.gepardec.rest.api;
 
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
-import com.gepardec.rest.model.dto.GameDto;
+import com.gepardec.rest.model.dto.GameRestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,7 +38,7 @@ public interface GameResource {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Ok", content = {
           @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameDto.class))}),
+          @Schema(implementation = GameRestDto.class))}),
       @ApiResponse(responseCode = "404", description = "Game not found")})
 
   @GET
@@ -51,7 +51,7 @@ public interface GameResource {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Game successfully created", content =
       @Content(mediaType = MediaType.APPLICATION_JSON,
-          schema = @Schema(implementation = GameDto.class))),
+          schema = @Schema(implementation = GameRestDto.class))),
       @ApiResponse(responseCode = "400", description = "Could not create Game")})
 
   @POST
@@ -63,10 +63,10 @@ public interface GameResource {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Game has been updated successfully",
           content = @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameDto.class))),
+          @Schema(implementation = GameRestDto.class))),
       @ApiResponse(responseCode = "404", description = "Game not found",
           content = @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameDto.class)))})
+          @Schema(implementation = GameRestDto.class)))})
 
   @PUT
   @Path("{id}")
@@ -77,7 +77,7 @@ public interface GameResource {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Game has been deleted successfully",
           content = @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameDto.class))),
+          @Schema(implementation = GameRestDto.class))),
       @ApiResponse(responseCode = "404", description = "Game not found")})
 
   @DELETE

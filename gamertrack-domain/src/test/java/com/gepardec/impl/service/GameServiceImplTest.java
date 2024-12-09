@@ -2,7 +2,6 @@ package com.gepardec.impl.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -10,6 +9,7 @@ import static org.mockito.Mockito.when;
 import com.gepardec.TestFixtures;
 import com.gepardec.interfaces.repository.GameRepository;
 import com.gepardec.model.Game;
+import com.gepardec.model.dtos.GameDto;
 import java.util.List;
 import java.util.Optional;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -34,35 +34,38 @@ class GameServiceImplTest {
   void ensureSavingValidGameWorksAndReturnsValidGame() {
     //Given
     Game game = TestFixtures.game();
+    GameDto gameDto = TestFixtures.gameToGameDto(game);
 
     //When
     when(gameRepository.GameExistsByGameName(any())).thenReturn(false);
-    when(gameRepository.saveGame(game)).thenReturn(Optional.of(game));
-    var savedGame = gameService.saveGame(game);
+    when(gameRepository.saveGame(gameDto)).thenReturn(Optional.of(game));
+    var savedGame = gameService.saveGame(gameDto);
 
     //Then
     assertEquals(savedGame.get(), game);
   }
+
 
   @Test
   void ensureSavingInvalidGameWorksAndReturnsOptionalEmpty() {
     Game game = TestFixtures.game();
 
     when(gameRepository.GameExistsByGameName(any())).thenReturn(false);
-    assertFalse(gameService.saveGame(game).isPresent());
+    assertFalse(gameService.saveGame(TestFixtures.gameToGameDto(game)).isPresent());
   }
 
   @Test
   void ensureSavingAlreadyExistingGameFailsAndReturnsOptionalEmpty() {
-    Game game = TestFixtures.game();
+    GameDto gameDto = TestFixtures.gameToGameDto(TestFixtures.game());
 
     when(gameRepository.GameExistsByGameName(any())).thenReturn(true);
-    assertFalse(gameService.saveGame(game).isPresent());
+    assertFalse(gameService.saveGame(gameDto).isPresent());
   }
 
   @Test
   void ensureDeletingExistingGameWorksAndReturnsDeletedGame() {
     Game game = TestFixtures.game();
+    GameDto gameDto = TestFixtures.gameToGameDto(game);
 
     when(gameRepository.findGameById(anyLong())).thenReturn(Optional.of(game));
 
@@ -83,29 +86,24 @@ class GameServiceImplTest {
     //Given
     Game gameOld = TestFixtures.game();
 
-    Game gameWithNewValues = TestFixtures.game();
-    gameWithNewValues.setName("New Name");
-    gameWithNewValues.setRules("New Rules");
+    GameDto gameWithNewValues = TestFixtures.gameToGameDto(gameOld);
 
     //When
-    when(gameRepository.findGameById(anyLong())).thenReturn(Optional.of(gameOld));
-    when(gameRepository.saveGame(any())).thenReturn(Optional.of(gameWithNewValues));
+    when(gameRepository.updateGame(any())).thenReturn(
+        Optional.of(TestFixtures.gameDtoToGame(gameWithNewValues)));
 
-    var updatedGame = gameService.updateGame(gameWithNewValues.getId(), gameWithNewValues);
+    var updatedGame = gameService.updateGame(gameWithNewValues);
 
     //Then
 
-    assertNotEquals(gameOld, updatedGame);
-    assertEquals(updatedGame.get(), gameWithNewValues);
+    assertEquals(updatedGame.get().getId(), gameWithNewValues.id());
   }
 
   @Test
   void ensureUpdatingNotExistingGameReturnsOptionalEmpty() {
-    Game gameWithNewValues = TestFixtures.game();
+    GameDto gameWithNewValues = TestFixtures.gameToGameDto(TestFixtures.game());
 
-    when(gameRepository.findGameById(anyLong())).thenReturn(Optional.empty());
-
-    assertEquals(gameService.updateGame(gameWithNewValues.getId(), gameWithNewValues),
+    assertEquals(gameService.updateGame(gameWithNewValues),
         Optional.empty());
   }
 

@@ -23,4 +23,6 @@ public interface UserRepository {
   Optional<User> findUserByIdIncludeDeleted(long id);
 
   Optional<User> findUserReferencesById(Long userId);
+
+  Boolean existsByUserId(List<Long> userIds);
 }
