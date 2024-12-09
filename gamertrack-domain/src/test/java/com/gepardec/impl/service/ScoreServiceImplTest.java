@@ -4,6 +4,7 @@ import com.gepardec.interfaces.repository.ScoreRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
+import com.gepardec.model.dto.ScoreDto;
 import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
@@ -38,12 +39,14 @@ public class ScoreServiceImplTest {
         Game game = new Game("Uno","nicht schummeln");
         game.setId(1L);
         Score score = new Score(user,game,10);
+        score.setId(1L);
 
-        when(scoreRepository.saveScore(score.getGame().getId(),
-                score.getUser().getId(),10)).thenReturn(Optional.of(score));
+        ScoreDto scoreDto = new ScoreDto(score);
 
-        assertEquals(scoreService.saveScore(score.getGame().getId(),
-                score.getUser().getId(),10).get().getScorePoints(), score.getScorePoints());
+
+        when(scoreRepository.saveScore(scoreDto)).thenReturn(Optional.of(score));
+
+        assertEquals(scoreService.saveScore(scoreDto).get().getScorePoints(), score.getScorePoints());
     }
 
     @Test
@@ -53,12 +56,12 @@ public class ScoreServiceImplTest {
         Game game = new Game("Uno","nicht schummeln");
         game.setId(1L);
         Score score = new Score(user,game,10);
+        score.setId(1L);
+        ScoreDto scoreDto = new ScoreDto(score);
 
-        when(scoreRepository.scoreExists(score.getGame().getId(),
-                score.getUser().getId())).thenReturn(true);
+        when(scoreRepository.scoreExists(scoreDto)).thenReturn(true);
 
-        assertTrue(scoreService.scoreExists(score.getGame().getId(),
-                score.getUser().getId()));
+        assertTrue(scoreService.scoreExists(scoreDto));
     }
 
     @Test
@@ -70,14 +73,14 @@ public class ScoreServiceImplTest {
         Score scoreEdit = new Score(user,game,10);
         scoreEdit.setId(1L);
 
+        ScoreDto scoreDto = new ScoreDto(scoreEdit);
+
         //Score was found
         when(scoreRepository.findScoreById(scoreEdit.getId())).thenReturn(Optional.of(scoreEdit));
 
-        when(scoreRepository.saveScore(
-                scoreEdit.getGame().getId(),scoreEdit.getUser().getId(), scoreEdit.getScorePoints()
-        )).thenReturn(Optional.of(scoreEdit));
+        when(scoreRepository.updateScore(scoreDto)).thenReturn(Optional.of(scoreEdit));
 
-        Optional<Score> updatedScore = scoreService.updateScore(scoreEdit.getId(), scoreEdit);
+        Optional<Score> updatedScore = scoreService.updateScore(scoreDto);
 
         assertTrue(updatedScore.isPresent());
         assertEquals(scoreEdit.getUser().getId(), updatedScore.get().getUser().getId());
@@ -93,11 +96,12 @@ public class ScoreServiceImplTest {
         game.setId(1L);
         Score scoreEdit = new Score(user,game,10);
         scoreEdit.setId(1L);
+        ScoreDto scoreDto = new ScoreDto(scoreEdit);
 
         //Score was found
         when(scoreRepository.findScoreById(scoreEdit.getId())).thenReturn(Optional.empty());
 
-        Optional<Score> updatedScore = scoreService.updateScore(scoreEdit.getId(), scoreEdit);
+        Optional<Score> updatedScore = scoreService.updateScore(scoreDto);
 
         assertFalse(updatedScore.isPresent());
     }
@@ -310,10 +314,15 @@ public class ScoreServiceImplTest {
         Score score3 = new Score(user3,game,30);
         score3.setId(3L);
 
-        //Score does not exist yet
-        when(scoreRepository.scoreExists(3L,1L)).thenReturn(false);
+        ScoreDto scoreDto1 = new ScoreDto(score1);
+        ScoreDto scoreDto2 = new ScoreDto(score2);
+        ScoreDto scoreDto3 = new ScoreDto(score3);
 
-        assertFalse(scoreService.scoreExists(3L, 1L));
+
+        //Score does not exist yet
+        when(scoreRepository.scoreExists(scoreDto3)).thenReturn(false);
+
+        assertFalse(scoreService.scoreExists(scoreDto3));
     }
 
     @Test
@@ -338,9 +347,13 @@ public class ScoreServiceImplTest {
         Score score3 = new Score(user3,game,30);
         score3.setId(3L);
 
-        //Score does not exist yet
-        when(scoreRepository.scoreExists(3L,1L)).thenReturn(true);
+        ScoreDto scoreDto1 = new ScoreDto(score1);
+        ScoreDto scoreDto2 = new ScoreDto(score2);
+        ScoreDto scoreDto3 = new ScoreDto(score3);
 
-        assertTrue(scoreService.scoreExists(3L, 1L));
+        //Score does not exist yet
+        when(scoreRepository.scoreExists(scoreDto3)).thenReturn(true);
+
+        assertTrue(scoreService.scoreExists(scoreDto3));
     }
 }

@@ -1,4 +1,4 @@
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -8,7 +8,7 @@ Content-Type:application/json
 }
 
 ###
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
 Content-Type:application/json
 
 {

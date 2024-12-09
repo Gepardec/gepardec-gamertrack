@@ -4,6 +4,7 @@ import com.gepardec.interfaces.repository.UserRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
+import com.gepardec.model.dto.UserDto;
 import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,6 @@ import static org.mockito.Mockito.when;
 public class UserServiceImplTest {
 
     @Mock
-    EntityManager entityManager;
-
-    @Mock
     UserRepository userRepository;
 
     @InjectMocks
@@ -38,22 +36,25 @@ public class UserServiceImplTest {
     @Test
     void ensureSaveAndReadGameWorksAndReturnsUser() {
         User user = new User("Max","Muster");
+        user.setId(1L);
+        UserDto userDto = new UserDto(user);
 
-        when(userRepository.saveUser(user)).thenReturn(Optional.of(user));
-        assertEquals(userService.saveUser(user).get().getFirstname(), user.getFirstname());
+        when(userRepository.saveUser(userDto)).thenReturn(Optional.of(user));
+        assertEquals(userService.saveUser(userDto).get().getFirstname(), user.getFirstname());
     }
 
     @Test
     void ensureUpdatingExistingUserWorksAndReturnsUser() {
         User userEdit = new User("Phillip","Muster");
         userEdit.setId(1L);
+        UserDto userDto = new UserDto(userEdit);
 
         //User was found
         when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.of(userEdit));
 
-        when(userRepository.saveUser(userEdit)).thenReturn(Optional.of(userEdit));
+        when(userRepository.updateUser(userDto)).thenReturn(Optional.of(userEdit));
 
-        Optional<User> updatedUser = userService.updateUser(userEdit.getId(), userEdit);
+        Optional<User> updatedUser = userService.updateUser(userDto);
 
         assertTrue(updatedUser.isPresent());
         assertEquals(userEdit.getFirstname(), updatedUser.get().getFirstname());
@@ -64,12 +65,13 @@ public class UserServiceImplTest {
     @Test
     void ensureUpdatingNonExistingUserWorksAndReturnsEmpty() {
         User userEdit = new User("Phillip","Muster");
-        userEdit.setId(100L);
+        userEdit.setId(1L);
+        UserDto userDto = new UserDto(userEdit);
 
         //User was not found
         when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.empty());
 
-        Optional<User> updatedUser = userService.updateUser(userEdit.getId(), userEdit);
+        Optional<User> updatedUser = userService.updateUser(userDto);
 
         assertFalse(updatedUser.isPresent());
 
@@ -77,7 +79,7 @@ public class UserServiceImplTest {
     @Test
     void ensureDeletingNonExistingUserWorksAndReturnsEmpty() {
         User userEdit = new User("Phillip","Muster");
-        userEdit.setId(100L);
+        userEdit.setId(1L);
 
         //User was not found
         when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.empty());
@@ -90,7 +92,7 @@ public class UserServiceImplTest {
     @Test
     void ensureDeletingUserWithNoScoresWorksReturnsDeletedUser() {
         User user = new User("Phillip","Muster");
-        user.setId(100L);
+        user.setId(1L);
         when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
         when(scoreService.findScoreByUser(user.getId())).thenReturn(List.of());
 
@@ -102,9 +104,9 @@ public class UserServiceImplTest {
     @Test
     void ensureDeletingUserWithScoresWorksReturnsDeletedUser() {
         User user = new User("Phillip","Muster");
-        user.setId(100L);
+        user.setId(1L);
         Score score = new Score();
-        score.setId(100L);
+        score.setId(1L);
         score.setUser(user);
         score.setGame(new Game("Vier Gewinnt", "nicht schummeln"));
 

@@ -1,6 +1,7 @@
 package com.gepardec.interfaces.services;
 
 import com.gepardec.model.Score;
+import com.gepardec.model.dto.ScoreDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ public interface ScoreService {
     List<Score> findScoreByGame(Long gameId);
     List<Score> findScoreByScorePoints(double scorePoints);
     List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints);
-    Optional<Score> saveScore(Long userId, Long gameId, double scorePoints);
-    Optional<Score> updateScore(Long id, Score scoreEdit);
-    boolean scoreExists(Long userId, Long gameId);
+    Optional<Score> saveScore(ScoreDto scoreDto);
+    Optional<Score> updateScore(ScoreDto scoreDto);
+    boolean scoreExists(ScoreDto scoreDto);
 }

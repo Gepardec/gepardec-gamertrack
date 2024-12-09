@@ -3,6 +3,7 @@ package com.gepardec.impl.service;
 import com.gepardec.interfaces.repository.ScoreRepository;
 import com.gepardec.interfaces.services.ScoreService;
 import com.gepardec.model.Score;
+import com.gepardec.model.dto.ScoreDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -22,19 +23,24 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     private ScoreRepository scoreRepository;
 
     @Override
-    public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
-        return scoreRepository.saveScore(userId,gameId,scorePoints);
+    public Optional<Score> saveScore(ScoreDto scoreDto) {
+        if(!scoreExists(scoreDto)) {
+            return scoreRepository.saveScore(scoreDto);
+        }
+
+        log.error("Score with userId: {} and gameId: {} already exists!", scoreDto.userId(), scoreDto.gameId());
+        return Optional.empty();
     }
 
     @Override
-    public Optional<Score> updateScore(Long id, Score scoreEdit){
-        Optional<Score> entity = scoreRepository.findScoreById(id);
+    public Optional<Score> updateScore(ScoreDto scoreDto) {
+        Optional<Score> entity = scoreRepository.findScoreById(scoreDto.id());
         if(entity.isPresent()) {
-            log.info("Score with the id {} is present", id);
-            return scoreRepository.saveScore(
-                    scoreEdit.user.getId(),scoreEdit.game.getId(),scoreEdit.getScorePoints());
+
+            log.info("Score with the id {} is present", scoreDto.id());
+            return scoreRepository.updateScore(scoreDto);
         }
-        log.error("Could not find score with id {}. Score was not updated", id);
+        log.error("Could not find score with id {}. Score was not updated", scoreDto.id());
         return Optional.empty();
     }
 
@@ -75,8 +81,8 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public boolean scoreExists(Long userId, Long gameId) {
-        return scoreRepository.scoreExists(userId,gameId);
+    public boolean scoreExists(ScoreDto scoreDto) {
+        return scoreRepository.scoreExists(scoreDto);
     }
 
 }

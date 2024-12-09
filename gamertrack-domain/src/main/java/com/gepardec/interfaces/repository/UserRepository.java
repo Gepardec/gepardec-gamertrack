@@ -1,11 +1,18 @@
 package com.gepardec.interfaces.repository;
 
 import com.gepardec.model.User;
+import com.gepardec.model.dto.UserDto;
+
 import java.util.List;
 import java.util.Optional;
 
 
 public interface UserRepository {
+
+  Optional<User> saveUser(UserDto userDto);
+  Optional<User> updateUser(UserDto userDto);
+
+  void deleteUser(UserDto userDto);
 
   List<User> findAllUsers();
 
@@ -14,10 +21,6 @@ public interface UserRepository {
   Optional<User> findUserById(long id);
 
   Optional<User> findUserByIdIncludeDeleted(long id);
-
-  Optional<User> saveUser(User user);
-
-  void deleteUser(User user);
 
   Optional<User> findUserReferencesById(Long userId);
 }
