@@ -2,6 +2,7 @@ package com.gepardec;
 
 import com.gepardec.model.Game;
 import com.gepardec.model.GameOutcome;
+import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import com.gepardec.model.dtos.GameDto;
 import com.gepardec.model.dtos.GameOutcomeDto;
@@ -89,6 +90,21 @@ public class TestFixtures {
       gameOutcomes.add(gameOutcome((long) i++));
     }
     return gameOutcomes;
+  }
+
+  public static Score score(Long scoreId, Long userId, Long gameId) {
+    Score score = new Score(user(userId),game(gameId),10L);
+    score.setId(scoreId);
+    return score;
+  }
+
+
+  public static List<Score> scores(int scoreCount) {
+    List<Score> scores = new ArrayList<>();
+    for (int i = 0; i < scoreCount; i++) {
+      scores.add(score((long) i,(long) i,1L));
+    }
+    return scores;
   }
 
 

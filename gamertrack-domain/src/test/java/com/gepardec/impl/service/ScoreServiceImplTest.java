@@ -1,5 +1,6 @@
 package com.gepardec.impl.service;
 
+import com.gepardec.TestFixtures;
 import com.gepardec.interfaces.repository.ScoreRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
@@ -34,15 +35,8 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureSaveAndReadScoreWorks() {
-        User user = new User("Max","Muster");
-        user.setId(1L);
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-        Score score = new Score(user,game,10);
-        score.setId(1L);
-
+        Score score = TestFixtures.score(1L,1L,1L);
         ScoreDto scoreDto = new ScoreDto(score);
-
 
         when(scoreRepository.saveScore(scoreDto)).thenReturn(Optional.of(score));
 
@@ -51,12 +45,8 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureSaveExistingScoreWorksCorrectly() {
-        User user = new User("Max","Muster");
-        user.setId(1L);
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-        Score score = new Score(user,game,10);
-        score.setId(1L);
+
+        Score score = TestFixtures.score(1L,1L,1L);
         ScoreDto scoreDto = new ScoreDto(score);
 
         when(scoreRepository.scoreExists(scoreDto)).thenReturn(true);
@@ -66,13 +56,7 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureUpdateExistingScoreWorksAndReturnsScore() {
-        User user = new User("Max","Muster");
-        user.setId(1L);
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-        Score scoreEdit = new Score(user,game,10);
-        scoreEdit.setId(1L);
-
+        Score scoreEdit = TestFixtures.score(1L,1L,1L);
         ScoreDto scoreDto = new ScoreDto(scoreEdit);
 
         //Score was found
@@ -90,12 +74,7 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureUpdateNonExistingScoreWorksAndReturnsEmpty() {
-        User user = new User("Max","Muster");
-        user.setId(1L);
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-        Score scoreEdit = new Score(user,game,10);
-        scoreEdit.setId(1L);
+        Score scoreEdit = TestFixtures.score(1L,1L,1L);
         ScoreDto scoreDto = new ScoreDto(scoreEdit);
 
         //Score was found
@@ -108,27 +87,9 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureFindAllScoresWorksAndReturnsAllScores() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user1,game,10);
-        score2.setId(2L);
-
-        Score score3 = new Score(user2,game,10);
-        score3.setId(3L);
-
-        when(scoreRepository.findAllScores()).thenReturn(List.of(score1,score2,score3));
+        when(scoreRepository.findAllScores()).thenReturn(scores);
 
         List<Score> foundScore = scoreService.findAllScores();
 
@@ -138,123 +99,51 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureFindScoreByIdWorksAndReturnsScore() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user2,game,10);
-        score2.setId(2L);
-
-        Score score3 = new Score(user3,game,10);
-        score3.setId(3L);
-
-        when(scoreRepository.findScoreById(2L)).thenReturn(Optional.of(score2));
+        when(scoreRepository.findScoreById(2L)).thenReturn(Optional.of(scores.get(1)));
 
         Optional<Score> foundScore = scoreService.findScoreById(2L);
 
         assertTrue(foundScore.isPresent());
-        assertEquals(score2.getUser().getId(), foundScore.get().getUser().getId());
-        assertEquals(score2.getGame().getId(), foundScore.get().getGame().getId());
-        assertEquals(score2.getScorePoints(), foundScore.get().getScorePoints());
+        assertEquals(scores.get(1).getUser().getId(), foundScore.get().getUser().getId());
+        assertEquals(scores.get(1).getGame().getId(), foundScore.get().getGame().getId());
+        assertEquals(scores.get(1).getScorePoints(), foundScore.get().getScorePoints());
     }
 
     @Test
     void ensureFindScoreByUserWorksAndReturnsScore() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user2,game,10);
-        score2.setId(2L);
-
-        Score score3 = new Score(user3,game,10);
-        score3.setId(3L);
-
-        when(scoreRepository.findScoreByUser(2L)).thenReturn(List.of(score2));
+        when(scoreRepository.findScoreByUser(2L)).thenReturn(List.of(scores.get(1)));
 
         List<Score> foundScore = scoreService.findScoreByUser(2L);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(score2.getUser().getId(), foundScore.getFirst().getUser().getId());
-        assertEquals(score2.getGame().getId(), foundScore.getFirst().getGame().getId());
-        assertEquals(score2.getScorePoints(), foundScore.getFirst().getScorePoints());
+        assertEquals(scores.get(1).getUser().getId(), foundScore.getFirst().getUser().getId());
+        assertEquals(scores.get(1).getGame().getId(), foundScore.getFirst().getGame().getId());
+        assertEquals(scores.get(1).getScorePoints(), foundScore.getFirst().getScorePoints());
     }
 
     @Test
     void ensureFindScoreByGameWorksAndReturnsScore() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user2,game,10);
-        score2.setId(2L);
-
-        Score score3 = new Score(user3,game,10);
-        score3.setId(3L);
-
-        when(scoreRepository.findScoreByGame(1L)).thenReturn(List.of(score2));
+        when(scoreRepository.findScoreByGame(1L)).thenReturn(List.of(scores.getFirst()));
 
         List<Score> foundScore = scoreService.findScoreByGame(1L);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(score2.getUser().getId(), foundScore.getFirst().getUser().getId());
-        assertEquals(score2.getGame().getId(), foundScore.getFirst().getGame().getId());
-        assertEquals(score2.getScorePoints(), foundScore.getFirst().getScorePoints());
+        assertEquals(scores.getFirst().getUser().getId(), foundScore.getFirst().getUser().getId());
+        assertEquals(scores.getFirst().getGame().getId(), foundScore.getFirst().getGame().getId());
+        assertEquals(scores.getFirst().getScorePoints(), foundScore.getFirst().getScorePoints());
     }
 
     @Test
     void ensureFindScoreByScorePointsWorksAndReturnsScore() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user2,game,10);
-        score2.setId(2L);
-
-        Score score3 = new Score(user3,game,10);
-        score3.setId(3L);
-
-        when(scoreRepository.findScoreByScorePoints(10)).thenReturn(List.of(score1,score2,score3));
+        when(scoreRepository.findScoreByScorePoints(10)).thenReturn(scores);
 
         List<Score> foundScore = scoreService.findScoreByScorePoints(10);
 
@@ -264,59 +153,23 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureFindScoreByMinMaxPointsWorksAndReturnsScore() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user2,game,20);
-        score2.setId(2L);
-
-        Score score3 = new Score(user3,game,30);
-        score3.setId(3L);
-
-        when(scoreRepository.findScoreByMinMaxScorePoints(11,30)).thenReturn(List.of(score2,score3));
+        when(scoreRepository.findScoreByMinMaxScorePoints(11,30)).thenReturn(scores);
 
         List<Score> foundScore = scoreService.findScoreByMinMaxScorePoints(11,30);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(2, scoreService.findScoreByMinMaxScorePoints(11,30).size());
+        assertEquals(3, scoreService.findScoreByMinMaxScorePoints(11,30).size());
     }
 
     @Test
     void ensureScoreExistsWorksAndReturnsFalse() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user2,game,20);
-        score2.setId(2L);
-
-        Score score3 = new Score(user3,game,30);
-        score3.setId(3L);
-
-        ScoreDto scoreDto1 = new ScoreDto(score1);
-        ScoreDto scoreDto2 = new ScoreDto(score2);
-        ScoreDto scoreDto3 = new ScoreDto(score3);
+        ScoreDto scoreDto1 = new ScoreDto(scores.get(0));
+        ScoreDto scoreDto2 = new ScoreDto(scores.get(1));
+        ScoreDto scoreDto3 = new ScoreDto(scores.get(2));
 
 
         //Score does not exist yet
@@ -327,29 +180,11 @@ public class ScoreServiceImplTest {
 
     @Test
     void ensureScoreExistsWorksAndReturnsTrue() {
-        User user1 = new User("Max","Muster");
-        User user2 = new User("Paul","Meyer");
-        User user3 = new User("Sascha","Bayer");
+        List<Score> scores = TestFixtures.scores(3);
 
-        user1.setId(1L);
-        user2.setId(2L);
-        user3.setId(3L);
-
-        Game game = new Game("Uno","nicht schummeln");
-        game.setId(1L);
-
-        Score score1 = new Score(user1,game,10);
-        score1.setId(1L);
-
-        Score score2 = new Score(user2,game,20);
-        score2.setId(2L);
-
-        Score score3 = new Score(user3,game,30);
-        score3.setId(3L);
-
-        ScoreDto scoreDto1 = new ScoreDto(score1);
-        ScoreDto scoreDto2 = new ScoreDto(score2);
-        ScoreDto scoreDto3 = new ScoreDto(score3);
+        ScoreDto scoreDto1 = new ScoreDto(scores.get(0));
+        ScoreDto scoreDto2 = new ScoreDto(scores.get(1));
+        ScoreDto scoreDto3 = new ScoreDto(scores.get(2));
 
         //Score does not exist yet
         when(scoreRepository.scoreExists(scoreDto3)).thenReturn(true);
