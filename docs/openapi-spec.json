@@ -690,6 +690,9 @@
           },
           "lastname" : {
             "type" : "string"
+          },
+          "deactivated" : {
+            "type" : "boolean"
           }
         }
       }

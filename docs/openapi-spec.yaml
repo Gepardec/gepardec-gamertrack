@@ -476,3 +476,5 @@ components:
           type: string
         lastname:
           type: string
+        deactivated:
+          type: boolean
