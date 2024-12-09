@@ -24,6 +24,14 @@
             <artifactId>gamertrack-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
+            <dependency>
+                <groupId>com.gepardec</groupId>
+                <artifactId>gamertrack-domain</artifactId>
+                <classifier>tests</classifier>
+                <type>test-jar</type>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
 
 
     </dependencies>
