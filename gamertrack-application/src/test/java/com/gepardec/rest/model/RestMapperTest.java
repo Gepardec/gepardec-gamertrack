@@ -1,7 +1,8 @@
 package com.gepardec.rest.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.gepardec.RestTestFixtures;
-import com.gepardec.model.User;
 import com.gepardec.model.dto.ScoreDto;
 import com.gepardec.model.dto.UserDto;
 import com.gepardec.rest.model.command.CreateScoreCommand;
@@ -10,8 +11,6 @@ import com.gepardec.rest.model.command.UpdateUserCommand;
 import com.gepardec.rest.model.mapper.RestMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RestMapperTest {
 

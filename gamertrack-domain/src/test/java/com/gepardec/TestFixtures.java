@@ -11,6 +11,7 @@ import java.util.List;
 
 public class TestFixtures {
 
+
   public static List<Game> games(int gameCount) {
     List<Game> games = new ArrayList<>();
 
@@ -93,7 +94,7 @@ public class TestFixtures {
   }
 
   public static Score score(Long scoreId, Long userId, Long gameId) {
-    Score score = new Score(user(userId),game(gameId),10L);
+    Score score = new Score(user(userId), game(gameId), 10L);
     score.setId(scoreId);
     return score;
   }
@@ -102,7 +103,7 @@ public class TestFixtures {
   public static List<Score> scores(int scoreCount) {
     List<Score> scores = new ArrayList<>();
     for (int i = 0; i < scoreCount; i++) {
-      scores.add(score((long) i,(long) i,1L));
+      scores.add(score((long) i, (long) i, 1L));
     }
     return scores;
   }
