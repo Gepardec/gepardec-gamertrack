@@ -99,4 +99,4 @@ Rest-Endpoints are available via
 | `/score`        | CRU - operations  |
 
 For more specific information for each endpoint
-visit: [OpenApi Spec](https://github.com/Gepardec/gepardec-gamertrack/blob/main/docs/openapi-spec.json)
+visit: [OpenApi Spec](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/Gepardec/gepardec-gamertrack/refs/heads/main/docs/openapi-spec.yaml)
