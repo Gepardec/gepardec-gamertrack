@@ -1,12 +1,13 @@
 package com.gepardec.interfaces.services;
 
 import com.gepardec.model.GameOutcome;
+import com.gepardec.model.dtos.GameOutcomeDto;
 import java.util.List;
 import java.util.Optional;
 
 public interface GameOutcomeService {
 
-  Optional<GameOutcome> saveGameOutcome(Long gameId, List<Long> userIds);
+  Optional<GameOutcome> saveGameOutcome(GameOutcomeDto gameOutcomeDto);
 
   List<GameOutcome> findAllGameOutcomes();
 
@@ -14,7 +15,7 @@ public interface GameOutcomeService {
 
   Optional<GameOutcome> deleteGameOutcome(Long gameOutcomeId);
 
-  Optional<GameOutcome> updateGameOutcome(Long gameOutcomeId, Long gameId, List<Long> userIds);
+  Optional<GameOutcome> updateGameOutcome(GameOutcomeDto gameOutcomeDto);
 
   List<GameOutcome> findGameOutcomeByUserId(Long userId);
 

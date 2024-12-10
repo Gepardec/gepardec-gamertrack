@@ -1,31 +1,38 @@
-GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games
+GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
 
+###
+GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games/1
+Accept: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
 
 ###
 
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games
+DELETE http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games/2
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+PUT http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games/1
 Content-Type: application/json
 Accept: application/json
 
 {
-  "title": "TestNamRTeste2",
-  "rules": "TestRules"
-}
-###
-GET http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/1
-Accept: application/json
-
-###
-
-DELETE http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/1
-
-###
-PUT http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/games/1
-Content-Type: application/json
-Accept: application/json
-
-{
-  "id": "1",
   "title": "UpdatedTitle",
   "rules": "New Rules"
 }

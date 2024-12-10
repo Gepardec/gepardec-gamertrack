@@ -1,4 +1,4 @@
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -6,9 +6,18 @@ Content-Type:application/json
   "gameId": 1,
   "scorePoints": 10
 }
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
 
 ###
-POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -16,6 +25,15 @@ Content-Type:application/json
   "gameId": 1,
   "scorePoints": 100
 }
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
 
 ###
 POST http://localhost:8080/gamertrack-application-1.0-SNAPSHOT/api/v1/scores/
@@ -26,5 +44,14 @@ Content-Type:application/json
   "gameId": 1,
   "scorePoints": 1000
 }
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
 
 ###

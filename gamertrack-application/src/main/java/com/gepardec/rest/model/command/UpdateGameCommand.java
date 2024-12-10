@@ -1,5 +1,5 @@
 package com.gepardec.rest.model.command;
 
-public record UpdateGameCommand(Long id, String title, String rules) {
+public record UpdateGameCommand(String title, String rules) {
 
 }

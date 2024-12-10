@@ -1,17 +1,19 @@
 package com.gepardec.adapters.output.persistence.repository;
 
 import com.gepardec.interfaces.repository.ScoreRepository;
+import com.gepardec.adapters.output.persistence.repository.mapper.Mapper;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
+import com.gepardec.model.dto.ScoreDto;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,11 +24,50 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     @PersistenceContext()
     protected EntityManager entityManager;
 
+    @Inject
+    Mapper mapper;
+    @Override
+    public Optional<Score> saveScore(ScoreDto scoreDto) {
+        if(entityManager.find(Game.class, scoreDto.gameId()) != null) {
+            if(entityManager.find(User.class, scoreDto.userId()) != null) {
+                Score score = mapper.toScore(scoreDto);
+                entityManager.persist(score);
+
+                Score scoreSaved = entityManager.find(Score.class, score.getId());
+                log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
+                return Optional.of(scoreSaved);
+            }
+            log.error("User with id: {} does not exist!", scoreDto.userId());
+            return Optional.empty();
+        }
+        log.error("Game with id: {} does not exist!", scoreDto.gameId());
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Score> updateScore(ScoreDto scoreDto) {
+        if(entityManager.find(Game.class, scoreDto.gameId()) != null) {
+            if(entityManager.find(User.class, scoreDto.userId()) != null) {
+                Score score = mapper.toExistingScore(scoreDto, entityManager.find(Score.class, scoreDto.id()));
+                entityManager.merge(score);
+
+                Score scoreMerged = entityManager.find(Score.class, score.getId());
+                log.info("Updated score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
+                return Optional.of(scoreMerged);
+            }
+            log.error("User with id: {} does not exist!", scoreDto.userId());
+            return Optional.empty();
+        }
+        log.error("Game with id: {} does not exist!", scoreDto.gameId());
+        return Optional.empty();
+    }
+
     @Override
     public List<Score> findAllScores() {
         List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s where s.user.deactivated = false", Score.class)
                 .getResultList();
-        log.info("Find all scores. Returned list of size:{}", resultList.size());
+
+        log.info("FindAllScores returned list of size:{}", resultList.size());
 
         return resultList;
     }
@@ -88,33 +129,14 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
-    public Optional<Score> saveScore(Long userId, Long gameId, double scorePoints) {
-
-        if(!scoreExists(userId, gameId)) {
-            Score score = new Score();
-            score.setUser(entityManager.getReference(User.class, userId));
-            score.setGame(entityManager.getReference(Game.class, gameId));
-            score.setScorePoints(scorePoints);
-
-            entityManager.persist(score);
-            Score scoreSaved = entityManager.find(Score.class, score.getId());
-            log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", userId, gameId, scorePoints);
-            return Optional.of(scoreSaved);
-        }
-        log.error("Score with userId: {} and gameId: {} already exists!", userId, gameId);
-
-        return Optional.empty();
-    }
-
-    @Override
-    public boolean scoreExists(Long userId, Long gameId) {
+    public boolean scoreExists(ScoreDto scoreDto) {
         List<Score> entity = entityManager.createQuery(
                         "SELECT s FROM Score s " +
                                 "WHERE s.game.id = :gameId and s.user.id =:userId ", Score.class)
-                .setParameter("gameId", gameId)
-                .setParameter("userId", userId)
+                .setParameter("gameId", scoreDto.gameId())
+                .setParameter("userId", scoreDto.userId())
                 .getResultList();
-        log.info("Score with userId: {} and gameId: {} exists: {}", userId, gameId, !entity.isEmpty());
+        log.info("Score with userId: {} and gameId: {} exists: {}", scoreDto.userId(), scoreDto.gameId(), !entity.isEmpty());
 
         return !entity.isEmpty();
     }

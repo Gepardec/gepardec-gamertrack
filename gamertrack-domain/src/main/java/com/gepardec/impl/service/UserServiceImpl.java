@@ -5,6 +5,7 @@ import com.gepardec.interfaces.services.ScoreService;
 import com.gepardec.interfaces.services.UserService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
+import com.gepardec.model.dto.UserDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -27,47 +28,49 @@ public class UserServiceImpl implements UserService, Serializable {
     private ScoreService scoreService;
 
     @Override
-    public Optional<User> saveUser(User user) {
-        return userRepository.saveUser(user);
+    public Optional<User> saveUser(UserDto userDto) {
+        return userRepository.saveUser(userDto);
     }
 
 
     @Override
-    public Optional<User> updateUser(Long id, User userEdit) {
-        Optional<User> entity = userRepository.findUserById(id);
+    public Optional<User> updateUser(UserDto userDto) {
+        Optional<User> entity = userRepository.findUserById(userDto.id());
         if(entity.isPresent()) {
-            log.info("updating: user with the id {} is present", id);
-            User user = entity.get();
-            user.setFirstname(userEdit.getFirstname());
-            user.setLastname(userEdit.getLastname());
-            return userRepository.saveUser(user);
+            log.info("updating: user with the id {} is present", userDto.id());
+            if(!entity.get().isDeactivated()) {
+                return userRepository.updateUser(userDto);
+            }
+            log.error("User with id {}. is deactivated and was not updated", userDto.id());
+            return Optional.empty();
         }
-        log.error("Could not find user with id {}. user was not updated", id);
+        log.error("Could not find user with id {}. user was not updated", userDto.id());
         return Optional.empty();
     }
 
     @Override
     public Optional<User> deleteUser(Long id) {
-        User user=null;
-        Optional<User> entity = userRepository.findUserById(id);
+        Optional<User> user = userRepository.findUserById(id);
 
-            if(entity.isPresent()){
+            if(user.isPresent()){
                 log.info("deleting: user with the id {} is present", id);
-                List<Score> scoresByUser = scoreService.findScoreByUser(entity.get().getId());
+                List<Score> scoresByUser = scoreService.findScoreByUser(user.get().getId());
                 if(scoresByUser.isEmpty()){
-                    user=entity.get();
                     log.info("user with the id {} has no scores stored. deleting user", id);
-                    userRepository.deleteUser(user);
+
+                    UserDto userDto = new UserDto(user.get());
+                    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", userDto.id(),userDto.firstname(),userDto.lastname(),userDto.deactivated());
+                    userRepository.deleteUser(userDto);
                 }
                 else {
-                    user=entity.get();
-                    user.setFirstname("DELETED");
-                    user.setLastname("U$ER");
-                    user.setDeactivated(true);
+                    user.get().setDeactivated(true);
+                    UserDto userDto = new UserDto(user.get());
+                    log.info("deleting: user WITH SCORES with the id {} firstname {} lastname {} deactivated {} is present", userDto.id(),userDto.firstname(),userDto.lastname(),userDto.deactivated());
+
                     log.info("user with the id {} has {} scores stored. user was deactivated", id, scoresByUser.size());
-                    userRepository.saveUser(user);
+                    userRepository.updateUser(userDto);
                 }
-                return Optional.of(user);
+                return user;
             }
         log.error("Could not find user with id {}. User was not deleted", id);
         return Optional.empty();

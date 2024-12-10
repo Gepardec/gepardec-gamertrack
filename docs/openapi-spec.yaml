@@ -34,7 +34,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "400":
           description: Could not create gameoutcome/Entity was not valid
   /gameoutcomes/{id}:
@@ -55,7 +55,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "204":
           description: Gameoutcome not found
     put:
@@ -81,7 +81,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "400":
           description: Bad Request
     delete:
@@ -101,7 +101,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "404":
           description: Gameoutcome not found
   /games:
@@ -126,7 +126,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "400":
           description: Could not create Game
   /games/{id}:
@@ -147,7 +147,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "404":
           description: Game not found
     put:
@@ -172,13 +172,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "404":
           description: Game not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
     delete:
       summary: 'Delete a game by ID '
       description: Game has to exist
@@ -196,7 +196,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GameDto'
+                $ref: '#/components/schemas/GameRestDto'
         "404":
           description: Game not found
   /scores:
@@ -405,7 +405,7 @@ components:
           items:
             type: integer
             format: int64
-    GameDto:
+    GameRestDto:
       type: object
       properties:
         id:
@@ -418,9 +418,6 @@ components:
     UpdateGameOutcomeCommand:
       type: object
       properties:
-        gameOutcomeId:
-          type: integer
-          format: int64
         gameId:
           type: integer
           format: int64
@@ -441,9 +438,6 @@ components:
     UpdateGameCommand:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
         title:
           type: string
         rules:
@@ -482,3 +476,5 @@ components:
           type: string
         lastname:
           type: string
+        deactivated:
+          type: boolean

@@ -4,9 +4,8 @@ import com.gepardec.interfaces.repository.GameOutcomeRepository;
 import com.gepardec.interfaces.repository.GameRepository;
 import com.gepardec.interfaces.repository.UserRepository;
 import com.gepardec.interfaces.services.GameOutcomeService;
-import com.gepardec.model.Game;
 import com.gepardec.model.GameOutcome;
-import com.gepardec.model.User;
+import com.gepardec.model.dtos.GameOutcomeDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -32,19 +31,19 @@ public class GameOutcomeServiceImpl implements GameOutcomeService {
 
 
   @Override
-  public Optional<GameOutcome> saveGameOutcome(Long gameId, List<Long> userIds) {
+  public Optional<GameOutcome> saveGameOutcome(GameOutcomeDto gameOutcomeDto) {
     logger.info(
-        "Saving Gameoutcome containing GameID: %s and UserIDs: %s".formatted(gameId, userIds));
-    List<User> users = userIds.stream()
-        .map(userId -> userRepository.findUserReferencesById(userId))
-        .flatMap(Optional::stream)
-        .toList();
+        "Saving Gameoutcome containing GameID: %s and UserIDs: %s".formatted(
+            gameOutcomeDto.gameId(), gameOutcomeDto.userIds()));
 
-    Optional<Game> game = gameRepository.findGameReferenceByGameId(gameId);
+    if (!gameOutcomeDto.userIds().isEmpty()
+        && userRepository.existsByUserId(gameOutcomeDto.userIds())
+        && gameRepository.existsByGameId(gameOutcomeDto.gameId())) {
+      return gameOutcomeRepository.saveGameOutcome(gameOutcomeDto);
+    }
 
-    return ((users.size() == userIds.size()) && game.isPresent())
-        ? gameOutcomeRepository.saveGameOutcome(new GameOutcome(game.get(), users))
-        : Optional.empty();
+    return Optional.empty();
+
   }
 
   @Override
@@ -76,32 +75,25 @@ public class GameOutcomeServiceImpl implements GameOutcomeService {
   }
 
   @Override
-  public Optional<GameOutcome> updateGameOutcome(Long gameOutcomeId, Long gameId,
-      List<Long> userIds) {
+  public Optional<GameOutcome> updateGameOutcome(GameOutcomeDto gameOutcomeDto) {
 
     logger.info("Updating gameoutcome with ID: %s");
 
-    List<User> users = userIds.stream().map(id -> userRepository.findUserReferencesById(id))
-        .flatMap(Optional::stream)
-        .toList();
-
-    Optional<Game> game = gameRepository.findGameReferenceByGameId(gameId);
-
-    Optional<GameOutcome> gameOutcomeOld = gameOutcomeRepository.findGameOutcomeById(gameOutcomeId);
-
-    if (users.size() == userIds.size() && game.isPresent() && gameOutcomeOld.isPresent()) {
+    if (!gameOutcomeDto.userIds().isEmpty()
+        && gameOutcomeDto.gameId() != null
+        && userRepository.existsByUserId(gameOutcomeDto.userIds())
+        && gameOutcomeRepository.existsGameOutcomeById(gameOutcomeDto.gameId())
+        && gameRepository.existsByGameId(gameOutcomeDto.gameId())) {
       logger.info(
           "Saving updated gameoutcome with ID: %s having the following attributes: \n %s %s".formatted(
-              gameOutcomeId, gameId, userIds));
-      GameOutcome gameOutcomeNew = gameOutcomeOld.get();
-      gameOutcomeNew.setGame(game.get());
-      gameOutcomeNew.setUsers(users);
-      return gameOutcomeRepository.saveGameOutcome(gameOutcomeNew);
+              gameOutcomeDto.id(), gameOutcomeDto.gameId(), gameOutcomeDto.userIds()));
+
+      return gameOutcomeRepository.updateGameOutcome(gameOutcomeDto);
     }
 
     logger.info(
         "Saving updated gameoutcome with ID: %s aborted due to provided ID not existing".formatted(
-            gameOutcomeId));
+            gameOutcomeDto.id()));
     return Optional.empty();
   }
 

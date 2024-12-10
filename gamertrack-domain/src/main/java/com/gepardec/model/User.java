@@ -23,6 +23,19 @@ public class User extends AbstractEntity{
         this.firstname = firstname;
         this.lastname = lastname;
     }
+    //temp
+    public User(String firstname, String lastname, boolean deactivated) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.deactivated = deactivated;
+    }
+
+    public User(long id, String firstname, String lastname, boolean deactivated) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.deactivated = deactivated;
+    }
 
     public User() {}
 
@@ -40,15 +53,6 @@ public class User extends AbstractEntity{
 
     public void setLastname(String lastname) {
         this.lastname = lastname;
-    }
-
-    @OneToMany
-    public List<Score> getScores() {
-        return scores;
-    }
-
-    public void setScores(List<Score> scores) {
-        this.scores = scores;
     }
 
     public boolean isDeactivated() {

@@ -1,7 +1,9 @@
 package com.gepardec.adapters.output.persistence.repository;
 
+import com.gepardec.adapters.output.persistence.repository.mapper.Mapper;
 import com.gepardec.interfaces.repository.GameOutcomeRepository;
 import com.gepardec.model.GameOutcome;
+import com.gepardec.model.dtos.GameOutcomeDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -18,9 +20,17 @@ public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
   @Inject
   private EntityManager em;
 
+  @Inject
+  Mapper mapper;
+  @Inject
+  private EntityManager entityManager;
+
   @Override
-  public Optional<GameOutcome> saveGameOutcome(GameOutcome gameOutcome) {
-    logger.info("  gameOutcome {}", gameOutcome);
+  public Optional<GameOutcome> saveGameOutcome(GameOutcomeDto gameOutcomeDto) {
+    logger.info("  gameOutcome {}", gameOutcomeDto);
+
+    GameOutcome gameOutcome = mapper.toGameOutcomeWithReference(gameOutcomeDto);
+
     em.persist(gameOutcome);
 
     return findGameOutcomeById(gameOutcome.getId());
@@ -53,9 +63,15 @@ public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
   }
 
   @Override
-  public Optional<GameOutcome> updateGameOutcome(Long gameOutcomeId, GameOutcome gameOutcome) {
-    logger.info("updating game outcome with id: %s".formatted(gameOutcomeId));
-    return saveGameOutcome(gameOutcome);
+  public Optional<GameOutcome> updateGameOutcome(GameOutcomeDto gameOutcomeDto) {
+    logger.info("updating game outcome with id: %s".formatted(gameOutcomeDto.id()));
+
+    Optional<GameOutcome> gameOutcome = findGameOutcomeById(gameOutcomeDto.id());
+
+    return gameOutcome
+        .map(game -> mapper.toGameOutcomeWithReference(gameOutcomeDto, game))
+        .map(entityManager::merge);
+
   }
 
   @Override
@@ -77,5 +93,10 @@ public class GameOutcomeRepositoryImpl implements GameOutcomeRepository {
 
     query.setParameter("gameId", gameId);
     return query.getResultList();
+  }
+
+  @Override
+  public Boolean existsGameOutcomeById(Long gameOutcomeId) {
+    return findGameOutcomeById(gameOutcomeId).isPresent();
   }
 }

@@ -1,7 +1,9 @@
 package com.gepardec.adapters.output.persistence.repository;
 
+import com.gepardec.adapters.output.persistence.repository.mapper.Mapper;
 import com.gepardec.interfaces.repository.GameRepository;
 import com.gepardec.model.Game;
+import com.gepardec.model.dtos.GameDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -17,10 +19,15 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   @Inject
   private EntityManager em;
 
-  @Override
-  public Optional<Game> saveGame(Game game) {
-    em.persist(game);
+  @Inject
+  private Mapper mapper;
 
+  @Override
+  public Optional<Game> saveGame(GameDto gameDto) {
+
+    Game game = mapper.toGame(gameDto);
+
+    em.persist(game);
     return Optional.ofNullable(em.find(Game.class, game.getId()));
   }
 
@@ -30,8 +37,9 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   }
 
   @Override
-  public Optional<Game> updateGame(Game game) {
-    return saveGame(game);
+  public Optional<Game> updateGame(GameDto gameDto) {
+    Optional<Game> gameOld = findGameById(gameDto.id());
+    return gameOld.map(game -> mapper.toGame(gameDto, game)).map(em::merge);
   }
 
   @Override
@@ -56,5 +64,10 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   @Override
   public Optional<Game> findGameReferenceByGameId(Long gameId) {
     return Optional.of(em.getReference(Game.class, gameId));
+  }
+
+  @Override
+  public Boolean existsByGameId(Long gameId) {
+    return findGameById(gameId).isPresent();
   }
 }
