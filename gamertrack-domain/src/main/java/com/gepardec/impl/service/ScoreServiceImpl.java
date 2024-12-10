@@ -65,6 +65,11 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
+    public List<Score> findTopScoreByGame(Long gameId, int top) {
+        return scoreRepository.findTopScoreByGame(gameId,top);
+    }
+
+    @Override
     public List<Score> findScoreByScorePoints(double scorePoints) {
         return scoreRepository.findScoreByScorePoints(scorePoints);
     }

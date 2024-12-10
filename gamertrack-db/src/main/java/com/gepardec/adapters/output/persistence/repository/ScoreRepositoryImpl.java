@@ -106,6 +106,19 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
+    public List<Score> findTopScoreByGame(Long gameId, int top) {
+        if(top<=0){return List.of();}
+
+        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId " +
+                        "AND s.user.deactivated = false order by s.scorePoints DESC", Score.class)
+                .setParameter("gameId", gameId)
+                .setMaxResults(top)
+                .getResultList();
+        log.info("Find Top {} score with gameId: {}. Returned list of size:{}", top, gameId, resultList.size());
+        return resultList;
+    }
+
+    @Override
     public List<Score> findScoreByScorePoints(double scorePoints) {
         List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.scorePoints = :scorePoints " +
                         "AND s.user.deactivated = false", Score.class)
