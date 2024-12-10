@@ -50,32 +50,27 @@ public class UserServiceImpl implements UserService, Serializable {
 
     @Override
     public Optional<User> deleteUser(Long id) {
-        User user=null;
-        Optional<User> entity = userRepository.findUserById(id);
+        Optional<User> user = userRepository.findUserById(id);
 
-            if(entity.isPresent()){
+            if(user.isPresent()){
                 log.info("deleting: user with the id {} is present", id);
-                List<Score> scoresByUser = scoreService.findScoreByUser(entity.get().getId());
+                List<Score> scoresByUser = scoreService.findScoreByUser(user.get().getId());
                 if(scoresByUser.isEmpty()){
-                    user=entity.get();
                     log.info("user with the id {} has no scores stored. deleting user", id);
 
-                    UserDto userDto = new UserDto(user);
+                    UserDto userDto = new UserDto(user.get());
                     log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", userDto.id(),userDto.firstname(),userDto.lastname(),userDto.deactivated());
                     userRepository.deleteUser(userDto);
                 }
                 else {
-                    user=entity.get();
-                    user.setFirstname("DELETED");
-                    user.setLastname("U$ER");
-                    user.setDeactivated(true);
-                    UserDto userDto = new UserDto(user);
+                    user.get().setDeactivated(true);
+                    UserDto userDto = new UserDto(user.get());
                     log.info("deleting: user WITH SCORES with the id {} firstname {} lastname {} deactivated {} is present", userDto.id(),userDto.firstname(),userDto.lastname(),userDto.deactivated());
 
                     log.info("user with the id {} has {} scores stored. user was deactivated", id, scoresByUser.size());
                     userRepository.updateUser(userDto);
                 }
-                return Optional.of(user);
+                return user;
             }
         log.error("Could not find user with id {}. User was not deleted", id);
         return Optional.empty();

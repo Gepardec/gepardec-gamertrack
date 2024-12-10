@@ -109,16 +109,14 @@ public class UserServiceImplTest {
 
         Optional<User> deletedUser = userService.deleteUser(user.getId());
         assertTrue(deletedUser.isPresent());
-        assertEquals("DELETED", deletedUser.get().getFirstname());
-        assertEquals("U$ER", deletedUser.get().getLastname());
+
     }
     @Test
     void ensureFindAllUsersWorksAndReturnsAllUsers() {
         User user1 = TestFixtures.user(1L);
         User user2 = TestFixtures.user(2L);
         User user3 = TestFixtures.user(3L);
-        user3.setFirstname("DELETED");
-        user3.setFirstname("U$ER");
+        user3.setDeactivated(true);
 
         when(userRepository.findAllUsers()).thenReturn(List.of(user1,user2));
 
@@ -129,8 +127,7 @@ public class UserServiceImplTest {
         User user1 = TestFixtures.user(1L);
         User user2 = TestFixtures.user(2L);
         User user3 = TestFixtures.user(3L);
-        user3.setFirstname("DELETED");
-        user3.setFirstname("U$ER");
+        user3.setDeactivated(true);
 
         when(userRepository.findAllUsersIncludeDeleted()).thenReturn(List.of(user1, user2, user3));
 
