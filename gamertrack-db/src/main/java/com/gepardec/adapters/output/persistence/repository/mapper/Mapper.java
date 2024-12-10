@@ -1,13 +1,13 @@
 package com.gepardec.adapters.output.persistence.repository.mapper;
 
 import com.gepardec.model.Game;
-import com.gepardec.model.GameOutcome;
+import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import com.gepardec.model.dto.ScoreDto;
 import com.gepardec.model.dto.UserDto;
 import com.gepardec.model.dtos.GameDto;
-import com.gepardec.model.dtos.GameOutcomeDto;
+import com.gepardec.model.dtos.MatchDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -44,12 +44,12 @@ public class Mapper {
   }
 
 
-  public GameOutcome toGameOutcomeWithReference(GameOutcomeDto gameOutcomeDto) {
-    return toGameOutcomeWithReference(gameOutcomeDto, new GameOutcome());
+  public Match toMatchWithReference(MatchDto gameOutcomeDto) {
+    return toMatchWithReference(gameOutcomeDto, new Match());
   }
 
-  public GameOutcome toGameOutcomeWithReference(GameOutcomeDto gameOutcomeDto,
-      GameOutcome gameOutcome) {
+  public Match toMatchWithReference(MatchDto gameOutcomeDto,
+      Match gameOutcome) {
     if (gameOutcomeDto == null && gameOutcome == null) {
       return null;
     }

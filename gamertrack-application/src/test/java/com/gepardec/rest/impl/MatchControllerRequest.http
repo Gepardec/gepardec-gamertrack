@@ -1,6 +1,6 @@
-GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/matches
 
-### (1) CREATE GAMEOUTCOME - Create game first
+### (1) CREATE MATCH - Create game first
 ### (1) CREATE USER AND GAME BEFORE BECAUSE OF RELATIONSHIPS
 
 POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
@@ -42,7 +42,7 @@ GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users
 
 
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/matches
 Content-Type: application/json
 Accept: application/json
 
@@ -56,17 +56,17 @@ Accept: application/json
 
 
 ###
-GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/matches
 
 ####
 
-GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes?userId=1
+GET http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/matches?userId=1
 
 
 
 ###
 
-PUT http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes/2
+PUT http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/matches/2
 Content-Type: application/json
 Accept: application/json
 
@@ -79,4 +79,4 @@ Accept: application/json
 
 ####
 
-DELETE http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes/1
+DELETE http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/matches/1

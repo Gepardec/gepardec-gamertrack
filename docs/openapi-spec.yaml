@@ -1,109 +1,5 @@
 openapi: 3.0.1
 paths:
-  /gameoutcomes:
-    get:
-      summary: "Gets all existing gameoutcomes from the database, or all Gameoutcomes\
-        \ filtered either by gameID or userID"
-      operationId: getGameOutcomes
-      parameters:
-      - name: gameId
-        in: query
-        schema:
-          type: integer
-          format: int64
-      - name: userId
-        in: query
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: Ok
-    post:
-      summary: Creates a gameoutcome
-      description: Gameoutcome must be valid
-      operationId: createGameOutcome
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateGameOutcomeCommand'
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GameRestDto'
-        "400":
-          description: Could not create gameoutcome/Entity was not valid
-  /gameoutcomes/{id}:
-    get:
-      summary: Gets gameoutcome by ID
-      description: Gameoutcome must exist
-      operationId: getGameOutcomeById
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GameRestDto'
-        "204":
-          description: Gameoutcome not found
-    put:
-      summary: Updates a gameoutcome
-      description: "Gameoutcome must be valid and exist, specified user and game ids\
-        \ that make up the gameoutcome have to exist"
-      operationId: updateGameOutcome
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateGameOutcomeCommand'
-      responses:
-        "200":
-          description: Gameoutcome has been updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GameRestDto'
-        "400":
-          description: Bad Request
-    delete:
-      summary: Deletes a gameoutcome
-      description: Gameoutcome must exist
-      operationId: deleteGameOutcome
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: Gameoutcome has been deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GameRestDto'
-        "404":
-          description: Gameoutcome not found
   /games:
     get:
       summary: Gets all existing games from the database
@@ -199,6 +95,110 @@ paths:
                 $ref: '#/components/schemas/GameRestDto'
         "404":
           description: Game not found
+  /matches:
+    get:
+      summary: "Gets all existing matches from the database, or all Matches filtered\
+        \ either by gameID or userID"
+      operationId: getMatches
+      parameters:
+      - name: gameId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: userId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+    post:
+      summary: Creates a match
+      description: Match must be valid
+      operationId: createMatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMatchCommand'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameRestDto'
+        "400":
+          description: Could not create match/Entity was not valid
+  /matches/{id}:
+    get:
+      summary: Gets match by ID
+      description: Match must exist
+      operationId: getMatchById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameRestDto'
+        "204":
+          description: Match not found
+    put:
+      summary: Updates a matche
+      description: "Match must be valid and exist, specified user and game ids that\
+        \ make up the match have to exist"
+      operationId: updateMatch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMatchCommand'
+      responses:
+        "200":
+          description: Match has been updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameRestDto'
+        "400":
+          description: Bad Request
+    delete:
+      summary: Deletes a match
+      description: Match must exist
+      operationId: deleteMatch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Match has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameRestDto'
+        "404":
+          description: Match not found
   /scores:
     get:
       summary: "Get all Scores (optional: MinMax ScorePoints)"
@@ -394,17 +394,15 @@ paths:
           description: No Content - No users were found
 components:
   schemas:
-    CreateGameOutcomeCommand:
+    CreateGameCommand:
+      required:
+      - title
       type: object
       properties:
-        gameId:
-          type: integer
-          format: int64
-        userIds:
-          type: array
-          items:
-            type: integer
-            format: int64
+        title:
+          type: string
+        rules:
+          type: string
     GameRestDto:
       type: object
       properties:
@@ -415,7 +413,14 @@ components:
           type: string
         rules:
           type: string
-    UpdateGameOutcomeCommand:
+    UpdateGameCommand:
+      type: object
+      properties:
+        title:
+          type: string
+        rules:
+          type: string
+    CreateMatchCommand:
       type: object
       properties:
         gameId:
@@ -426,22 +431,17 @@ components:
           items:
             type: integer
             format: int64
-    CreateGameCommand:
-      required:
-      - title
+    UpdateMatchCommand:
       type: object
       properties:
-        title:
-          type: string
-        rules:
-          type: string
-    UpdateGameCommand:
-      type: object
-      properties:
-        title:
-          type: string
-        rules:
-          type: string
+        gameId:
+          type: integer
+          format: int64
+        userIds:
+          type: array
+          items:
+            type: integer
+            format: int64
     CreateScoreCommand:
       required:
       - gameId
