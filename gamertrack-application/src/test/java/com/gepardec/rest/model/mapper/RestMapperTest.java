@@ -34,8 +34,6 @@ class RestMapperTest {
         RestTestFixtures.createGameOutcomeCommand().gameId());
     assertTrue(mappedGameOutcomeDto.userIds()
         .containsAll(RestTestFixtures.createGameOutcomeCommand().userIds()));
-    assertEquals(mappedGameOutcomeDto.gameId(),
-        RestTestFixtures.createGameOutcomeCommand().gameId());
   }
 
   @Test
@@ -72,15 +70,16 @@ class RestMapperTest {
     assertEquals(RestTestFixtures.updateGameCommand().title(), mappedGameDto.title());
     assertEquals(RestTestFixtures.updateGameCommand().rules(), mappedGameDto.rules());
   }
+
   @Test
   public void ensureMapCreateScoreCommandToScoreDtoWorks() {
     CreateScoreCommand scoreCommand = RestTestFixtures.createScoreCommand(1L);
 
     ScoreDto mappedScoreDto = restMapper.toScore(scoreCommand);
 
-    assertEquals(scoreCommand.userId(),mappedScoreDto.userId());
-    assertEquals(scoreCommand.gameId(),mappedScoreDto.gameId());
-    assertEquals(scoreCommand.scorePoints(),mappedScoreDto.scorePoints());
+    assertEquals(scoreCommand.userId(), mappedScoreDto.userId());
+    assertEquals(scoreCommand.gameId(), mappedScoreDto.gameId());
+    assertEquals(scoreCommand.scorePoints(), mappedScoreDto.scorePoints());
 
   }
 
@@ -90,8 +89,8 @@ class RestMapperTest {
 
     UserDto mappedUserDto = restMapper.CreateUserCommandtoUser(userCommand);
 
-    assertEquals(userCommand.firstname(),mappedUserDto.firstname());
-    assertEquals(userCommand.lastname(),mappedUserDto.lastname());
+    assertEquals(userCommand.firstname(), mappedUserDto.firstname());
+    assertEquals(userCommand.lastname(), mappedUserDto.lastname());
 
   }
 
@@ -100,12 +99,12 @@ class RestMapperTest {
 
     UpdateUserCommand updateUserCommand = RestTestFixtures.updateUserCommand(1L);
 
-    UserDto mappedUserDto = restMapper.UpdateUserCommandtoUser(1L,updateUserCommand);
+    UserDto mappedUserDto = restMapper.UpdateUserCommandtoUser(1L, updateUserCommand);
 
     assertEquals(1L, mappedUserDto.id());
-    assertEquals(updateUserCommand.firstname(),mappedUserDto.firstname());
-    assertEquals(updateUserCommand.lastname(),mappedUserDto.lastname());
-    assertEquals(updateUserCommand.deactivated(),mappedUserDto.deactivated());
+    assertEquals(updateUserCommand.firstname(), mappedUserDto.firstname());
+    assertEquals(updateUserCommand.lastname(), mappedUserDto.lastname());
+    assertEquals(updateUserCommand.deactivated(), mappedUserDto.deactivated());
 
   }
 }
