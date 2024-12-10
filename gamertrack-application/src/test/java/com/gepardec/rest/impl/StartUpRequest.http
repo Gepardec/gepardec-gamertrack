@@ -1,0 +1,454 @@
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Max",
+  "lastname": "Mustermann"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Laura",
+  "lastname": "Musterfrau"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "John",
+  "lastname": "McTron"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Gill",
+  "lastname": "Hill"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Jill",
+  "lastname": "Bill"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Conner",
+  "lastname": "Dohnner"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+###
+###
+###  GAMES
+###
+###
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Mensch Ärgere dich nicht",
+  "rules": "Nicht Schummeln"
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Vier gewinnt",
+  "rules": "Diesmal wirklich nicht Schummeln"
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Skip Bo",
+  "rules": "Keine Karten verstecken"
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+###
+###
+###  GAMEOUTCOMES
+###
+###
+###
+
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "gameId": 1,
+  "userIds": [
+    1,
+    2
+  ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+Content-Type: application/json
+Accept: application/json
+
+{
+"gameId": 1,
+"userIds": [
+1,
+2,
+3
+]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "gameId": 1,
+  "userIds": [
+    1,
+    3,
+    2
+  ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "gameId": 3,
+  "userIds": [
+    3,
+    1,
+    2
+  ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "gameId": 3,
+  "userIds": [
+    3,
+    1,
+    2,
+    4,
+    5
+  ]
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+###
+###
+###  SCORES
+###
+###
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 1,
+  "gameId": 1,
+  "scorePoints": 40
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 1,
+  "gameId": 2,
+  "scorePoints": 80
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 1,
+  "gameId": 3,
+  "scorePoints": 70
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 2,
+  "gameId": 1,
+  "scorePoints": 20
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 2,
+  "gameId": 2,
+  "scorePoints": 100
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 2,
+  "gameId": 3,
+  "scorePoints": 15
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 3,
+  "gameId": 1,
+  "scorePoints": 150
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 3,
+  "gameId": 2,
+  "scorePoints": 75
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+Content-Type:application/json
+
+{
+  "userId": 3,
+  "gameId": 3,
+  "scorePoints": 60
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+
