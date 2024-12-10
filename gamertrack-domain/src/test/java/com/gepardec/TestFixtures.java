@@ -62,10 +62,11 @@ public class TestFixtures {
   }
 
   public static List<User> users(int userCount) {
-    List<User> users = new ArrayList<>();
+    List<User> users = new ArrayList<>(userCount);
 
-    for (int i = 0; i < userCount; i++) {
-      users.add(TestFixtures.user((long) i++));
+    for (int i = 0; i <= userCount; i++) {
+      User user = TestFixtures.user((long) i + 1);
+      users.add(user);
     }
 
     return users;

@@ -3,6 +3,7 @@ package com.gepardec.impl.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -43,9 +44,11 @@ class GameOutcomeServiceImplTest {
 
     when(gameOutcomeRepository.saveGameOutcome(any())).thenReturn(
         Optional.of(TestFixtures.gameOutcome()));
+    when(gameRepository.existsByGameId(anyLong())).thenReturn(true);
+    when(userRepository.existsByUserId(anyList())).thenReturn(true);
 
     assertEquals(gameOutcomeService.saveGameOutcome(gameOutcomeDto).get().getId(),
-        Optional.of(TestFixtures.gameOutcome()).get().getId());
+        TestFixtures.gameOutcome().getId());
   }
 
   @Test
@@ -134,13 +137,15 @@ class GameOutcomeServiceImplTest {
   @Test
   void ensureUpdateGameOutcomeReturnsUpdatedGameOutcomeForExistingGameOutcome() {
     //Given
-    GameOutcome gameOutcomeOld = TestFixtures.gameOutcome();
     GameOutcome gameOutcomeNew = TestFixtures.gameOutcome(1L);
     GameOutcomeDto gameOutcomeNewDto = TestFixtures.gameOutcometoGameOutcomeDto(gameOutcomeNew);
 
     //When
 
     when(gameOutcomeRepository.updateGameOutcome(any())).thenReturn(Optional.of(gameOutcomeNew));
+    when(gameRepository.existsByGameId(anyLong())).thenReturn(true);
+    when(userRepository.existsByUserId(anyList())).thenReturn(true);
+    when(gameOutcomeRepository.existsGameOutcomeById(anyLong())).thenReturn(true);
 
     var updatedGameOutcome = gameOutcomeService.updateGameOutcome(gameOutcomeNewDto);
 
