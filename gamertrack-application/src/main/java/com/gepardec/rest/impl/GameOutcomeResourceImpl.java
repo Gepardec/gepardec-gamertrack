@@ -42,14 +42,19 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
       logger.info("Getting all GameOutcomes with UserID: %s".formatted(userId.get()));
       return Response.ok().
           entity(gameOutcomeService.findGameOutcomeByUserId(userId.get())
-              .stream().map(GameOutcomeRestDto::new)
+              .stream()
+              .map(GameOutcomeRestDto::new)
               .toList())
           .build();
     }
 
     logger.info("Getting all existing GameOutcomes");
-    return Response.ok().entity(gameOutcomeService.findAllGameOutcomes().stream()
-        .map(GameOutcomeRestDto::new).toList()).build();
+    return Response.ok()
+        .entity(gameOutcomeService.findAllGameOutcomes()
+            .stream()
+            .map(GameOutcomeRestDto::new)
+            .toList())
+        .build();
   }
 
 
@@ -57,7 +62,9 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
   public Response getGameOutcomeById(Long id) {
     logger.info("Getting GameOutcome with ID: %s".formatted(id));
 
-    return gameOutcomeService.findGameOutcomeById(id).map(GameOutcomeRestDto::new).map(Response::ok)
+    return gameOutcomeService.findGameOutcomeById(id)
+        .map(GameOutcomeRestDto::new)
+        .map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 
@@ -86,7 +93,9 @@ public class GameOutcomeResourceImpl implements GameOutcomeResource {
   @Override
   public Response deleteGameOutcome(Long id) {
     logger.info("Deleting GameOutcome with ID: %s".formatted(id));
-    return gameOutcomeService.deleteGameOutcome(id).map(GameOutcomeRestDto::new).map(Response::ok)
+    return gameOutcomeService.deleteGameOutcome(id)
+        .map(GameOutcomeRestDto::new)
+        .map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 }
