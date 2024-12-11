@@ -7,13 +7,13 @@ import static org.mockito.Mockito.when;
 
 import com.gepardec.TestFixtures;
 import com.gepardec.model.Game;
-import com.gepardec.model.GameOutcome;
+import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import com.gepardec.model.dto.ScoreDto;
 import com.gepardec.model.dto.UserDto;
 import com.gepardec.model.dtos.GameDto;
-import com.gepardec.model.dtos.GameOutcomeDto;
+import com.gepardec.model.dtos.MatchDto;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -97,41 +97,41 @@ public class MapperTest {
 
 
   @Test
-  void ensureGameOutcomeDtoToGameOutcomeWithReferenceWorks() {
-    GameOutcomeDto gameOutcomeDto = new GameOutcomeDto(1L, 1L, List.of(1L));
+  void ensureMatchDtoToMatchWithReferenceWorks() {
+    MatchDto matchDto = new MatchDto(1L, 1L, List.of(1L));
 
     when(entityManager.getReference(Game.class, TestFixtures.game().getId())).thenReturn(
         TestFixtures.game());
     when(entityManager.getReference(User.class, TestFixtures.user(1L).getId())).thenReturn(
         TestFixtures.user(1L));
 
-    GameOutcome mappedGameOutcome = mapper.toGameOutcomeWithReference(gameOutcomeDto);
+    Match mappedMatch = mapper.toMatchWithReference(matchDto);
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    assertEquals(mappedGameOutcome.getId(), gameOutcomeDto.id());
-    assertEquals(mappedGameOutcome.getGame().getId(), gameOutcomeDto.gameId());
-    assertTrue(mappedGameOutcome.getUsers().stream().map(User::getId).toList()
-        .containsAll(gameOutcomeDto.userIds()));
+    assertEquals(mappedMatch.getId(), matchDto.id());
+    assertEquals(mappedMatch.getGame().getId(), matchDto.gameId());
+    assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
+        .containsAll(matchDto.userIds()));
 
   }
 
   @Test
-  void ensureGameOutcomeDtoToGameOutcomeWithReferenceWorksProvidingDtoAndEntity() {
-    GameOutcomeDto gameOutcomeDto = new GameOutcomeDto(1L, 1L, List.of(1L));
+  void ensureMatchDtoToMatchWithReferenceWorksProvidingDtoAndEntity() {
+    MatchDto matchDto = new MatchDto(1L, 1L, List.of(1L));
 
     when(entityManager.getReference(Game.class, TestFixtures.game().getId())).thenReturn(
         TestFixtures.game());
     when(entityManager.getReference(User.class, TestFixtures.user(1L).getId())).thenReturn(
         TestFixtures.user(1L));
 
-    GameOutcome mappedGameOutcome = mapper.toGameOutcomeWithReference(gameOutcomeDto,
-        TestFixtures.gameOutcome(1L, TestFixtures.game(), List.of(TestFixtures.user(1L))));
+    Match mappedGameOutcome = mapper.toMatchWithReference(matchDto,
+        TestFixtures.match(1L, TestFixtures.game(), List.of(TestFixtures.user(1L))));
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    assertEquals(mappedGameOutcome.getId(), gameOutcomeDto.id());
-    assertEquals(mappedGameOutcome.getGame().getId(), gameOutcomeDto.gameId());
+    assertEquals(mappedGameOutcome.getId(), matchDto.id());
+    assertEquals(mappedGameOutcome.getGame().getId(), matchDto.gameId());
     assertTrue(mappedGameOutcome.getUsers().stream().map(User::getId).toList()
-        .containsAll(gameOutcomeDto.userIds()));
+        .containsAll(matchDto.userIds()));
   }
 
   @Test

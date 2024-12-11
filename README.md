@@ -66,7 +66,7 @@ classDiagram
             +String name
             +String rules
         }
-        class GameOutcome {
+        class Match {
             +Game game
             +List<User> users
         }
@@ -76,8 +76,8 @@ classDiagram
         }
     }
     Score "0..n" --* "1" User
-    User "n" *--|> "0..m" GameOutcome
-    GameOutcome "0..n" --* "1" Game
+    User "n" *--|> "0..m" Match
+    Match "0..n" --* "1" Game
     Game "1" *-- "0..n" Score
 ```
 
@@ -91,12 +91,12 @@ Rest-Endpoints are available via
 
 ###
 
-| Endpoint        | Description       |
-|:----------------|:------------------|
-| `/users`        | CRUD - operations |
-| `/games`        | CRUD - operations |
-| `/gameoutcomes` | CRUD - operations |
-| `/score`        | CRU - operations  |
+| Endpoint   | Description       |
+|:-----------|:------------------|
+| `/users`   | CRUD - operations |
+| `/games`   | CRUD - operations |
+| `/matches` | CRUD - operations |
+| `/score`   | CRU - operations  |
 
 For more specific information for each endpoint
 visit: [OpenApi Spec](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/Gepardec/gepardec-gamertrack/refs/heads/main/docs/openapi-spec.yaml)

@@ -1,7 +1,7 @@
 package com.gepardec.rest.api;
 
-import com.gepardec.rest.model.command.CreateGameOutcomeCommand;
-import com.gepardec.rest.model.command.UpdateGameOutcomeCommand;
+import com.gepardec.rest.model.command.CreateMatchCommand;
+import com.gepardec.rest.model.command.UpdateMatchCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,50 +23,50 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 
-@Path("gameoutcomes")
+@Path("matches")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GameOutcomeResource {
+public interface MatchResource {
 
 
-  @Operation(summary = "Gets all existing gameoutcomes from the database, or all Gameoutcomes filtered either by gameID or userID")
+  @Operation(summary = "Gets all existing matches from the database, or all Matches filtered either by gameID or userID")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Ok")})
 
   @GET
-  Response getGameOutcomes(@QueryParam("gameId") Optional<Long> gameId,
+  Response getMatches(@QueryParam("gameId") Optional<Long> gameId,
       @QueryParam("userId") Optional<Long> userId);
 
 
-  @Operation(summary = "Gets gameoutcome by ID", description = "Gameoutcome must exist")
+  @Operation(summary = "Gets match by ID", description = "Match must exist")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Ok", content = {
           @Content(mediaType = MediaType.APPLICATION_JSON, schema =
           @Schema(implementation = GameRestDto.class))}),
-      @ApiResponse(responseCode = "204", description = "Gameoutcome not found")})
+      @ApiResponse(responseCode = "204", description = "Match not found")})
 
   @GET
   @Path("{id}")
-  Response getGameOutcomeById(@PathParam("id") Long id);
+  Response getMatchById(@PathParam("id") Long id);
 
 
-  @Operation(summary = "Creates a gameoutcome", description = "Gameoutcome must be valid")
-  @RequestBody(content = @Content(schema = @Schema(implementation = CreateGameOutcomeCommand.class)))
+  @Operation(summary = "Creates a match", description = "Match must be valid")
+  @RequestBody(content = @Content(schema = @Schema(implementation = CreateMatchCommand.class)))
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Created", content = {
           @Content(mediaType = MediaType.APPLICATION_JSON, schema =
           @Schema(implementation = GameRestDto.class))}),
-      @ApiResponse(responseCode = "400", description = "Could not create gameoutcome/Entity was not valid")
+      @ApiResponse(responseCode = "400", description = "Could not create match/Entity was not valid")
   })
 
   @POST
-  Response createGameOutcome(CreateGameOutcomeCommand gameOutcomeCmd);
+  Response createMatch(CreateMatchCommand matchCmd);
 
 
-  @Operation(summary = "Updates a gameoutcome", description = "Gameoutcome must be valid and exist, specified user and game ids that make up the gameoutcome have to exist")
-  @RequestBody(content = @Content(schema = @Schema(implementation = UpdateGameOutcomeCommand.class)))
+  @Operation(summary = "Updates a matche", description = "Match must be valid and exist, specified user and game ids that make up the match have to exist")
+  @RequestBody(content = @Content(schema = @Schema(implementation = UpdateMatchCommand.class)))
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Gameoutcome has been updated", content = {
+      @ApiResponse(responseCode = "200", description = "Match has been updated", content = {
           @Content(mediaType = MediaType.APPLICATION_JSON, schema =
           @Schema(implementation = GameRestDto.class))}),
       @ApiResponse(responseCode = "400", description = "Bad Request")
@@ -74,18 +74,18 @@ public interface GameOutcomeResource {
 
   @PUT
   @Path("{id}")
-  Response updateGameOutcome(@PathParam("id") Long id,
-      @Valid UpdateGameOutcomeCommand gameOutcomeCommand);
+  Response updateMatch(@PathParam("id") Long id,
+      @Valid UpdateMatchCommand matchCommand);
 
 
-  @Operation(summary = "Deletes a gameoutcome", description = "Gameoutcome must exist")
+  @Operation(summary = "Deletes a match", description = "Match must exist")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Gameoutcome has been deleted", content = {
+      @ApiResponse(responseCode = "200", description = "Match has been deleted", content = {
           @Content(mediaType = MediaType.APPLICATION_JSON, schema =
           @Schema(implementation = GameRestDto.class))}),
-      @ApiResponse(responseCode = "404", description = "Gameoutcome not found")})
+      @ApiResponse(responseCode = "404", description = "Match not found")})
 
   @DELETE
   @Path("{id}")
-  Response deleteGameOutcome(@PathParam("id") Long id);
+  Response deleteMatch(@PathParam("id") Long id);
 }

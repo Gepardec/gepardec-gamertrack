@@ -9,7 +9,7 @@ import com.gepardec.RestTestFixtures;
 import com.gepardec.model.dto.ScoreDto;
 import com.gepardec.model.dto.UserDto;
 import com.gepardec.model.dtos.GameDto;
-import com.gepardec.model.dtos.GameOutcomeDto;
+import com.gepardec.model.dtos.MatchDto;
 import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
@@ -25,29 +25,29 @@ class RestMapperTest {
   RestMapper restMapper;
 
   @Test
-  void ensureCreateGameOutcomeCmdToGameOutcomeDtoWorks() {
-    GameOutcomeDto mappedGameOutcomeDto =
-        restMapper.toGameOutcomeDto(RestTestFixtures.createGameOutcomeCommand());
+  void ensureCreateMatchCmdToMatchDtoWorks() {
+    MatchDto mappedMatchDto =
+        restMapper.toMatchDto(RestTestFixtures.createMatchCommand());
 
-    assertNotNull(mappedGameOutcomeDto);
-    assertEquals(mappedGameOutcomeDto.gameId(),
-        RestTestFixtures.createGameOutcomeCommand().gameId());
-    assertTrue(mappedGameOutcomeDto.userIds()
-        .containsAll(RestTestFixtures.createGameOutcomeCommand().userIds()));
+    assertNotNull(mappedMatchDto);
+    assertEquals(mappedMatchDto.gameId(),
+        RestTestFixtures.createMatchCommand().gameId());
+    assertTrue(mappedMatchDto.userIds()
+        .containsAll(RestTestFixtures.createMatchCommand().userIds()));
   }
 
   @Test
-  void ensureUpdateGameOutcomeCmdToGameOutcomeDtoWorks() {
-    GameOutcomeDto mappedGameOutcomeDto = restMapper
-        .toGameOutcomeDto(RestTestFixtures.updateGameOutcomeCommand().gameId(),
-            RestTestFixtures.updateGameOutcomeCommand());
+  void ensureUpdateMatchCmdToMatchDtoWorks() {
+    MatchDto mappedMatchDto = restMapper
+        .toMatchDto(RestTestFixtures.updateMatchCommand().gameId(),
+            RestTestFixtures.updateMatchCommand());
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    assertNotNull(mappedGameOutcomeDto);
-    assertEquals(mappedGameOutcomeDto.gameId(),
-        RestTestFixtures.updateGameOutcomeCommand().gameId());
-    assertTrue(mappedGameOutcomeDto.userIds()
-        .containsAll(RestTestFixtures.updateGameOutcomeCommand().userIds()));
+    assertNotNull(mappedMatchDto);
+    assertEquals(mappedMatchDto.gameId(),
+        RestTestFixtures.updateMatchCommand().gameId());
+    assertTrue(mappedMatchDto.userIds()
+        .containsAll(RestTestFixtures.updateMatchCommand().userIds()));
   }
 
   @Test

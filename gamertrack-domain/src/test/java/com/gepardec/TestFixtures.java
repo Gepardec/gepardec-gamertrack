@@ -1,11 +1,11 @@
 package com.gepardec;
 
 import com.gepardec.model.Game;
-import com.gepardec.model.GameOutcome;
+import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import com.gepardec.model.dtos.GameDto;
-import com.gepardec.model.dtos.GameOutcomeDto;
+import com.gepardec.model.dtos.MatchDto;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +35,9 @@ public class TestFixtures {
     return new GameDto(game.getId(), game.getName(), game.getRules());
   }
 
-  public static GameOutcomeDto gameOutcometoGameOutcomeDto(GameOutcome gameOutcome) {
-    return new GameOutcomeDto(gameOutcome.getId(), gameOutcome.getGame().getId(),
-        gameOutcome.getUsers().stream().map(User::getId).toList());
+  public static MatchDto matchToMatchDto(Match match) {
+    return new MatchDto(match.getId(), match.getGame().getId(),
+        match.getUsers().stream().map(User::getId).toList());
   }
 
   public static Game gameDtoToGame(GameDto gameDto) {
@@ -49,16 +49,16 @@ public class TestFixtures {
   }
 
 
-  public static GameOutcome gameOutcome() {
-    return gameOutcome(1L, TestFixtures.game(), TestFixtures.users(10));
+  public static Match match() {
+    return match(1L, TestFixtures.game(), TestFixtures.users(10));
   }
 
 
-  public static GameOutcome gameOutcome(Long id, Game game, List<User> users) {
-    GameOutcome gameOutcome = new GameOutcome(game, users.stream().toList());
-    gameOutcome.setId(id);
+  public static Match match(Long id, Game game, List<User> users) {
+    Match match = new Match(game, users.stream().toList());
+    match.setId(id);
 
-    return gameOutcome;
+    return match;
   }
 
   public static List<User> users(int userCount) {
@@ -78,20 +78,20 @@ public class TestFixtures {
     return user;
   }
 
-  public static GameOutcome gameOutcome(Long gameOutComeId) {
-    GameOutcome gameOutcome = gameOutcome();
-    gameOutcome.setId(gameOutComeId);
+  public static Match match(Long matchId) {
+    Match match = match();
+    match.setId(matchId);
 
-    return gameOutcome;
+    return match;
   }
 
 
-  public static List<GameOutcome> gameOutcomes(int gameOutcomeCount) {
-    List<GameOutcome> gameOutcomes = new ArrayList<>();
-    for (int i = 0; i < gameOutcomeCount; i++) {
-      gameOutcomes.add(gameOutcome((long) i++));
+  public static List<Match> matches(int matchCount) {
+    List<Match> matches = new ArrayList<>();
+    for (int i = 0; i < matchCount; i++) {
+      matches.add(match((long) i++));
     }
-    return gameOutcomes;
+    return matches;
   }
 
   public static Score score(Long scoreId, Long userId, Long gameId) {
