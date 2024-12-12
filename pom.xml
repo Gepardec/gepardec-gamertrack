@@ -46,10 +46,11 @@
 
 
   <properties>
+    <java.version>21</java.version>
     <jboss.home>${basedir}${file.separator}..${file.separator}wildfly</jboss.home>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.target>23</maven.compiler.target>
-    <maven.compiler.source>23</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.source>${java.version}}</maven.compiler.source>
     <junit.version>5.11.0</junit.version>
   </properties>
 
