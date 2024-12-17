@@ -63,24 +63,6 @@ public interface ScoreResource {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
             @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
     })
-    @Path(USER_ID_PATH )
-    @GET
-    public Response getScoreByUser(@PathParam("id") Long id);
-
-    @Operation(summary = "Get Scores by gameId", description = "Returns list of scores")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
-    })
-    @Path(GAME_ID_PATH)
-    @GET
-    public Response getScoreByGame(@PathParam("id") Long gameId);
-
-    @Operation(summary = "Get Scores by Scorepoints", description = "Returns list of scores")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
-    })
     @Path( SCOREPOINTS_PATH)
     @GET
     public Response getScoreByScorePoints(@PathParam("points") double points);

@@ -35,22 +35,6 @@ public class ScoreResourceImpl implements ScoreResource {
     }
 
     @Override
-    public Response getScoreByUser(Long userId) {
-        return scoreService.findScoreByUser(userId).stream().map(ScoreRestDto::new).toList().isEmpty()
-                ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findScoreByUser(userId).stream().map(ScoreRestDto::new).toList()).build();
-
-    }
-
-    @Override
-    public Response getScoreByGame(Long gameId) {
-        return scoreService.findScoreByGame(gameId).stream().map(ScoreRestDto::new).toList().isEmpty()
-                ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findScoreByGame(gameId).stream().map(ScoreRestDto::new).toList()).build();
-
-    }
-
-    @Override
     public Response getScoreByScorePoints(double points) {
         return scoreService.findScoreByScorePoints(points).stream().map(ScoreRestDto::new).toList().isEmpty()
                 ? Response.status(Response.Status.NO_CONTENT).build()
