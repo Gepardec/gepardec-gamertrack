@@ -1,4 +1,4 @@
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
 Content-Type:application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
 Content-Type:application/json
 
 {
@@ -34,7 +34,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
 Content-Type:application/json
 
 {
@@ -52,7 +52,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
 Content-Type:application/json
 
 {
@@ -70,7 +70,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
 Content-Type:application/json
 
 {
@@ -88,7 +88,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/users/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
 Content-Type:application/json
 
 {
@@ -112,7 +112,7 @@ Content-Type:application/json
 ###
 ###
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
+POST http://localhost:8080/gepardec-gamertrack/api/v1/games
 Content-Type: application/json
 Accept: application/json
 
@@ -130,7 +130,7 @@ Accept: application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
+POST http://localhost:8080/gepardec-gamertrack/api/v1/games
 Content-Type: application/json
 Accept: application/json
 
@@ -148,7 +148,7 @@ Accept: application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/games
+POST http://localhost:8080/gepardec-gamertrack/api/v1/games
 Content-Type: application/json
 Accept: application/json
 
@@ -168,12 +168,12 @@ Accept: application/json
 ###
 ###
 ###
-###  GAMEOUTCOMES
+###  matches
 ###
 ###
 ###
 
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
 Content-Type: application/json
 Accept: application/json
 
@@ -194,7 +194,7 @@ Accept: application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
 Content-Type: application/json
 Accept: application/json
 
@@ -216,7 +216,7 @@ Accept: application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
 Content-Type: application/json
 Accept: application/json
 
@@ -238,7 +238,7 @@ Accept: application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
 Content-Type: application/json
 Accept: application/json
 
@@ -260,7 +260,7 @@ Accept: application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/gameoutcomes
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
 Content-Type: application/json
 Accept: application/json
 
@@ -290,7 +290,7 @@ Accept: application/json
 ###
 ###
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -308,7 +308,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -326,7 +326,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -344,7 +344,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -362,7 +362,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -380,7 +380,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -398,7 +398,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -416,7 +416,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
@@ -434,7 +434,7 @@ Content-Type:application/json
     });
 %}
 ###
-POST http://localhost:8080/gamertrack-war-1.0-SNAPSHOT/api/v1/scores/
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
 Content-Type:application/json
 
 {
