@@ -1,7 +1,6 @@
 package com.gepardec.rest.impl;
 
-import com.gepardec.interfaces.services.UserService;
-import com.gepardec.model.User;
+import com.gepardec.core.services.UserService;
 import com.gepardec.rest.api.UserResource;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;

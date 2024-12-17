@@ -7,9 +7,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.interfaces.repository.GameRepository;
+import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
-import com.gepardec.model.dtos.GameDto;
+import com.gepardec.model.dto.GameDto;
 import java.util.List;
 import java.util.Optional;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;

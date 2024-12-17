@@ -1,6 +1,6 @@
 package com.gepardec.rest.impl;
 
-import com.gepardec.interfaces.services.ScoreService;
+import com.gepardec.core.services.ScoreService;
 import com.gepardec.rest.api.RankListResource;
 import com.gepardec.rest.model.dto.ScoreRestDto;
 import jakarta.enterprise.context.RequestScoped;

@@ -1,7 +1,7 @@
-package com.gepardec.adapters.output.persistence.repository;
+package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.adapters.output.persistence.repository.mapper.Mapper;
-import com.gepardec.interfaces.repository.UserRepository;
+import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.User;
 import com.gepardec.model.dto.UserDto;
 import jakarta.enterprise.context.ApplicationScoped;

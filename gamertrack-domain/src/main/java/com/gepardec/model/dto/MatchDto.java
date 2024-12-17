@@ -1,4 +1,4 @@
-package com.gepardec.model.dtos;
+package com.gepardec.model.dto;
 
 import com.gepardec.model.Match;
 import com.gepardec.model.User;

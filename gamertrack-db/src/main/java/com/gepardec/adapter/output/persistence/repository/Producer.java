@@ -1,4 +1,4 @@
-package com.gepardec.adapters.output.persistence.repository;
+package com.gepardec.adapter.output.persistence.repository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;

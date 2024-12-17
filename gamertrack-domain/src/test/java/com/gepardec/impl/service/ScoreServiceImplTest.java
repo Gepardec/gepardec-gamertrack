@@ -1,10 +1,8 @@
 package com.gepardec.impl.service;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.interfaces.repository.ScoreRepository;
-import com.gepardec.model.Game;
+import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.model.Score;
-import com.gepardec.model.User;
 import com.gepardec.model.dto.ScoreDto;
 import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;

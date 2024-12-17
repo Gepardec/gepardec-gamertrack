@@ -1,9 +1,9 @@
-package com.gepardec.adapters.output.persistence.repository;
+package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.adapters.output.persistence.repository.mapper.Mapper;
-import com.gepardec.interfaces.repository.GameRepository;
+import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
-import com.gepardec.model.dtos.GameDto;
+import com.gepardec.model.dto.GameDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;

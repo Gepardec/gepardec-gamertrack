@@ -1,11 +1,11 @@
 package com.gepardec.impl.service;
 
-import com.gepardec.interfaces.repository.GameRepository;
-import com.gepardec.interfaces.repository.MatchRepository;
-import com.gepardec.interfaces.repository.UserRepository;
-import com.gepardec.interfaces.services.MatchService;
+import com.gepardec.core.repository.GameRepository;
+import com.gepardec.core.repository.MatchRepository;
+import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.MatchService;
 import com.gepardec.model.Match;
-import com.gepardec.model.dtos.MatchDto;
+import com.gepardec.model.dto.MatchDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

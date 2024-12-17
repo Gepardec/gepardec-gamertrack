@@ -1,8 +1,8 @@
 package com.gepardec.impl.service;
 
-import com.gepardec.interfaces.repository.UserRepository;
-import com.gepardec.interfaces.services.ScoreService;
-import com.gepardec.interfaces.services.UserService;
+import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.ScoreService;
+import com.gepardec.core.services.UserService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import com.gepardec.model.dto.UserDto;

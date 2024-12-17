@@ -1,9 +1,7 @@
-package com.gepardec.interfaces.repository;
+package com.gepardec.core.repository;
 
 import com.gepardec.model.Score;
-import com.gepardec.model.User;
 import com.gepardec.model.dto.ScoreDto;
-import com.gepardec.model.dto.UserDto;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,9 +1,9 @@
 package com.gepardec.impl.service;
 
-import com.gepardec.interfaces.repository.GameRepository;
-import com.gepardec.interfaces.services.GameService;
+import com.gepardec.core.repository.GameRepository;
+import com.gepardec.core.services.GameService;
 import com.gepardec.model.Game;
-import com.gepardec.model.dtos.GameDto;
+import com.gepardec.model.dto.GameDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
