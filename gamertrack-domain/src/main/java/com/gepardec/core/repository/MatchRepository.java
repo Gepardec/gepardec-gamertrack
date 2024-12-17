@@ -23,5 +23,7 @@ public interface MatchRepository {
 
   Boolean existsMatchById(Long gameOutcomeId);
 
+  List<Match> findMatchByUserIdAndGameId(Long userId, Long gameId);
+
 
 }

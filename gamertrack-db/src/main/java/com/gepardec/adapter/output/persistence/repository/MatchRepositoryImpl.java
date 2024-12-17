@@ -48,7 +48,7 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Override
   public void deleteMatch(Long matchId) {
-    logger.info("Looking up game outcome by id: %s in order to delet".formatted(matchId));
+    logger.info("Looking up matches by id: %s in order to delet".formatted(matchId));
     Optional<Match> matchToDelete = findMatchById(matchId);
 
     if (matchToDelete.isEmpty()) {
@@ -89,6 +89,17 @@ public class MatchRepositoryImpl implements MatchRepository {
     var query = em.createQuery("select go from Match go where go.game.id = :gameId ",
         Match.class);
 
+    query.setParameter("gameId", gameId);
+    return query.getResultList();
+  }
+
+  @Override
+  public List<Match> findMatchByUserIdAndGameId(Long userId, Long gameId) {
+    logger.info("Finding matches by UserId: {} and GameId: {}".formatted(userId, gameId));
+    var query = em.createQuery(
+        "select m from Match m inner join m.users u where (:userId is NULL OR u.id = :userId) and (:gameId is NULL OR m.game.id = :gameId)",
+        Match.class);
+    query.setParameter("userId", userId);
     query.setParameter("gameId", gameId);
     return query.getResultList();
   }

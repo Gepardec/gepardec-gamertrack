@@ -28,20 +28,9 @@ public class MatchResourceImpl implements MatchResource {
   @Override
   public Response getMatches(Optional<Long> gameId, Optional<Long> userId) {
 
-    if (gameId.isPresent()) {
-      logger.info("Getting all Matches with GameID: %s".formatted(gameId.get()));
+    if (gameId.isPresent() || userId.isPresent()) {
       return Response.ok()
-          .entity(matchService.findMatchsByGameId(gameId.get())
-              .stream()
-              .map(MatchRestDto::new)
-              .toList())
-          .build();
-    }
-
-    if (userId.isPresent()) {
-      logger.info("Getting all Matchess with UserID: %s".formatted(userId.get()));
-      return Response.ok().
-          entity(matchService.findMatchByUserId(userId.get())
+          .entity(matchService.findMatchesByUserIdAndGameId(userId, gameId)
               .stream()
               .map(MatchRestDto::new)
               .toList())
@@ -55,6 +44,7 @@ public class MatchResourceImpl implements MatchResource {
             .map(MatchRestDto::new)
             .toList())
         .build();
+
   }
 
 

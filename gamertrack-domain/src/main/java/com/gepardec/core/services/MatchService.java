@@ -21,4 +21,6 @@ public interface MatchService {
 
   List<Match> findMatchsByGameId(Long gameId);
 
+  List<Match> findMatchesByUserIdAndGameId(Optional<Long> userId, Optional<Long> gameId);
+
 }
