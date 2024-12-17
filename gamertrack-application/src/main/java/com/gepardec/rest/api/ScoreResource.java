@@ -38,7 +38,7 @@ public interface ScoreResource {
     public Response createScore(@Valid CreateScoreCommand createScoreCommand);
     //-------------------------------
 
-    @Operation(summary = "Get all Scores (optional: MinMax ScorePoints)", description = "Returns list of scores")
+    @Operation(summary = "Get all Scores (optional filter: min, max, user & game)", description = "Returns list of scores")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
             @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
@@ -52,7 +52,6 @@ public interface ScoreResource {
     @Operation(summary = "Get Scores by id", description = "Returns list of scores")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
     })
     @Path(ID_PATH)
     @GET
@@ -61,7 +60,6 @@ public interface ScoreResource {
     @Operation(summary = "Get Scores by userId", description = "Returns list of scores")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
     })
     @Path( SCOREPOINTS_PATH)
     @GET

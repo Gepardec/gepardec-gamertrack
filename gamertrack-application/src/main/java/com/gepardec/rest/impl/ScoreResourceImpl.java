@@ -4,6 +4,7 @@ import com.gepardec.core.services.ScoreService;
 import com.gepardec.rest.api.ScoreResource;
 import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.dto.ScoreRestDto;
+import com.gepardec.rest.model.dto.UserRestDto;
 import com.gepardec.rest.model.mapper.RestMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -21,9 +22,11 @@ public class ScoreResourceImpl implements ScoreResource {
 
     @Override
     public Response getScores(Optional<Double> minPoints, Optional<Double> maxPoints, Optional<Long> userId, Optional<Long> gameId) {
-        return scoreService.findScoresFilter(minPoints,maxPoints, userId,gameId).stream().map(ScoreRestDto::new).toList().isEmpty()
-                ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findScoresFilter(minPoints,maxPoints, userId,gameId).stream().map(ScoreRestDto::new).toList()).build();
+        return Response.ok(scoreService.findScoresFilter(minPoints,maxPoints, userId,gameId)
+                        .stream()
+                        .map(ScoreRestDto::new)
+                        .toList())
+                .build();
 
     }
 
@@ -36,9 +39,11 @@ public class ScoreResourceImpl implements ScoreResource {
 
     @Override
     public Response getScoreByScorePoints(double points) {
-        return scoreService.findScoreByScorePoints(points).stream().map(ScoreRestDto::new).toList().isEmpty()
-                ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findScoreByScorePoints(points).stream().map(ScoreRestDto::new).toList()).build();
+        return Response.ok(scoreService.findScoreByScorePoints(points)
+                        .stream()
+                        .map(ScoreRestDto::new)
+                        .toList())
+                .build();
     }
 
     //Only temporary for testing
