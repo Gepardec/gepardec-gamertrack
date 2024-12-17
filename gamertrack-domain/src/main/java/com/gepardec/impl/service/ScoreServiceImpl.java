@@ -1,7 +1,7 @@
 package com.gepardec.impl.service;
 
-import com.gepardec.interfaces.repository.ScoreRepository;
-import com.gepardec.interfaces.services.ScoreService;
+import com.gepardec.core.repository.ScoreRepository;
+import com.gepardec.core.services.ScoreService;
 import com.gepardec.model.Score;
 import com.gepardec.model.dto.ScoreDto;
 import jakarta.ejb.Stateless;

@@ -1,6 +1,6 @@
 package com.gepardec.rest.impl;
 
-import com.gepardec.interfaces.services.MatchService;
+import com.gepardec.core.services.MatchService;
 import com.gepardec.rest.api.MatchResource;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.UpdateMatchCommand;

@@ -1,6 +1,6 @@
 package com.gepardec.rest.impl;
 
-import com.gepardec.interfaces.services.GameService;
+import com.gepardec.core.services.GameService;
 import com.gepardec.model.Game;
 import com.gepardec.rest.api.GameResource;
 import com.gepardec.rest.model.command.CreateGameCommand;

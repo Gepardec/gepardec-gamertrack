@@ -1,7 +1,7 @@
-package com.gepardec.interfaces.services;
+package com.gepardec.core.services;
 
 import com.gepardec.model.Game;
-import com.gepardec.model.dtos.GameDto;
+import com.gepardec.model.dto.GameDto;
 import java.util.List;
 import java.util.Optional;
 

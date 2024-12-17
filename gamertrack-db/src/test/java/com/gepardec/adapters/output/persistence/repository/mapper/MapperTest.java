@@ -6,14 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import com.gepardec.model.dto.ScoreDto;
 import com.gepardec.model.dto.UserDto;
-import com.gepardec.model.dtos.GameDto;
-import com.gepardec.model.dtos.MatchDto;
+import com.gepardec.model.dto.GameDto;
+import com.gepardec.model.dto.MatchDto;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.junit.jupiter.api.Test;

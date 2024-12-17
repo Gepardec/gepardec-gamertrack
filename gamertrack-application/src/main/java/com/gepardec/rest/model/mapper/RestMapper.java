@@ -2,8 +2,8 @@ package com.gepardec.rest.model.mapper;
 
 import com.gepardec.model.dto.ScoreDto;
 import com.gepardec.model.dto.UserDto;
-import com.gepardec.model.dtos.GameDto;
-import com.gepardec.model.dtos.MatchDto;
+import com.gepardec.model.dto.GameDto;
+import com.gepardec.model.dto.MatchDto;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.CreateScoreCommand;

@@ -1,6 +1,6 @@
 package com.gepardec.rest.impl;
 
-import com.gepardec.interfaces.services.ScoreService;
+import com.gepardec.core.services.ScoreService;
 import com.gepardec.rest.api.ScoreResource;
 import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.dto.ScoreRestDto;

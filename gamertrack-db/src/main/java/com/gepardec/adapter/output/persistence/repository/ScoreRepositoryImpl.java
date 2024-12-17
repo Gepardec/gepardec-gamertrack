@@ -1,7 +1,7 @@
-package com.gepardec.adapters.output.persistence.repository;
+package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.interfaces.repository.ScoreRepository;
-import com.gepardec.adapters.output.persistence.repository.mapper.Mapper;
+import com.gepardec.core.repository.ScoreRepository;
+import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;

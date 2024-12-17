@@ -1,9 +1,9 @@
-package com.gepardec.adapters.output.persistence.repository;
+package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.adapters.output.persistence.repository.mapper.Mapper;
-import com.gepardec.interfaces.repository.MatchRepository;
+import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.model.Match;
-import com.gepardec.model.dtos.MatchDto;
+import com.gepardec.model.dto.MatchDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -22,8 +22,6 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Inject
   Mapper mapper;
-  @Inject
-  private EntityManager entityManager;
 
   @Override
   public Optional<Match> saveMatch(MatchDto matchDto) {
@@ -70,7 +68,7 @@ public class MatchRepositoryImpl implements MatchRepository {
 
     return match
         .map(game -> mapper.toMatchWithReference(matchDto, game))
-        .map(entityManager::merge);
+        .map(em::merge);
 
   }
 

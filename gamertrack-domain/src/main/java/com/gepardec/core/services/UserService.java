@@ -1,4 +1,4 @@
-package com.gepardec.interfaces.services;
+package com.gepardec.core.services;
 
 import com.gepardec.model.User;
 import com.gepardec.model.dto.UserDto;

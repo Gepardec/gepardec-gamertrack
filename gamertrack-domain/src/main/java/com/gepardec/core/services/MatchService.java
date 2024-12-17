@@ -1,7 +1,7 @@
-package com.gepardec.interfaces.services;
+package com.gepardec.core.services;
 
 import com.gepardec.model.Match;
-import com.gepardec.model.dtos.MatchDto;
+import com.gepardec.model.dto.MatchDto;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,12 +1,10 @@
 package com.gepardec.impl.service;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.interfaces.repository.UserRepository;
-import com.gepardec.model.Game;
+import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import com.gepardec.model.dto.UserDto;
-import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
