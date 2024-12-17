@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional
 @Stateless
@@ -52,6 +53,26 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     @Override
     public Optional<Score> findScoreById(Long id) {
         return scoreRepository.findScoreById(id);
+    }
+
+    @Override
+    public List<Score> findScoresFilter(Optional<Double> minPoints, Optional<Double> maxPoints, Optional<Long> userId, Optional<Long> gameId) {
+        double min = minPoints.orElse(0.0);
+        double max = maxPoints.orElse(Double.MAX_VALUE); // only tmp -> paging
+
+        if(min > max) {
+            double tmp = max;
+            max = min;
+            min = tmp;
+            log.info("switched minPoints with maxPoint because minPoints was greater than maxPoints");
+        }
+
+        List<Score> allScores = scoreRepository.findScoreByMinMaxScorePoints(min, max);
+        return allScores.stream().filter(
+                score ->
+                        (gameId.isEmpty() || (score.getGame() != null && score.getGame().getId().equals(gameId.get()))) &&
+                        (userId.isEmpty() || (score.getUser() != null && score.getUser().getId().equals(userId.get())))
+                        ).collect(Collectors.toList());
     }
 
     @Override

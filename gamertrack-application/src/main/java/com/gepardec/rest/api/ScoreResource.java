@@ -12,6 +12,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Optional;
+
 import static com.gepardec.rest.api.ScoreResource.BASE_SCORE_PATH;
 
 
@@ -42,8 +44,10 @@ public interface ScoreResource {
             @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
     })
     @GET()
-    public Response getScores(@QueryParam("min") @DefaultValue("0") double minScore,
-                              @QueryParam("max") @DefaultValue("0") double maxScore);
+    public Response getScores(@QueryParam("min") Optional<Double> minScore,
+                              @QueryParam("max") Optional<Double> maxScore,
+                              @QueryParam("user") Optional<Long> userId,
+                              @QueryParam("game") Optional<Long> gameId);
 
     @Operation(summary = "Get Scores by id", description = "Returns list of scores")
     @ApiResponses(value = {

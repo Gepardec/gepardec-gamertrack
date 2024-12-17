@@ -9,6 +9,8 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Optional;
+
 @RequestScoped
 public class ScoreResourceImpl implements ScoreResource {
 
@@ -18,16 +20,11 @@ public class ScoreResourceImpl implements ScoreResource {
     private RestMapper mapper;
 
     @Override
-    public Response getScores(double minScore, double maxScore) {
-        if (minScore == 0 && maxScore == 0) {
-            return scoreService.findAllScores().stream().map(ScoreRestDto::new).toList().isEmpty()
-                    ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.ok().entity(scoreService.findAllScores().stream().map(ScoreRestDto::new).toList()).build();
-        } else {
-            return scoreService.findScoreByMinMaxScorePoints(minScore,maxScore).stream().map(ScoreRestDto::new).toList().isEmpty()
-                    ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.ok().entity(scoreService.findScoreByMinMaxScorePoints(minScore,maxScore).stream().map(ScoreRestDto::new).toList()).build();
-        }
+    public Response getScores(Optional<Double> minPoints, Optional<Double> maxPoints, Optional<Long> userId, Optional<Long> gameId) {
+        return scoreService.findScoresFilter(minPoints,maxPoints, userId,gameId).stream().map(ScoreRestDto::new).toList().isEmpty()
+                ? Response.status(Response.Status.NO_CONTENT).build()
+                : Response.ok().entity(scoreService.findScoresFilter(minPoints,maxPoints, userId,gameId).stream().map(ScoreRestDto::new).toList()).build();
+
     }
 
     @Override
