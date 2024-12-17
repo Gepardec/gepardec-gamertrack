@@ -22,8 +22,6 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Inject
   Mapper mapper;
-  @Inject
-  private EntityManager entityManager;
 
   @Override
   public Optional<Match> saveMatch(MatchDto matchDto) {
@@ -70,7 +68,7 @@ public class MatchRepositoryImpl implements MatchRepository {
 
     return match
         .map(game -> mapper.toMatchWithReference(matchDto, game))
-        .map(entityManager::merge);
+        .map(em::merge);
 
   }
 
