@@ -105,9 +105,9 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   @Override
   public Boolean existsByUserId(List<Long> userIds) {
     long foundUserIds = userIds.stream()
-        .map(this::findUserById)
-        .count();
-
+            .map(this::findUserById)
+            .filter(Optional::isPresent)
+            .count();
     return foundUserIds == userIds.size();
   }
 }
