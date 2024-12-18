@@ -94,6 +94,40 @@ public class ScoreServiceImplTest {
         assertFalse(foundScore.isEmpty());
         assertEquals(3, foundScore.size());
     }
+    @Test
+    void ensureFindScoresFilterWorksAndReturnsFilteredByUserScores() {
+        List<Score> scores = TestFixtures.scores(5);
+
+        when(scoreRepository.findScoreByMinMaxScorePoints(10.0d,100.0d)).thenReturn(scores);
+
+        List<Score> foundScore = scoreService
+                .findScoresFilter(Optional.of(10D),Optional.of(100D),
+                        Optional.of(1L),Optional.of(1L));
+
+        assertFalse(foundScore.isEmpty());
+        assertEquals(1, scoreService
+                .findScoresFilter(Optional.of(10D),Optional.of(100D),
+                        Optional.of(1L),Optional.of(1L)).size());
+
+
+    }
+    @Test
+    void ensureFindScoresFilterWorksAndReturnsFilteredByGameScores() {
+        List<Score> scores = TestFixtures.scores(5);
+
+        when(scoreRepository.findScoreByMinMaxScorePoints(10.0d,100.0d)).thenReturn(scores);
+
+        List<Score> foundScore = scoreService
+                .findScoresFilter(Optional.of(10D),Optional.of(100D),
+                        Optional.empty(),Optional.of(1L));
+
+        assertFalse(foundScore.isEmpty());
+        assertEquals(5, scoreService
+                .findScoresFilter(Optional.of(10D),Optional.of(100D),
+                        Optional.empty(),Optional.of(1L)).size());
+
+
+    }
 
     @Test
     void ensureFindScoreByIdWorksAndReturnsScore() {
