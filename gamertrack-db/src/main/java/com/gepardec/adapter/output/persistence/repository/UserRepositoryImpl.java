@@ -11,14 +11,17 @@ import jakarta.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
+@Transactional
 public class UserRepositoryImpl implements UserRepository, Serializable {
 
   private static final Logger log = LoggerFactory.getLogger(UserRepositoryImpl.class);
-  @PersistenceContext()
+  @Inject
   protected EntityManager entityManager;
   @Inject
   Mapper mapper;
