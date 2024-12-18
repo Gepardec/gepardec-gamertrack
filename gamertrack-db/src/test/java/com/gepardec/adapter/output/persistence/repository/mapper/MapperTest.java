@@ -1,4 +1,4 @@
-package com.gepardec.adapters.output.persistence.repository.mapper;
+package com.gepardec.adapter.output.persistence.repository.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
