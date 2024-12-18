@@ -36,14 +36,14 @@ public class MatchServiceImpl implements MatchService {
 
     if (userId.isPresent() && gameId.isPresent()) {
       logger.info("Finding matches by userId {} and gameId {}".formatted(userId, gameId));
-      return matchRepository.findMatchByUserIdAndGameId(userId.get(), gameId.get());
+      return matchRepository.findMatchesByUserIdAndGameId(userId.get(), gameId.get());
     }
 
     return userId
-        .map(uid -> matchRepository.findMatchByUserId(
+        .map(uid -> matchRepository.findMatchesByUserId(
             uid))
         .orElseGet(() -> gameId
-            .map(gid -> matchRepository.findMatchByGameId(
+            .map(gid -> matchRepository.findMatchesByGameId(
                 gid))
             .orElse(Collections.emptyList()));
   }
@@ -116,16 +116,16 @@ public class MatchServiceImpl implements MatchService {
   }
 
   @Override
-  public List<Match> findMatchByUserId(Long userId) {
+  public List<Match> findMatchesByUserId(Long userId) {
     logger.info(
         "Getting all existing matches that reference user with UserID: %s".formatted(userId));
-    return matchRepository.findMatchByUserId(userId);
+    return matchRepository.findMatchesByUserId(userId);
   }
 
   @Override
-  public List<Match> findMatchsByGameId(Long gameId) {
+  public List<Match> findMatchesByGameId(Long gameId) {
     logger.info(
         "Getting all existing matches that reference game with GameID: %s".formatted(gameId));
-    return matchRepository.findMatchByGameId(gameId);
+    return matchRepository.findMatchesByGameId(gameId);
   }
 }

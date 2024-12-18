@@ -17,13 +17,13 @@ public interface MatchRepository {
 
   Optional<Match> updateMatch(MatchDto gameOutcomeDto);
 
-  List<Match> findMatchByUserId(Long userId);
+  List<Match> findMatchesByUserId(Long userId);
 
-  List<Match> findMatchByGameId(Long gameId);
+  List<Match> findMatchesByGameId(Long gameId);
 
   Boolean existsMatchById(Long gameOutcomeId);
 
-  List<Match> findMatchByUserIdAndGameId(Long userId, Long gameId);
+  List<Match> findMatchesByUserIdAndGameId(Long userId, Long gameId);
 
 
 }

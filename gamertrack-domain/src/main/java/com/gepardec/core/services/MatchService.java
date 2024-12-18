@@ -17,9 +17,9 @@ public interface MatchService {
 
   Optional<Match> updateMatch(MatchDto gameOutcomeDto);
 
-  List<Match> findMatchByUserId(Long userId);
+  List<Match> findMatchesByUserId(Long userId);
 
-  List<Match> findMatchsByGameId(Long gameId);
+  List<Match> findMatchesByGameId(Long gameId);
 
   List<Match> findMatchesByUserIdAndGameId(Optional<Long> userId, Optional<Long> gameId);
 
