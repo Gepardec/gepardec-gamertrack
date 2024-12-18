@@ -1,53 +1,59 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-/*
-import com.gepardec.interfaces.repository.UserRepository;
+import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.User;
+import com.gepardec.model.dto.ScoreDto;
+import com.gepardec.model.dto.UserDto;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.transaction.Transactional;
+import org.jboss.arquillian.container.test.api.Deployment;
+
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.jupiter.api.Test;
-
-import org.jboss.weld.bootstrap.spi.BeanDiscoveryMode;
-import org.jboss.weld.junit5.auto.AddBeanClasses;
-import org.jboss.weld.junit5.auto.SetBeanDiscoveryMode;
-import org.jboss.weld.junit5.auto.WeldJunit5AutoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.Extension;
 
-@ExtendWith(WeldJunit5AutoExtension.class)
-@AddBeanClasses({UserRepository.class, UserRepositoryImpl.class, EntityManager.class})
-@SetBeanDiscoveryMode(BeanDiscoveryMode.ALL)
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ExtendWith(ArquillianExtension.class)
 public class UserRepositoryTest {
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Inject
     UserRepository userRepository;
 
-    EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("integration-test");
+    @Inject
+    Mapper mapper;
 
-    @PersistenceContext
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-    @BeforeEach
-    public void init() {
-
+    @Deployment
+    public static Archive<?> createDeployment() {
+        return ShrinkWrap.create(JavaArchive.class, "test.jar")
+                .addClasses(UserRepositoryImpl.class, UserRepository.class, UserDto.class, User.class, TestFixtures.class, EntityManager.class, Mapper.class)
+                .addPackage(User.class.getPackage())
+                .addPackage(UserRepository.class.getPackage())
+                .addPackage(UserRepositoryImpl.class.getPackage())
+                .addPackage(UserDto.class.getPackage())
+                .addAsManifestResource("beans.xml")
+                .addAsManifestResource("persistence.xml");
     }
 
     @Test
-    public void ensureCreateUserWorksCorrectly() {
-        User user = new User();
-        user.firstname = "John";
-        user.lastname = "Doe";
-
-        entityManager.persist(user);
-        //userRepository.saveUser(user);
-
-        //assertEquals(1, userRepository.findAllUsers().get().size());
+    void ensureSaveUserWorks(){
+        UserDto user = new UserDto(TestFixtures.user(1L));
+        userRepository.saveUser(user);
+        assertTrue(userRepository.findUserById(1L).isPresent());
     }
+
 }
-
-
- */

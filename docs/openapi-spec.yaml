@@ -199,6 +199,29 @@ paths:
                 $ref: '#/components/schemas/GameRestDto'
         "404":
           description: Match not found
+  /ranklist/{gameId}:
+    get:
+      summary: "Get top scores by game (optional: TopCount)"
+      description: Returns a list of scores
+      operationId: getTopScoresBygame
+      parameters:
+      - name: gameId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: top
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      responses:
+        "200":
+          description: Successfully retrieved
+        "204":
+          description: No Content - No scores were found
   /scores:
     get:
       summary: "Get all Scores (optional: MinMax ScorePoints)"
@@ -216,7 +239,7 @@ paths:
         schema:
           type: number
           format: double
-          default: 179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+          default: 0
       responses:
         "200":
           description: Successfully retrieved
