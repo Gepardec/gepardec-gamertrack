@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(ArquillianExtension.class)
-public class UserRepositoryTest {
+public class UserRepositoryTest extends GamertrackDbIT{
     /*
 
 --------------------------------------------------------------------------------
@@ -52,18 +52,6 @@ public class UserRepositoryTest {
 
     @Inject
     Mapper mapper;
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class, "test.jar")
-                .addClasses(UserRepositoryImpl.class, UserRepository.class, UserDto.class, User.class, TestFixtures.class, EntityManager.class, Mapper.class)
-                .addPackage(User.class.getPackage())
-                .addPackage(UserRepository.class.getPackage())
-                .addPackage(UserRepositoryImpl.class.getPackage())
-                .addPackage(UserDto.class.getPackage())
-                .addAsManifestResource("beans.xml")
-                .addAsManifestResource("persistence.xml");
-    }
 
     @BeforeEach
     public void before() {
