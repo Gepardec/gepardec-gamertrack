@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<arquillian xmlns="http://arquillian.org/schema/arquillian"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://arquillian.org/schema/arquillian http://arquillian.org/schema/arquillian/arquillian_1_0.xsd">
-    <container qualifier="wildfly" default="true">
-        <configuration>
-            <property name="jbossHome">/Users/jaroslav.romashchuk/Documents/OnBoardingProject/wildfly-34.0.0/</property>
-        </configuration>
-    </container>
+<!--
+~ Copyright The WildFly Authors
+~ SPDX-License-Identifier: Apache-2.0
+-->
+
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+  <container qualifier="wildfly" default="true">
+    <configuration>
+      <property name="jbossHome">${jboss.home}</property>
+    </configuration>
+  </container>
 </arquillian>
