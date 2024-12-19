@@ -16,7 +16,9 @@ public class TestFixtures {
     List<Game> games = new ArrayList<>();
 
     for (int i = 0; i < gameCount; i++) {
-      games.add(TestFixtures.game((long) i++));
+      Game game = TestFixtures.game((long) 1 + i);
+      game.setName(game.getName() + " " + i);
+      games.add(game);
     }
     return games;
   }
