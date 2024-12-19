@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional
 @Stateless
@@ -55,27 +56,44 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public List<Score> findScoreByUser(Long userId) {
+    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId) {
+
+        if(minPoints != null && maxPoints != null) {
+            if (minPoints > maxPoints) {
+                double tmp = maxPoints;
+                maxPoints = minPoints;
+                minPoints = tmp;
+                log.info("switched minPoints with maxPoint because minPoints was greater than maxPoints");
+            }
+        }
+
+       return scoreRepository.filterScores(minPoints, maxPoints, userId, gameId);
+    }
+
+
+
+    @Override
+    public List<Score> findScoresByUser(Long userId) {
         return scoreRepository.findScoreByUser(userId);
     }
 
     @Override
-    public List<Score> findScoreByGame(Long gameId) {
+    public List<Score> findScoresByGame(Long gameId) {
         return scoreRepository.findScoreByGame(gameId);
     }
 
     @Override
-    public List<Score> findTopScoreByGame(Long gameId, int top) {
+    public List<Score> findTopScoresByGame(Long gameId, int top) {
         return scoreRepository.findTopScoreByGame(gameId,top);
     }
 
     @Override
-    public List<Score> findScoreByScorePoints(double scorePoints) {
+    public List<Score> findScoreByScoresPoints(double scorePoints) {
         return scoreRepository.findScoreByScorePoints(scorePoints);
     }
 
     @Override
-    public List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints) {
+    public List<Score> findScoreByMinMaxScoresPoints(double minPoints, double maxPoints) {
         if(minPoints > maxPoints) {
             double tmp = maxPoints;
             maxPoints = minPoints;

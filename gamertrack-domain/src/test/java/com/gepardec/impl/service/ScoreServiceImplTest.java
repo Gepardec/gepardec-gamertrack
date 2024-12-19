@@ -94,6 +94,36 @@ public class ScoreServiceImplTest {
         assertFalse(foundScore.isEmpty());
         assertEquals(3, foundScore.size());
     }
+    @Test
+    void ensureFindScoresFilterWorksAndReturnsFilteredByUserScores() {
+        List<Score> scores = TestFixtures.scores(5);
+
+        when(scoreRepository.filterScores(10.0d,100.0d,1L,1L)).thenReturn(List.of(scores.get(0)));
+
+        List<Score> foundScore = scoreService
+                .filterScores(10D,100D,
+                        1L,1L);
+
+        assertFalse(foundScore.isEmpty());
+        assertEquals(1, foundScore.size());
+
+
+    }
+    @Test
+    void ensureFindScoresFilterWorksAndReturnsFilteredByGameScores() {
+        List<Score> scores = TestFixtures.scores(5);
+
+        when(scoreRepository.filterScores(10.0d,100.0d,null,1L)).thenReturn(scores);
+
+        List<Score> foundScore = scoreService
+                .filterScores(10D,100D,null,1L);
+
+        assertFalse(foundScore.isEmpty());
+        assertEquals(5, scoreService
+                .filterScores(10D,100D, null,1L).size());
+
+
+    }
 
     @Test
     void ensureFindScoreByIdWorksAndReturnsScore() {
@@ -110,12 +140,12 @@ public class ScoreServiceImplTest {
     }
 
     @Test
-    void ensureFindScoreByUserWorksAndReturnsScore() {
+    void ensureFindScoresByUserWorksAndReturnsScores() {
         List<Score> scores = TestFixtures.scores(3);
 
         when(scoreRepository.findScoreByUser(2L)).thenReturn(List.of(scores.get(1)));
 
-        List<Score> foundScore = scoreService.findScoreByUser(2L);
+        List<Score> foundScore = scoreService.findScoresByUser(2L);
 
         assertFalse(foundScore.isEmpty());
         assertEquals(scores.get(1).getUser().getId(), foundScore.getFirst().getUser().getId());
@@ -124,12 +154,12 @@ public class ScoreServiceImplTest {
     }
 
     @Test
-    void ensureFindScoreByGameWorksAndReturnsScore() {
+    void ensureFindScoresByGameWorksAndReturnsScores() {
         List<Score> scores = TestFixtures.scores(3);
 
         when(scoreRepository.findScoreByGame(1L)).thenReturn(List.of(scores.getFirst()));
 
-        List<Score> foundScore = scoreService.findScoreByGame(1L);
+        List<Score> foundScore = scoreService.findScoresByGame(1L);
 
         assertFalse(foundScore.isEmpty());
         assertEquals(scores.getFirst().getUser().getId(), foundScore.getFirst().getUser().getId());
@@ -138,27 +168,27 @@ public class ScoreServiceImplTest {
     }
 
     @Test
-    void ensureFindScoreByScorePointsWorksAndReturnsScore() {
+    void ensureFindScoresByScorePointsWorksAndReturnsScoreByScores() {
         List<Score> scores = TestFixtures.scores(3);
 
         when(scoreRepository.findScoreByScorePoints(10)).thenReturn(scores);
 
-        List<Score> foundScore = scoreService.findScoreByScorePoints(10);
+        List<Score> foundScore = scoreService.findScoreByScoresPoints(10);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(3, scoreService.findScoreByScorePoints(10).size());
+        assertEquals(3, scoreService.findScoreByScoresPoints(10).size());
     }
 
     @Test
-    void ensureFindScoreByMinMaxPointsWorksAndReturnsScore() {
+    void ensureFindScoresByMinMaxPointsWorksAndReturnsScore() {
         List<Score> scores = TestFixtures.scores(3);
 
         when(scoreRepository.findScoreByMinMaxScorePoints(11,30)).thenReturn(scores);
 
-        List<Score> foundScore = scoreService.findScoreByMinMaxScorePoints(11,30);
+        List<Score> foundScore = scoreService.findScoreByMinMaxScoresPoints(11,30);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(3, scoreService.findScoreByMinMaxScorePoints(11,30).size());
+        assertEquals(3, scoreService.findScoreByMinMaxScoresPoints(11,30).size());
     }
 
     @Test

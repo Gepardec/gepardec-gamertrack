@@ -48,7 +48,7 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Override
   public void deleteMatch(Long matchId) {
-    logger.info("Looking up game outcome by id: %s in order to delet".formatted(matchId));
+    logger.info("Looking up matches by id: %s in order to delet".formatted(matchId));
     Optional<Match> matchToDelete = findMatchById(matchId);
 
     if (matchToDelete.isEmpty()) {
@@ -73,7 +73,7 @@ public class MatchRepositoryImpl implements MatchRepository {
   }
 
   @Override
-  public List<Match> findMatchByUserId(Long userId) {
+  public List<Match> findMatchesByUserId(Long userId) {
     logger.info("Finding all matches by userId: %s".formatted(userId));
     var query = em.createQuery(
         "select go from Match go inner join go.users u where u.id = :userId ",
@@ -84,11 +84,22 @@ public class MatchRepositoryImpl implements MatchRepository {
   }
 
   @Override
-  public List<Match> findMatchByGameId(Long gameId) {
+  public List<Match> findMatchesByGameId(Long gameId) {
     logger.info("Finding all games outcomes by gameId: %s".formatted(gameId));
     var query = em.createQuery("select go from Match go where go.game.id = :gameId ",
         Match.class);
 
+    query.setParameter("gameId", gameId);
+    return query.getResultList();
+  }
+
+  @Override
+  public List<Match> findMatchesByUserIdAndGameId(Long userId, Long gameId) {
+    logger.info("Finding matches by UserId: {} and GameId: {}".formatted(userId, gameId));
+    var query = em.createQuery(
+        "select m from Match m inner join m.users u where (:userId is NULL OR u.id = :userId) and (:gameId is NULL OR m.game.id = :gameId)",
+        Match.class);
+    query.setParameter("userId", userId);
     query.setParameter("gameId", gameId);
     return query.getResultList();
   }
