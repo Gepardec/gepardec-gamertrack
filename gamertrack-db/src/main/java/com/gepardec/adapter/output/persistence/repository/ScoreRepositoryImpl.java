@@ -10,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
+@Transactional
 public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(ScoreRepositoryImpl.class);
