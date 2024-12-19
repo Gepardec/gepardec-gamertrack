@@ -9,7 +9,6 @@ import java.util.Optional;
 public interface ScoreService {
     List<Score> findAllScores();
     Optional<Score> findScoreById(Long id);
-    List<Score> findScoresFilter(Optional<Double> minPoints, Optional<Double> maxPoints,Optional<Long> userId,Optional<Long> gameId);
     List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId);
     List<Score> findScoresByUser(Long userId);
     List<Score> findScoresByGame(Long gameId);
