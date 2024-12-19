@@ -98,16 +98,14 @@ public class ScoreServiceImplTest {
     void ensureFindScoresFilterWorksAndReturnsFilteredByUserScores() {
         List<Score> scores = TestFixtures.scores(5);
 
-        when(scoreRepository.findScoreByMinMaxScorePoints(10.0d,100.0d)).thenReturn(scores);
+        when(scoreRepository.filterScores(10.0d,100.0d,1L,1L)).thenReturn(List.of(scores.get(0)));
 
         List<Score> foundScore = scoreService
-                .findScoresFilter(Optional.of(10D),Optional.of(100D),
-                        Optional.of(1L),Optional.of(1L));
+                .filterScores(10D,100D,
+                        1L,1L);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(1, scoreService
-                .findScoresFilter(Optional.of(10D),Optional.of(100D),
-                        Optional.of(1L),Optional.of(1L)).size());
+        assertEquals(1, foundScore.size());
 
 
     }
@@ -115,16 +113,14 @@ public class ScoreServiceImplTest {
     void ensureFindScoresFilterWorksAndReturnsFilteredByGameScores() {
         List<Score> scores = TestFixtures.scores(5);
 
-        when(scoreRepository.findScoreByMinMaxScorePoints(10.0d,100.0d)).thenReturn(scores);
+        when(scoreRepository.filterScores(10.0d,100.0d,null,1L)).thenReturn(scores);
 
         List<Score> foundScore = scoreService
-                .findScoresFilter(Optional.of(10D),Optional.of(100D),
-                        Optional.empty(),Optional.of(1L));
+                .filterScores(10D,100D,null,1L);
 
         assertFalse(foundScore.isEmpty());
         assertEquals(5, scoreService
-                .findScoresFilter(Optional.of(10D),Optional.of(100D),
-                        Optional.empty(),Optional.of(1L)).size());
+                .filterScores(10D,100D, null,1L).size());
 
 
     }
