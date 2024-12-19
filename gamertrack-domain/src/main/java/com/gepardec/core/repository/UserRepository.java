@@ -15,6 +15,7 @@ public interface UserRepository {
   Optional<User> updateUser(UserDto userDto);
 
   void deleteUser(UserDto userDto);
+  void deleteAllUsers();
 
   List<User> findAllUsers();
 

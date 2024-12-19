@@ -56,6 +56,13 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
     log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", user.getId(),user.getFirstname(),user.getLastname(),user.isDeactivated());
     entityManager.remove(user);
   }
+
+  @Override
+  public void deleteAllUsers() {
+    entityManager.createNativeQuery("DELETE FROM users").executeUpdate();
+    log.info("Deleted all users. size: {}", findAllUsers().size());
+  }
+
   @Override
   public List<User> findAllUsersIncludeDeleted() {
     List<User> resultList = entityManager.createQuery("SELECT u FROM User u", User.class)
