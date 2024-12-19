@@ -20,13 +20,12 @@ public class ScoreResourceImpl implements ScoreResource {
     private RestMapper mapper;
 
     @Override
-    public Response getScores(Optional<Double> minPoints, Optional<Double> maxPoints, Optional<Long> userId, Optional<Long> gameId) {
-        return Response.ok(scoreService.findScoresFilter(minPoints,maxPoints, userId,gameId)
+    public Response getScores(Double minPoints, Double maxPoints, Long userId, Long gameId) {
+        return Response.ok(scoreService.filterScores(minPoints,maxPoints, userId,gameId)
                         .stream()
                         .map(ScoreRestDto::new)
                         .toList())
                 .build();
-
     }
 
     @Override

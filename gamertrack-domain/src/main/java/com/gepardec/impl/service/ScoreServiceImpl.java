@@ -76,6 +76,23 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
+    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId) {
+
+        if(minPoints != null && maxPoints != null) {
+            if (minPoints > maxPoints) {
+                double tmp = maxPoints;
+                maxPoints = minPoints;
+                minPoints = tmp;
+                log.info("switched minPoints with maxPoint because minPoints was greater than maxPoints");
+            }
+        }
+
+       return scoreRepository.filterScores(minPoints, maxPoints, userId, gameId);
+    }
+
+
+
+    @Override
     public List<Score> findScoresByUser(Long userId) {
         return scoreRepository.findScoreByUser(userId);
     }

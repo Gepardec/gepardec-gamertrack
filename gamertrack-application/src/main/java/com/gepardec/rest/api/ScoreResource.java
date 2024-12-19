@@ -44,10 +44,10 @@ public interface ScoreResource {
             @ApiResponse(responseCode = "204", description = "No Content - No scores were found")
     })
     @GET()
-    public Response getScores(@QueryParam("min") Optional<Double> minScore,
-                              @QueryParam("max") Optional<Double> maxScore,
-                              @QueryParam("user") Optional<Long> userId,
-                              @QueryParam("game") Optional<Long> gameId);
+    public Response getScores(@QueryParam("min") Double minScore,
+                              @QueryParam("max") Double maxScore,
+                              @QueryParam("user") Long userId,
+                              @QueryParam("game") Long gameId);
 
     @Operation(summary = "Get Scores by id", description = "Returns list of scores")
     @ApiResponses(value = {

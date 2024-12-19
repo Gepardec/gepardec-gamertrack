@@ -84,6 +84,25 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
+    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId) {
+        List<Score> resultList = entityManager.createQuery(
+                "SELECT s FROM Score s " +
+                        "WHERE (:minPoints is null OR :minPoints <= s.scorePoints) " +
+                        "AND (:maxPoints is null OR s.scorePoints <= :maxPoints) " +
+                        "AND s.user.deactivated = false " +
+                        "AND (:userId is null OR s.user.id = :userId) " +
+                        "AND (:gameId is null OR s.game.id = :gameId) " +
+                        "order by s.scorePoints", Score.class)
+                .setParameter("minPoints", minPoints)
+                .setParameter("maxPoints", maxPoints)
+                .setParameter("userId", userId)
+                .setParameter("gameId", gameId)
+                .getResultList();
+        log.info("Filter score by minPoints: {}, maxPoints: {}, userId: {}, gameId: {}. Resultsize: {}", minPoints,maxPoints, userId, gameId, resultList.size());
+
+        return resultList;    }
+
+    @Override
     public List<Score> findScoreByUser(Long userId) {
         List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.user.id = :userId " +
                         "AND s.user.deactivated = false", Score.class)
