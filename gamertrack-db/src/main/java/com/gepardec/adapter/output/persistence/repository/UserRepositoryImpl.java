@@ -105,11 +105,6 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   }
 
   @Override
-  public Optional<User> findUserReferencesById(Long userId) {
-    return Optional.of(entityManager.getReference(User.class, userId));
-  }
-
-  @Override
   public Boolean existsByUserId(List<Long> userIds) {
     long foundUserIds = userIds.stream()
             .map(this::findUserById)
