@@ -10,11 +10,11 @@ public interface ScoreService {
     List<Score> findAllScores();
     Optional<Score> findScoreById(Long id);
     List<Score> findScoresFilter(Optional<Double> minPoints, Optional<Double> maxPoints,Optional<Long> userId,Optional<Long> gameId);
-    List<Score> findScoreByUser(Long userId);
-    List<Score> findScoreByGame(Long gameId);
-    List<Score> findTopScoreByGame(Long gameId, int top);
-    List<Score> findScoreByScorePoints(double scorePoints);
-    List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints);
+    List<Score> findScoresByUser(Long userId);
+    List<Score> findScoresByGame(Long gameId);
+    List<Score> findTopScoresByGame(Long gameId, int top);
+    List<Score> findScoreByScoresPoints(double scorePoints);
+    List<Score> findScoreByMinMaxScoresPoints(double minPoints, double maxPoints);
     Optional<Score> saveScore(ScoreDto scoreDto);
     Optional<Score> updateScore(ScoreDto scoreDto);
     boolean scoreExists(ScoreDto scoreDto);

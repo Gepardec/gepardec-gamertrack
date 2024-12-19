@@ -4,7 +4,6 @@ import com.gepardec.core.services.ScoreService;
 import com.gepardec.rest.api.ScoreResource;
 import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.dto.ScoreRestDto;
-import com.gepardec.rest.model.dto.UserRestDto;
 import com.gepardec.rest.model.mapper.RestMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -39,7 +38,7 @@ public class ScoreResourceImpl implements ScoreResource {
 
     @Override
     public Response getScoreByScorePoints(double points) {
-        return Response.ok(scoreService.findScoreByScorePoints(points)
+        return Response.ok(scoreService.findScoreByScoresPoints(points)
                         .stream()
                         .map(ScoreRestDto::new)
                         .toList())
