@@ -17,9 +17,7 @@ public interface GameRepository {
 
   List<Game> findAllGames();
 
-  Boolean GameExistsByGameName(String name);
-
-  Optional<Game> findGameReferenceByGameId(Long gameId);
+  Boolean gameExistsByGameName(String name);
 
   Boolean existsByGameId(Long gameId);
 }
