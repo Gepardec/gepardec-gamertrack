@@ -64,7 +64,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT{
         Long savedGameId = gameRepository.saveGame(gameDto).get().getId();
         Long savedUserId = userRepository.saveUser(userDto).get().getId();
 
-        Score score = new Score(user,game,10.0);
         ScoreDto scoreDto = new ScoreDto(1,savedUserId,savedGameId,10.0);
 
         Long savedId = scoreRepository.saveScore(scoreDto).get().getId();
@@ -83,7 +82,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT{
         Long savedGameId = gameRepository.saveGame(gameDto).get().getId();
         Long savedUserId = userRepository.saveUser(userDto).get().getId();
 
-        Score score = new Score(user,game,10.0);
         ScoreDto scoreDto = new ScoreDto(1,savedUserId,savedGameId,10.0);
 
         Long savedId = scoreRepository.saveScore(scoreDto).get().getId();
@@ -116,10 +114,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT{
         GameDto gameDto1 = TestFixtures.gameToGameDto(game1);
 
         Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
-
-        Score score1 = new Score(user1,game1,10.0);
-        Score score2 = new Score(user2,game1,30.0);
-        Score score3 = new Score(user3,game1,10.0);
 
         ScoreDto scoreDto1 = new ScoreDto(1L,savedUserId1,savedGameId1,10.0);
         ScoreDto scoreDto2 = new ScoreDto(2L,savedUserId2,savedGameId1,30.0);
@@ -154,9 +148,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT{
         Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
         Long savedGameId2 = gameRepository.saveGame(gameDto2).get().getId();
 
-        Score score1 = new Score(user1,game1,10.0);
-        Score score2 = new Score(user2,game2,10.0);
-
         ScoreDto scoreDto1 = new ScoreDto(1L,savedUserId1,savedGameId1,10.0);
         ScoreDto scoreDto2 = new ScoreDto(2L,savedUserId2,savedGameId2,30.0);
 
@@ -186,10 +177,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT{
         GameDto gameDto1 = TestFixtures.gameToGameDto(game1);
 
         Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
-
-        Score score1 = new Score(user1,game1,10.0);
-        Score score2 = new Score(user2,game1,30.0);
-        Score score3 = new Score(user3,game1,10.0);
 
         ScoreDto scoreDto1 = new ScoreDto(1L,savedUserId1,savedGameId1,10.0);
         ScoreDto scoreDto2 = new ScoreDto(2L,savedUserId2,savedGameId1,30.0);
@@ -224,10 +211,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT{
         GameDto gameDto1 = TestFixtures.gameToGameDto(game1);
 
         Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
-
-        Score score1 = new Score(user1,game1,10.0);
-        Score score2 = new Score(user2,game1,30.0);
-        Score score3 = new Score(user3,game1,10.0);
 
         ScoreDto scoreDto1 = new ScoreDto(1L,savedUserId1,savedGameId1,10.0);
         ScoreDto scoreDto2 = new ScoreDto(2L,savedUserId2,savedGameId1,30.0);
