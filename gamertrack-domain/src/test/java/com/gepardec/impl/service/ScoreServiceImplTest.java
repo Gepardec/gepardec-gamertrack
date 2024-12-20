@@ -143,7 +143,7 @@ public class ScoreServiceImplTest {
     void ensureFindScoresByUserWorksAndReturnsScores() {
         List<Score> scores = TestFixtures.scores(3);
 
-        when(scoreRepository.findScoreByUser(2L)).thenReturn(List.of(scores.get(1)));
+        when(scoreRepository.filterScores(null,null,2L,null)).thenReturn(List.of(scores.get(1)));
 
         List<Score> foundScore = scoreService.findScoresByUser(2L);
 
@@ -157,7 +157,7 @@ public class ScoreServiceImplTest {
     void ensureFindScoresByGameWorksAndReturnsScores() {
         List<Score> scores = TestFixtures.scores(3);
 
-        when(scoreRepository.findScoreByGame(1L)).thenReturn(List.of(scores.getFirst()));
+        when(scoreRepository.filterScores(null,null,null,1L)).thenReturn(List.of(scores.getFirst()));
 
         List<Score> foundScore = scoreService.findScoresByGame(1L);
 
@@ -183,7 +183,7 @@ public class ScoreServiceImplTest {
     void ensureFindScoresByMinMaxPointsWorksAndReturnsScore() {
         List<Score> scores = TestFixtures.scores(3);
 
-        when(scoreRepository.findScoreByMinMaxScorePoints(11,30)).thenReturn(scores);
+        when(scoreRepository.filterScores(11D,30D,null,null)).thenReturn(scores);
 
         List<Score> foundScore = scoreService.findScoreByMinMaxScoresPoints(11,30);
 
