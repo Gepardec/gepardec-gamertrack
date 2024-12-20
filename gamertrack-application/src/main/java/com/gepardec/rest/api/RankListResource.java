@@ -25,6 +25,6 @@ public interface RankListResource {
     })
     @Path(ID_PATH)
     @GET
-    public Response getTopScoresBygame(@PathParam("gameId") Long gameId, @QueryParam("top") @DefaultValue("50") int top);
+    public Response getTopScoresBygame(@PathParam("gameId") Long gameId, @QueryParam("top") @DefaultValue("50") int top, @QueryParam("includeDeactivated") Boolean includeDeactivated);
 
 }
