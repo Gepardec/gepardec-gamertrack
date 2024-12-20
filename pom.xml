@@ -119,7 +119,7 @@
         <inherited>false</inherited>
         <executions>
           <execution>
-            <phase>test</phase>
+            <phase>test-compile</phase>
             <goals>
               <goal>provision</goal>
             </goals>
@@ -133,15 +133,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.3.0</version>
+
         <configuration>
-          <skip>true</skip>
+          <argLine>-Djboss.home=${jboss.home}</argLine>
         </configuration>
-
-
         <executions>
           <execution>
             <id>setArquillianEnvironmentVar</id>
-            <phase>test</phase>
+            <phase>test-compile</phase>
             <goals>
               <goal>test</goal>
             </goals>

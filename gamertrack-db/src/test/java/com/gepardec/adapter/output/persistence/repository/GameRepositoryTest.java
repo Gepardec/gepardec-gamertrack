@@ -1,21 +1,13 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.dto.GameDto;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.UserTransaction;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,39 +16,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ArquillianExtension.class)
 class GameRepositoryTest extends GamertrackDbIT {
 
-
-  @Deployment
-  public static Archive<?> createDeployment() {
-    return ShrinkWrap.create(JavaArchive.class)
-        .addPackage(GameRepositoryImpl.class.getPackage())
-        .addPackage(GameDto.class.getPackage())
-        .addPackage(Game.class.getPackage())
-        .addPackage(GameRepository.class.getPackage())
-        .addPackage(ConstraintViolationException.class.getPackage())
-        .addClass(GameRepositoryImpl.class)
-        .addClass(GameDto.class)
-        .addClass(Game.class)
-        .addClass(TestFixtures.class)
-        .addClass(ConstraintViolationException.class)
-        .addClass(Mapper.class)
-        .addAsManifestResource("beans.xml", "beans.xml")
-        .addAsManifestResource("persistence.xml", "persistence.xml");
-
-  }
-
   @BeforeEach
   void beforeEach() throws Exception {
-    super.removeTableData(em, utx, Game.class);
+    super.removeTableData(Game.class);
   }
 
   @Inject
   private GameRepository repository;
-
-  @PersistenceContext
-  private EntityManager em;
-
-  @Inject
-  private UserTransaction utx;
 
 
   @Test
