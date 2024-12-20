@@ -91,7 +91,9 @@ public class TestFixtures {
   public static List<Match> matches(int matchCount) {
     List<Match> matches = new ArrayList<>();
     for (int i = 0; i < matchCount; i++) {
-      matches.add(match((long) i++));
+      Match match = match((long) i + 1);
+      match.getGame().setName(String.valueOf(i + 1));
+      matches.add(match);
     }
     return matches;
   }

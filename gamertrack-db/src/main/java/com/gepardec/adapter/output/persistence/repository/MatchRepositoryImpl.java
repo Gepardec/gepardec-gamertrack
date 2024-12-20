@@ -7,12 +7,14 @@ import com.gepardec.model.dto.MatchDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
+@Transactional
 public class MatchRepositoryImpl implements MatchRepository {
 
   private final Logger logger = LoggerFactory.getLogger(MatchRepositoryImpl.class);
@@ -43,6 +45,7 @@ public class MatchRepositoryImpl implements MatchRepository {
   @Override
   public Optional<Match> findMatchById(Long id) {
     logger.info("Finding game outcome by id: %s".formatted(id));
+    System.out.println(id);
     return Optional.ofNullable(em.find(Match.class, id));
   }
 
