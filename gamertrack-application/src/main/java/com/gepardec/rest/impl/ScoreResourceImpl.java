@@ -20,8 +20,8 @@ public class ScoreResourceImpl implements ScoreResource {
     private RestMapper mapper;
 
     @Override
-    public Response getScores(Double minPoints, Double maxPoints, Long userId, Long gameId) {
-        return Response.ok(scoreService.filterScores(minPoints,maxPoints, userId,gameId)
+    public Response getScores(Double minPoints, Double maxPoints, Long userId, Long gameId,Boolean includeDeactivated) {
+        return Response.ok(scoreService.filterScores(minPoints,maxPoints, userId,gameId,includeDeactivated)
                         .stream()
                         .map(ScoreRestDto::new)
                         .toList())
@@ -36,8 +36,8 @@ public class ScoreResourceImpl implements ScoreResource {
     }
 
     @Override
-    public Response getScoreByScorePoints(double points) {
-        return Response.ok(scoreService.findScoreByScoresPoints(points)
+    public Response getScoreByScorePoints(double points, Boolean includeDeactivated) {
+        return Response.ok(scoreService.findScoreByScoresPoints(points, includeDeactivated)
                         .stream()
                         .map(ScoreRestDto::new)
                         .toList())

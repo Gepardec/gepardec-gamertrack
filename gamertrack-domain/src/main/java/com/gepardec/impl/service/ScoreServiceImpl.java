@@ -46,8 +46,8 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public List<Score> findAllScores() {
-        return scoreRepository.findAllScores();
+    public List<Score> findAllScores(Boolean includeDeactivatedUsers) {
+        return scoreRepository.filterScores(null,null,null,null, includeDeactivatedUsers);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId) {
+    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId, Boolean includeDeactivatedUsers) {
 
         if(minPoints != null && maxPoints != null) {
             if (minPoints > maxPoints) {
@@ -67,40 +67,40 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
             }
         }
 
-       return scoreRepository.filterScores(minPoints, maxPoints, userId, gameId);
+       return scoreRepository.filterScores(minPoints, maxPoints, userId, gameId,includeDeactivatedUsers);
     }
 
 
 
     @Override
-    public List<Score> findScoresByUser(Long userId) {
-        return scoreRepository.filterScores(null,null,userId,null);
+    public List<Score> findScoresByUser(Long userId, Boolean includeDeactivatedUsers) {
+        return scoreRepository.filterScores(null,null,userId,null, includeDeactivatedUsers);
     }
 
     @Override
-    public List<Score> findScoresByGame(Long gameId) {
-        return scoreRepository.filterScores(null,null,null,gameId);
+    public List<Score> findScoresByGame(Long gameId, Boolean includeDeactivatedUsers) {
+        return scoreRepository.filterScores(null,null,null,gameId, includeDeactivatedUsers);
     }
 
     @Override
-    public List<Score> findTopScoresByGame(Long gameId, int top) {
-        return scoreRepository.findTopScoreByGame(gameId,top);
+    public List<Score> findTopScoresByGame(Long gameId, int top, Boolean includeDeactivatedUsers) {
+        return scoreRepository.findTopScoreByGame(gameId,top,includeDeactivatedUsers);
     }
 
     @Override
-    public List<Score> findScoreByScoresPoints(double scorePoints) {
-        return scoreRepository.findScoreByScorePoints(scorePoints);
+    public List<Score> findScoreByScoresPoints(double scorePoints, Boolean includeDeactivatedUsers) {
+        return scoreRepository.findScoreByScorePoints(scorePoints, includeDeactivatedUsers);
     }
 
     @Override
-    public List<Score> findScoreByMinMaxScoresPoints(double minPoints, double maxPoints) {
+    public List<Score> findScoreByMinMaxScoresPoints(double minPoints, double maxPoints, Boolean includeDeactivatedUsers) {
         if(minPoints > maxPoints) {
             double tmp = maxPoints;
             maxPoints = minPoints;
             minPoints = tmp;
             log.info("switched minPoints with maxPoint because minPoints was greater than maxPoints");
         }
-        return scoreRepository.filterScores(minPoints,maxPoints,null,null);
+        return scoreRepository.filterScores(minPoints,maxPoints,null,null,includeDeactivatedUsers);
     }
 
     @Override

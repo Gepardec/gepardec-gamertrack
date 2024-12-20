@@ -89,7 +89,7 @@ public class UserServiceImplTest {
         User user = TestFixtures.user(1L);
 
         when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
-        when(scoreService.findScoresByUser(user.getId())).thenReturn(List.of());
+        when(scoreService.findScoresByUser(user.getId(),true)).thenReturn(List.of());
 
         Optional<User> deletedUser = userService.deleteUser(user.getId());
         assertTrue(deletedUser.isPresent());
@@ -102,7 +102,7 @@ public class UserServiceImplTest {
         Score score = TestFixtures.score(1L,1L,1L);
 
         when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
-        when(scoreService.findScoresByUser(user.getId())).thenReturn(List.of(score));
+        when(scoreService.findScoresByUser(user.getId(),true)).thenReturn(List.of(score));
 
         Optional<User> deletedUser = userService.deleteUser(user.getId());
         assertTrue(deletedUser.isPresent());

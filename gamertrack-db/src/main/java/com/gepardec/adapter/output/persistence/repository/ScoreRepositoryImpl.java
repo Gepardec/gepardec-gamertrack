@@ -63,19 +63,10 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
-    public List<Score> findAllScores() {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s where s.user.deactivated = false", Score.class)
-                .getResultList();
-
-        log.info("FindAllScores returned list of size:{}", resultList.size());
-
-        return resultList;
-    }
-
-    @Override
     public Optional<Score> findScoreById(Long id) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.id = :id " +
-                        "AND s.user.deactivated = false ", Score.class)
+        List<Score> resultList = entityManager.createQuery(
+                "SELECT s FROM Score s " +
+                        "WHERE s.id = :id ", Score.class)
                 .setParameter("id", id)
                 .getResultList();
         log.info("Find score with id: {}. Returned list of size:{}", id, resultList.size());
@@ -84,32 +75,39 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
-    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId) {
+    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId, Boolean includeDeactivatedUsers) {
         List<Score> resultList = entityManager.createQuery(
                 "SELECT s FROM Score s " +
                         "WHERE (:minPoints is null OR :minPoints <= s.scorePoints) " +
                         "AND (:maxPoints is null OR s.scorePoints <= :maxPoints) " +
-                        "AND s.user.deactivated = false " +
+                        "AND (:includeDeactivatedUsers = true OR s.user.deactivated = false) " +
                         "AND (:userId is null OR s.user.id = :userId) " +
                         "AND (:gameId is null OR s.game.id = :gameId) " +
                         "order by s.scorePoints", Score.class)
                 .setParameter("minPoints", minPoints)
                 .setParameter("maxPoints", maxPoints)
+                .setParameter("includeDeactivatedUsers", includeDeactivatedUsers)
                 .setParameter("userId", userId)
                 .setParameter("gameId", gameId)
                 .getResultList();
-        log.info("Filter score by minPoints: {}, maxPoints: {}, userId: {}, gameId: {}. Resultsize: {}", minPoints,maxPoints, userId, gameId, resultList.size());
+        log.info("Filter score by minPoints: {}, maxPoints: {}, userId: {}, gameId: {}, includeDeactivatedUser{}. Resultsize: {}", minPoints,maxPoints, userId, gameId, includeDeactivatedUsers, resultList.size());
 
         return resultList;    }
 
 
+
+
     @Override
-    public List<Score> findTopScoreByGame(Long gameId, int top) {
+    public List<Score> findTopScoreByGame(Long gameId, int top, Boolean includeDeactivatedUsers) {
         if(top<=0){return List.of();}
 
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId " +
-                        "AND s.user.deactivated = false order by s.scorePoints DESC", Score.class)
+        List<Score> resultList = entityManager.createQuery(
+                "SELECT s FROM Score s " +
+                        "WHERE s.game.id = :gameId " +
+                        "AND (:includeDeactivatedUsers = true OR s.user.deactivated = false) " +
+                        "order by s.scorePoints DESC", Score.class)
                 .setParameter("gameId", gameId)
+                .setParameter("includeDeactivatedUsers", includeDeactivatedUsers)
                 .setMaxResults(top)
                 .getResultList();
         log.info("Find Top {} score with gameId: {}. Returned list of size:{}", top, gameId, resultList.size());
@@ -117,10 +115,13 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
-    public List<Score> findScoreByScorePoints(double scorePoints) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.scorePoints = :scorePoints " +
-                        "AND s.user.deactivated = false", Score.class)
+    public List<Score> findScoreByScorePoints(double scorePoints, Boolean includeDeactivatedUsers) {
+        List<Score> resultList = entityManager.createQuery(
+                "SELECT s FROM Score s " +
+                        "WHERE s.scorePoints = :scorePoints " +
+                        "AND (:includeDeactivatedUsers = true OR s.user.deactivated = false) ", Score.class)
                 .setParameter("scorePoints", scorePoints)
+                .setParameter("includeDeactivatedUsers", includeDeactivatedUsers)
                 .getResultList();
         log.info("Find score with {} ScorePoints. Returned list of size:{}", scorePoints, resultList.size());
 
@@ -131,7 +132,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     public boolean scoreExists(ScoreDto scoreDto) {
         List<Score> entity = entityManager.createQuery(
                         "SELECT s FROM Score s " +
-                                "WHERE s.game.id = :gameId and s.user.id =:userId ", Score.class)
+                                "WHERE s.game.id = :gameId " +
+                                "AND s.user.id =:userId ", Score.class)
                 .setParameter("gameId", scoreDto.gameId())
                 .setParameter("userId", scoreDto.userId())
                 .getResultList();

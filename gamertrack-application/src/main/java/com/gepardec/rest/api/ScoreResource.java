@@ -23,8 +23,6 @@ import static com.gepardec.rest.api.ScoreResource.BASE_SCORE_PATH;
 public interface ScoreResource {
     public static final String BASE_SCORE_PATH = "scores";
     public static final String ID_PATH = "{id}";
-    public static final String USER_ID_PATH = "user/"+ ID_PATH;
-    public static final String GAME_ID_PATH = "game/"+ ID_PATH;
     public static final String SCOREPOINTS_PATH = "scorepoints/{points}";
 
     //Only temporary for testing
@@ -47,7 +45,8 @@ public interface ScoreResource {
     public Response getScores(@QueryParam("min") Double minScore,
                               @QueryParam("max") Double maxScore,
                               @QueryParam("user") Long userId,
-                              @QueryParam("game") Long gameId);
+                              @QueryParam("game") Long gameId,
+                              @QueryParam("includeDeactivated") Boolean includeDeactivated);
 
     @Operation(summary = "Get Scores by id", description = "Returns list of scores")
     @ApiResponses(value = {
@@ -63,6 +62,6 @@ public interface ScoreResource {
     })
     @Path( SCOREPOINTS_PATH)
     @GET
-    public Response getScoreByScorePoints(@PathParam("points") double points);
+    public Response getScoreByScorePoints(@PathParam("points") double points, @QueryParam("includeDeactivated") Boolean includeDeactivated);
 
 }
