@@ -7,21 +7,21 @@ import java.util.Optional;
 
 public interface MatchRepository {
 
-  Optional<Match> saveMatch(MatchDto gameOutcomeDto);
+  Optional<Match> saveMatch(MatchDto matchDto);
 
   List<Match> findAllMatches();
 
   Optional<Match> findMatchById(Long id);
 
-  void deleteMatch(Long gameOutcomeId);
+  void deleteMatch(Long matchId);
 
-  Optional<Match> updateMatch(MatchDto gameOutcomeDto);
+  Optional<Match> updateMatch(MatchDto matchDto);
 
   List<Match> findMatchByUserId(Long userId);
 
   List<Match> findMatchByGameId(Long gameId);
 
-  Boolean existsMatchById(Long gameOutcomeId);
+  Boolean existsMatchById(Long matchId);
 
 
 }

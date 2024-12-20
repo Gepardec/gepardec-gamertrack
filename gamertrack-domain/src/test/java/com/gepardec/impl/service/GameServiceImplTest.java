@@ -37,7 +37,7 @@ class GameServiceImplTest {
     GameDto gameDto = TestFixtures.gameToGameDto(game);
 
     //When
-    when(gameRepository.GameExistsByGameName(any())).thenReturn(false);
+    when(gameRepository.gameExistsByGameName(any())).thenReturn(false);
     when(gameRepository.saveGame(gameDto)).thenReturn(Optional.of(game));
     var savedGame = gameService.saveGame(gameDto);
 
@@ -50,7 +50,7 @@ class GameServiceImplTest {
   void ensureSavingInvalidGameWorksAndReturnsOptionalEmpty() {
     Game game = TestFixtures.game();
 
-    when(gameRepository.GameExistsByGameName(any())).thenReturn(false);
+    when(gameRepository.gameExistsByGameName(any())).thenReturn(false);
     assertFalse(gameService.saveGame(TestFixtures.gameToGameDto(game)).isPresent());
   }
 
@@ -58,7 +58,7 @@ class GameServiceImplTest {
   void ensureSavingAlreadyExistingGameFailsAndReturnsOptionalEmpty() {
     GameDto gameDto = TestFixtures.gameToGameDto(TestFixtures.game());
 
-    when(gameRepository.GameExistsByGameName(any())).thenReturn(true);
+    when(gameRepository.gameExistsByGameName(any())).thenReturn(true);
     assertFalse(gameService.saveGame(gameDto).isPresent());
   }
 

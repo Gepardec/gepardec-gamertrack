@@ -8,13 +8,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
+@Transactional
 public class GameRepositoryImpl implements GameRepository, Serializable {
-
 
   @Inject
   private EntityManager em;
@@ -24,10 +25,10 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
 
   @Override
   public Optional<Game> saveGame(GameDto gameDto) {
-
     Game game = mapper.toGame(gameDto);
 
     em.persist(game);
+    em.flush();
     return Optional.ofNullable(em.find(Game.class, game.getId()));
   }
 
@@ -54,16 +55,11 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   }
 
   @Override
-  public Boolean GameExistsByGameName(String gameName) {
+  public Boolean gameExistsByGameName(String gameName) {
     Query query = em.createQuery("select g from Game g where g.name = :gameName", Game.class);
     query.setParameter("gameName", gameName);
 
     return !query.getResultList().isEmpty();
-  }
-
-  @Override
-  public Optional<Game> findGameReferenceByGameId(Long gameId) {
-    return Optional.of(em.getReference(Game.class, gameId));
   }
 
   @Override
