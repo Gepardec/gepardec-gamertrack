@@ -74,12 +74,12 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
 
     @Override
     public List<Score> findScoresByUser(Long userId) {
-        return scoreRepository.findScoreByUser(userId);
+        return scoreRepository.filterScores(null,null,userId,null);
     }
 
     @Override
     public List<Score> findScoresByGame(Long gameId) {
-        return scoreRepository.findScoreByGame(gameId);
+        return scoreRepository.filterScores(null,null,null,gameId);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
             minPoints = tmp;
             log.info("switched minPoints with maxPoint because minPoints was greater than maxPoints");
         }
-        return scoreRepository.findScoreByMinMaxScorePoints(minPoints, maxPoints);
+        return scoreRepository.filterScores(minPoints,maxPoints,null,null);
     }
 
     @Override

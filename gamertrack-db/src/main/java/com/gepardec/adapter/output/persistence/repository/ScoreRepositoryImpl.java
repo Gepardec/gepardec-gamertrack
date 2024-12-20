@@ -102,27 +102,6 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
         return resultList;    }
 
-    @Override
-    public List<Score> findScoreByUser(Long userId) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.user.id = :userId " +
-                        "AND s.user.deactivated = false", Score.class)
-                .setParameter("userId", userId)
-                .getResultList();
-        log.info("Find score with userId: {}. Returned list of size:{}", userId, resultList.size());
-
-        return resultList;
-    }
-
-    @Override
-    public List<Score> findScoreByGame(Long gameId) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE s.game.id = :gameId " +
-                        "AND s.user.deactivated = false", Score.class)
-                .setParameter("gameId", gameId)
-                .getResultList();
-        log.info("Find score with gameId: {}. Returned list of size:{}", gameId, resultList.size());
-
-        return resultList;
-    }
 
     @Override
     public List<Score> findTopScoreByGame(Long gameId, int top) {
@@ -144,18 +123,6 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .setParameter("scorePoints", scorePoints)
                 .getResultList();
         log.info("Find score with {} ScorePoints. Returned list of size:{}", scorePoints, resultList.size());
-
-        return resultList;
-    }
-
-    @Override
-    public List<Score> findScoreByMinMaxScorePoints(double minPoints, double maxPoints) {
-        List<Score> resultList = entityManager.createQuery("SELECT s FROM Score s WHERE :minPoints <= s.scorePoints " +
-                        "AND s.scorePoints <= :maxPoints AND s.user.deactivated = false order by s.scorePoints", Score.class)
-                .setParameter("minPoints", minPoints)
-                .setParameter("maxPoints", maxPoints)
-                .getResultList();
-        log.info("Find score with scorePoints between {} and {}. Returned list of size:{}", minPoints,maxPoints, resultList);
 
         return resultList;
     }
