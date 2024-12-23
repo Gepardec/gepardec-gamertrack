@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Transactional
@@ -30,38 +31,38 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     @Inject
     EntityMapper entityMapper;
     @Override
-    public Optional<Score> saveScore(Score scoreDto) {
-        if(entityManager.find(GameEntity.class, scoreDto.getGame().getId()) != null) {
-            if(entityManager.find(UserEntity.class, scoreDto.getUser().getId()) != null) {
-                ScoreEntity score = entityMapper.toScore(scoreDto);
-                entityManager.persist(score);
+    public Optional<Score> saveScore(Score score) {
+        if(entityManager.find(GameEntity.class, score.getGame().getId()) != null) {
+            if(entityManager.find(UserEntity.class, score.getUser().getId()) != null) {
+                ScoreEntity scoreEntity = entityMapper.ScoreModeltoScoreEntity(score);
+                entityManager.persist(scoreEntity);
 
                 ScoreEntity scoreSaved = entityManager.find(ScoreEntity.class, score.getId());
-                log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
-                return Optional.of(scoreSaved);
+                log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", scoreSaved.getUser().getId(), scoreSaved.getGame().getId(), scoreSaved.getScorePoints());
+                return Optional.of(entityMapper.ScoreEntityToScoreModel(scoreSaved));
             }
-            log.error("User with id: {} does not exist!", scoreDto.getUser().getId());
+            log.error("User with id: {} does not exist!", score.getUser().getId());
             return Optional.empty();
         }
-        log.error("Game with id: {} does not exist!", scoreDto.getGame().getId());
+        log.error("Game with id: {} does not exist!", score.getGame().getId());
         return Optional.empty();
     }
 
     @Override
-    public Optional<Score> updateScore(Score scoreDto) {
-        if(entityManager.find(GameEntity.class, scoreDto.getGame().getId()) != null) {
-            if(entityManager.find(UserEntity.class, scoreDto.getUser().getId()) != null) {
-                ScoreEntity score = entityMapper.toExistingScore(scoreDto, entityManager.find(ScoreEntity.class, scoreDto.getId()));
-                entityManager.merge(score);
+    public Optional<Score> updateScore(Score score) {
+        if(entityManager.find(GameEntity.class, score.getGame().getId()) != null) {
+            if(entityManager.find(UserEntity.class, score.getUser().getId()) != null) {
+                ScoreEntity scoreEntity = entityMapper.ScoreModeltoExistingScoreEntity(score, entityManager.find(ScoreEntity.class, score.getId()));
+                entityManager.merge(scoreEntity);
 
                 ScoreEntity scoreMerged = entityManager.find(ScoreEntity.class, score.getId());
-                log.info("Updated score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
-                return Optional.of(scoreMerged);
+                log.info("Updated score with userId: {}, gameId: {} and {} scorePoints.", scoreMerged.getUser().getId(), scoreMerged.getGame().getId(), scoreMerged.getScorePoints());
+                return Optional.of(entityMapper.ScoreEntityToScoreModel(scoreMerged));
             }
-            log.error("User with id: {} does not exist!", scoreDto.getUser().getId());
+            log.error("User with id: {} does not exist! Updating Aborted", score.getUser().getId());
             return Optional.empty();
         }
-        log.error("Game with id: {} does not exist!", scoreDto.getGame().getId());
+        log.error("Game with id: {} does not exist! Updating Aborted", score.getGame().getId());
         return Optional.empty();
     }
 
@@ -74,7 +75,9 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .getResultList();
         log.info("Find score with id: {}. Returned list of size:{}", id, resultList.size());
 
-        return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.getFirst());
+        return resultList.isEmpty()
+                ? Optional.empty()
+                : Optional.of(entityMapper.ScoreEntityToScoreModel(resultList.getFirst()));
     }
 
     @Override
@@ -95,10 +98,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .getResultList();
         log.info("Filter score by minPoints: {}, maxPoints: {}, userId: {}, gameId: {}, includeDeactivatedUser{}. Resultsize: {}", minPoints,maxPoints, userId, gameId, includeDeactivatedUsers, resultList.size());
 
-        return resultList;    }
-
-
-
+        return resultList.stream().map(entityMapper::ScoreEntityToScoreModel).collect(Collectors.toList());
+    }
 
     @Override
     public List<Score> findTopScoreByGame(Long gameId, int top, Boolean includeDeactivatedUsers) {
@@ -114,7 +115,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .setMaxResults(top)
                 .getResultList();
         log.info("Find Top {} score with gameId: {}. Returned list of size:{}", top, gameId, resultList.size());
-        return resultList;
+        return resultList.stream().map(entityMapper::ScoreEntityToScoreModel).collect(Collectors.toList());
     }
 
     @Override
@@ -128,7 +129,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 .getResultList();
         log.info("Find score with {} ScorePoints. Returned list of size:{}", scorePoints, resultList.size());
 
-        return resultList;
+        return resultList.stream().map(entityMapper::ScoreEntityToScoreModel).collect(Collectors.toList());
     }
 
     @Override
