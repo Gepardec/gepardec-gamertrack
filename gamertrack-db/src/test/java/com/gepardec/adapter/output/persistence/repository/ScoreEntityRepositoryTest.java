@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.repository.UserRepository;
@@ -39,7 +39,7 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
   UserRepository userRepository;
 
   @Inject
-  Mapper mapper;
+  EntityMapper entityMapper;
 
   @Inject
   private UserTransaction utx;

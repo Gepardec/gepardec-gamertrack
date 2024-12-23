@@ -1,7 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.User;
 import jakarta.inject.Inject;
@@ -37,7 +37,7 @@ public class UserRepositoryTest extends GamertrackDbIT{
     UserRepository userRepository;
 
     @Inject
-    Mapper mapper;
+    EntityMapper entityMapper;
 
     @BeforeEach
     public void before() {
