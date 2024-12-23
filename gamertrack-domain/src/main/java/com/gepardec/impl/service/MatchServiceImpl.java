@@ -5,7 +5,7 @@ import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.MatchService;
 import com.gepardec.model.Match;
-import com.gepardec.model.dto.MatchDto;
+import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -49,15 +49,15 @@ public class MatchServiceImpl implements MatchService {
   }
 
   @Override
-  public Optional<Match> saveMatch(MatchDto matchDto) {
+  public Optional<Match> saveMatch(Match match) {
     logger.info(
         "Saving match containing GameID: %s and UserIDs: %s".formatted(
-            matchDto.gameId(), matchDto.userIds()));
+            match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
 
-    if (!matchDto.userIds().isEmpty()
-        && userRepository.existsByUserId(matchDto.userIds())
-        && gameRepository.existsByGameId(matchDto.gameId())) {
-      return matchRepository.saveMatch(matchDto);
+    if (!match.getUsers().isEmpty()
+        && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
+        && gameRepository.existsByGameId(match.getGame().getId())) {
+      return matchRepository.saveMatch(match);
     }
 
     return Optional.empty();
@@ -93,25 +93,25 @@ public class MatchServiceImpl implements MatchService {
   }
 
   @Override
-  public Optional<Match> updateMatch(MatchDto matchDto) {
+  public Optional<Match> updateMatch(Match match) {
 
     logger.info("Updating match with ID: %s");
 
-    if (!matchDto.userIds().isEmpty()
-        && matchDto.gameId() != null
-        && userRepository.existsByUserId(matchDto.userIds())
-        && matchRepository.existsMatchById(matchDto.gameId())
-        && gameRepository.existsByGameId(matchDto.gameId())) {
+    if (!match.getUsers().isEmpty()
+        && match.getGame().getId() != null
+        && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
+        && matchRepository.existsMatchById(match.getGame().getId())
+        && gameRepository.existsByGameId(match.getGame().getId())) {
       logger.info(
           "Saving updated match with ID: %s having the following attributes: \n %s %s".formatted(
-              matchDto.id(), matchDto.gameId(), matchDto.userIds()));
+              match.getId(), match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
 
-      return matchRepository.updateMatch(matchDto);
+      return matchRepository.updateMatch(match);
     }
 
     logger.info(
         "Saving updated match with ID: %s aborted due to provided ID not existing".formatted(
-            matchDto.id()));
+            match.getId()));
     return Optional.empty();
   }
 

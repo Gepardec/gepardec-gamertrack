@@ -3,7 +3,6 @@ package com.gepardec.adapter.output.persistence.repository;
 import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.model.Match;
-import com.gepardec.model.dto.MatchDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -26,7 +25,7 @@ public class MatchRepositoryImpl implements MatchRepository {
   Mapper mapper;
 
   @Override
-  public Optional<Match> saveMatch(MatchDto matchDto) {
+  public Optional<Match> saveMatch(Match matchDto) {
     logger.info("  match {}", matchDto);
 
     Match match = mapper.toMatchWithReference(matchDto);
@@ -64,10 +63,10 @@ public class MatchRepositoryImpl implements MatchRepository {
   }
 
   @Override
-  public Optional<Match> updateMatch(MatchDto matchDto) {
+  public Optional<Match> updateMatch(Match matchDto) {
     logger.info("updating game outcome with id: %s".formatted(matchDto.id()));
 
-    Optional<Match> match = findMatchById(matchDto.id());
+    Optional<Match> match = findMatchById(matchDto.getId());
 
     return match
         .map(game -> mapper.toMatchWithReference(matchDto, game))

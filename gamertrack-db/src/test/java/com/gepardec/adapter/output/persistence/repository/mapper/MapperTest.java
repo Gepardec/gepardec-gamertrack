@@ -6,14 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.model.Game;
-import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.ScoreDto;
-import com.gepardec.model.dto.UserDto;
-import com.gepardec.model.dto.GameDto;
-import com.gepardec.model.dto.MatchDto;
+import com.gepardec.model.Game;
+import com.gepardec.model.Match;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -33,11 +29,11 @@ public class MapperTest {
 
   @Test
   public void ensureMapUserDtoToUserWorks() {
-    User user = TestFixtures.user(1L);
+    com.gepardec.adapter.output.persistence.entity.User user = TestFixtures.user(1L);
 
-    UserDto userDto = new UserDto(user);
+    User userDto = new User(user);
 
-    User mappedUser = mapper.toUser(userDto);
+    com.gepardec.adapter.output.persistence.entity.User mappedUser = mapper.toUser(userDto);
 
     assertEquals(mappedUser.getFirstname(), user.getFirstname());
     assertEquals(mappedUser.getLastname(), user.getLastname());
@@ -46,11 +42,11 @@ public class MapperTest {
 
   @Test
   public void ensureMapUserDtoToExistingUserWorks() {
-    User user = TestFixtures.user(1L);
+    com.gepardec.adapter.output.persistence.entity.User user = TestFixtures.user(1L);
 
-    UserDto userDto = new UserDto(user);
+    User userDto = new User(user);
 
-    User mappedUser = mapper.toExistingUser(userDto, user);
+    com.gepardec.adapter.output.persistence.entity.User mappedUser = mapper.toExistingUser(userDto, user);
 
     assertEquals(mappedUser.getId(), user.getId());
     assertEquals(mappedUser.getFirstname(), user.getFirstname());
@@ -60,16 +56,16 @@ public class MapperTest {
 
   @Test
   public void ensureMapScoreDtoToScoreWorks() {
-    Score score = TestFixtures.score(1L, 1L, 1L);
+    com.gepardec.adapter.output.persistence.entity.Score score = TestFixtures.score(1L, 1L, 1L);
 
-    ScoreDto scoreDto = new ScoreDto(score);
+    Score scoreDto = new Score(score);
 
-    when(entityManager.getReference(User.class, scoreDto.userId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.User.class, scoreDto.userId())).thenReturn(
         TestFixtures.user(1L));
-    when(entityManager.getReference(Game.class, scoreDto.gameId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.Game.class, scoreDto.gameId())).thenReturn(
         TestFixtures.game(1L));
 
-    Score mappedScore = mapper.toScore(scoreDto);
+    com.gepardec.adapter.output.persistence.entity.Score mappedScore = mapper.toScore(scoreDto);
 
     assertEquals(mappedScore.getUser().getId(), scoreDto.userId());
     assertEquals(mappedScore.getGame().getId(), scoreDto.gameId());
@@ -78,16 +74,16 @@ public class MapperTest {
 
   @Test
   public void ensureMapScoreDtoToExistingScoreWorks() {
-    Score score = TestFixtures.score(1L, 1L, 1L);
+    com.gepardec.adapter.output.persistence.entity.Score score = TestFixtures.score(1L, 1L, 1L);
 
-    ScoreDto scoreDto = new ScoreDto(score);
+    Score scoreDto = new Score(score);
 
-    when(entityManager.getReference(User.class, scoreDto.userId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.User.class, scoreDto.userId())).thenReturn(
         TestFixtures.user(1L));
-    when(entityManager.getReference(Game.class, scoreDto.gameId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.Game.class, scoreDto.gameId())).thenReturn(
         TestFixtures.game(1L));
 
-    Score mappedScore = mapper.toExistingScore(scoreDto, score);
+    com.gepardec.adapter.output.persistence.entity.Score mappedScore = mapper.toExistingScore(scoreDto, score);
 
     assertEquals(mappedScore.getId(), scoreDto.id());
     assertEquals(mappedScore.getUser().getId(), scoreDto.userId());
@@ -98,62 +94,62 @@ public class MapperTest {
 
   @Test
   void ensureMatchDtoToMatchWithReferenceWorks() {
-    MatchDto matchDto = new MatchDto(1L, 1L, List.of(1L));
+    Match match = new Match(1L, 1L, List.of(1L));
 
-    when(entityManager.getReference(Game.class, TestFixtures.game().getId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.Game.class, TestFixtures.game().getId())).thenReturn(
         TestFixtures.game());
-    when(entityManager.getReference(User.class, TestFixtures.user(1L).getId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.User.class, TestFixtures.user(1L).getId())).thenReturn(
         TestFixtures.user(1L));
 
-    Match mappedMatch = mapper.toMatchWithReference(matchDto);
+    com.gepardec.adapter.output.persistence.entity.Match mappedMatch = mapper.toMatchWithReference(match);
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    assertEquals(mappedMatch.getId(), matchDto.id());
-    assertEquals(mappedMatch.getGame().getId(), matchDto.gameId());
-    assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
-        .containsAll(matchDto.userIds()));
+    assertEquals(mappedMatch.getId(), match.id());
+    assertEquals(mappedMatch.getGame().getId(), match.gameId());
+    assertTrue(mappedMatch.getUsers().stream().map(com.gepardec.adapter.output.persistence.entity.User::getId).toList()
+        .containsAll(match.userIds()));
 
   }
 
   @Test
   void ensureMatchDtoToMatchWithReferenceWorksProvidingDtoAndEntity() {
-    MatchDto matchDto = new MatchDto(1L, 1L, List.of(1L));
+    Match match = new Match(1L, 1L, List.of(1L));
 
-    when(entityManager.getReference(Game.class, TestFixtures.game().getId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.Game.class, TestFixtures.game().getId())).thenReturn(
         TestFixtures.game());
-    when(entityManager.getReference(User.class, TestFixtures.user(1L).getId())).thenReturn(
+    when(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.User.class, TestFixtures.user(1L).getId())).thenReturn(
         TestFixtures.user(1L));
 
-    Match mappedGameOutcome = mapper.toMatchWithReference(matchDto,
+    com.gepardec.adapter.output.persistence.entity.Match mappedGameOutcome = mapper.toMatchWithReference(match,
         TestFixtures.match(1L, TestFixtures.game(), List.of(TestFixtures.user(1L))));
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    assertEquals(mappedGameOutcome.getId(), matchDto.id());
-    assertEquals(mappedGameOutcome.getGame().getId(), matchDto.gameId());
-    assertTrue(mappedGameOutcome.getUsers().stream().map(User::getId).toList()
-        .containsAll(matchDto.userIds()));
+    assertEquals(mappedGameOutcome.getId(), match.id());
+    assertEquals(mappedGameOutcome.getGame().getId(), match.gameId());
+    assertTrue(mappedGameOutcome.getUsers().stream().map(com.gepardec.adapter.output.persistence.entity.User::getId).toList()
+        .containsAll(match.userIds()));
   }
 
   @Test
   void ensureGameDtoToGameWithReferenceWorks() {
-    GameDto gameDto = TestFixtures.gameToGameDto(TestFixtures.game());
+    Game game = TestFixtures.gameToGameDto(TestFixtures.game());
 
-    Game mappedGame = mapper.toGame(gameDto);
+    com.gepardec.adapter.output.persistence.entity.Game mappedGame = mapper.toGame(game);
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    assertEquals(gameDto.title(), mappedGame.getName());
-    assertEquals(gameDto.rules(), mappedGame.getRules());
+    assertEquals(game.title(), mappedGame.getName());
+    assertEquals(game.rules(), mappedGame.getRules());
   }
 
   @Test
   void ensureGameDtoToGameWithReferenceWorksProvidingDtoAndEntity() {
-    GameDto gameDto = TestFixtures.gameToGameDto(TestFixtures.game());
+    Game game = TestFixtures.gameToGameDto(TestFixtures.game());
 
-    Game mappedGame = mapper.toGame(gameDto, TestFixtures.game());
+    com.gepardec.adapter.output.persistence.entity.Game mappedGame = mapper.toGame(game, TestFixtures.game());
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    assertEquals(gameDto.id(), mappedGame.getId());
-    assertEquals(gameDto.title(), mappedGame.getName());
-    assertEquals(gameDto.rules(), mappedGame.getRules());
+    assertEquals(game.id(), mappedGame.getId());
+    assertEquals(game.title(), mappedGame.getName());
+    assertEquals(game.rules(), mappedGame.getRules());
   }
 }

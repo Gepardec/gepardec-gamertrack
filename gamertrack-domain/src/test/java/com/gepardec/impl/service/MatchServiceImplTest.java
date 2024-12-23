@@ -13,7 +13,7 @@ import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.Match;
-import com.gepardec.model.dto.MatchDto;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +40,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureSavingValidMatchReturnsOptionalMatch() {
-    MatchDto matchDto = TestFixtures.matchToMatchDto(
+    Match match = TestFixtures.matchToMatchDto(
         TestFixtures.match());
 
     when(matchRepository.saveMatch(any())).thenReturn(
@@ -48,7 +48,7 @@ class MatchServiceImplTest {
     when(gameRepository.existsByGameId(anyLong())).thenReturn(true);
     when(userRepository.existsByUserId(anyList())).thenReturn(true);
 
-    assertEquals(matchService.saveMatch(matchDto).get().getId(),
+    assertEquals(matchService.saveMatch(match).get().getId(),
         TestFixtures.match().getId());
   }
 
@@ -139,7 +139,7 @@ class MatchServiceImplTest {
   void ensureUpdateMatchReturnsUpdatedMatchForExistingMatch() {
     //Given
     Match matchNew = TestFixtures.match(1L);
-    MatchDto matchNewDto = TestFixtures.matchToMatchDto(matchNew);
+    Match matchNewDto = TestFixtures.matchToMatchDto(matchNew);
 
     //When
 

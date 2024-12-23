@@ -1,13 +1,13 @@
 package com.gepardec.core.repository;
 
 import com.gepardec.model.Match;
-import com.gepardec.model.dto.MatchDto;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface MatchRepository {
 
-  Optional<Match> saveMatch(MatchDto matchDto);
+  Optional<Match> saveMatch(Match match);
 
   List<Match> findAllMatches();
 
@@ -15,7 +15,7 @@ public interface MatchRepository {
 
   void deleteMatch(Long matchId);
 
-  Optional<Match> updateMatch(MatchDto matchDto);
+  Optional<Match> updateMatch(Match match);
 
   List<Match> findMatchesByUserId(Long userId);
 

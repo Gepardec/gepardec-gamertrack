@@ -1,9 +1,10 @@
 package com.gepardec.rest.model.mapper;
 
+import com.gepardec.model.Score;
+import com.gepardec.model.User;
+import com.gepardec.model.Game;
+import com.gepardec.model.Match;
 import com.gepardec.model.dto.ScoreDto;
-import com.gepardec.model.dto.UserDto;
-import com.gepardec.model.dto.GameDto;
-import com.gepardec.model.dto.MatchDto;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.CreateScoreCommand;
@@ -16,37 +17,37 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class RestMapper {
 
-  public ScoreDto toScore(CreateScoreCommand scoreCommand) {
-    return new ScoreDto(0, scoreCommand.userId(), scoreCommand.gameId(),
-        scoreCommand.scorePoints());
+  public Score toScoreDto(CreateScoreCommand scoreCommand) {
+
+    return new ScoreDto(scoreCommand.userId(), scoreCommand.gameId());
   }
 
-  public UserDto CreateUserCommandtoUser(CreateUserCommand createUserCommand) {
-    return new UserDto(0, createUserCommand.firstname(), createUserCommand.lastname(), false);
+  public User CreateUserCommandtoUser(CreateUserCommand createUserCommand) {
+    return new User(0, createUserCommand.firstname(), createUserCommand.lastname(), false);
   }
 
-  public UserDto UpdateUserCommandtoUser(Long id, UpdateUserCommand updateUserCommand) {
-    return new UserDto(id, updateUserCommand.firstname(), updateUserCommand.lastname(),
+  public User UpdateUserCommandtoUser(Long id, UpdateUserCommand updateUserCommand) {
+    return new User(id, updateUserCommand.firstname(), updateUserCommand.lastname(),
         updateUserCommand.deactivated());
   }
 
 
-  public MatchDto toMatchDto(Long id, UpdateMatchCommand gameOutcomeCommand) {
-    return new MatchDto(id, gameOutcomeCommand.gameId(),
+  public Match toMatchDto(Long id, UpdateMatchCommand gameOutcomeCommand) {
+    return new Match(id, gameOutcomeCommand.gameId(),
         gameOutcomeCommand.userIds());
   }
 
-  public MatchDto toMatchDto(CreateMatchCommand createGameCommand) {
-    return new MatchDto(null, createGameCommand.gameId(),
+  public Match toMatchDto(CreateMatchCommand createGameCommand) {
+    return new Match(null, createGameCommand.gameId(),
         createGameCommand.userIds());
   }
 
-  public GameDto toGameDto(Long id, UpdateGameCommand updateGameCommand) {
-    return new GameDto(id, updateGameCommand.title(),
+  public Game toGameDto(Long id, UpdateGameCommand updateGameCommand) {
+    return new Game(id, updateGameCommand.title(),
         updateGameCommand.rules());
   }
 
-  public GameDto toGameDto(CreateGameCommand createGameCommand) {
-    return new GameDto(0L, createGameCommand.title(), createGameCommand.rules());
+  public Game toGameDto(CreateGameCommand createGameCommand) {
+    return new Game(0L, createGameCommand.title(), createGameCommand.rules());
   }
 }

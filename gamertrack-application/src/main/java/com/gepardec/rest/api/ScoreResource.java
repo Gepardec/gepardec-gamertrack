@@ -2,8 +2,6 @@ package com.gepardec.rest.api;
 
 import com.gepardec.model.Score;
 import com.gepardec.rest.model.command.CreateScoreCommand;
-import com.gepardec.rest.model.command.CreateUserCommand;
-import com.gepardec.rest.model.command.UpdateUserCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

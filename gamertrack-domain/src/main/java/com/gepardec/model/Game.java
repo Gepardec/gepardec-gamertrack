@@ -1,40 +1,41 @@
 package com.gepardec.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+public class Game{
+    private Long id;
+    private String title;
+    private String rules;
 
-@Entity
-@Table(name = "games")
-public class Game extends AbstractEntity {
+    public Game(Long id) {
+        this.id = id;
+    }
 
-  @NotBlank
-  private String name;
-  private String rules;
+    public Game(Long id, String title, String rules) {
+        this.id = id;
+        this.title = title;
+        this.rules = rules;
+    }
 
+    public Long getId() {
+        return id;
+    }
 
-  public Game(String name, String rules) {
-    this.name = name;
-    this.rules = rules;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public Game() {
+    public String getTitle() {
+        return title;
+    }
 
-  }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getRules() {
+        return rules;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getRules() {
-    return rules;
-  }
-
-  public void setRules(String rules) {
-    this.rules = rules;
-  }
+    public void setRules(String rules) {
+        this.rules = rules;
+    }
 }

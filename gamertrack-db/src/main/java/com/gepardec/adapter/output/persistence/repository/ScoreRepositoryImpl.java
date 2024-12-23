@@ -5,7 +5,6 @@ import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.ScoreDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -29,9 +28,9 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     @Inject
     Mapper mapper;
     @Override
-    public Optional<Score> saveScore(ScoreDto scoreDto) {
-        if(entityManager.find(Game.class, scoreDto.gameId()) != null) {
-            if(entityManager.find(User.class, scoreDto.userId()) != null) {
+    public Optional<Score> saveScore(Score scoreDto) {
+        if(entityManager.find(Game.class, scoreDto.getGame().getId()) != null) {
+            if(entityManager.find(User.class, scoreDto.getUser().getId()) != null) {
                 Score score = mapper.toScore(scoreDto);
                 entityManager.persist(score);
 
@@ -39,17 +38,17 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
                 return Optional.of(scoreSaved);
             }
-            log.error("User with id: {} does not exist!", scoreDto.userId());
+            log.error("User with id: {} does not exist!", scoreDto.getUser().getId());
             return Optional.empty();
         }
-        log.error("Game with id: {} does not exist!", scoreDto.gameId());
+        log.error("Game with id: {} does not exist!", scoreDto.getGame().getId());
         return Optional.empty();
     }
 
     @Override
-    public Optional<Score> updateScore(ScoreDto scoreDto) {
-        if(entityManager.find(Game.class, scoreDto.gameId()) != null) {
-            if(entityManager.find(User.class, scoreDto.userId()) != null) {
+    public Optional<Score> updateScore(Score scoreDto) {
+        if(entityManager.find(Game.class, scoreDto.getGame().getId()) != null) {
+            if(entityManager.find(User.class, scoreDto.getUser().getId()) != null) {
                 Score score = mapper.toExistingScore(scoreDto, entityManager.find(Score.class, scoreDto.id()));
                 entityManager.merge(score);
 
@@ -57,10 +56,10 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 log.info("Updated score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
                 return Optional.of(scoreMerged);
             }
-            log.error("User with id: {} does not exist!", scoreDto.userId());
+            log.error("User with id: {} does not exist!", scoreDto.getUser().getId());
             return Optional.empty();
         }
-        log.error("Game with id: {} does not exist!", scoreDto.gameId());
+        log.error("Game with id: {} does not exist!", scoreDto.getGame().getId());
         return Optional.empty();
     }
 
@@ -131,15 +130,15 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
 
     @Override
-    public boolean scoreExists(ScoreDto scoreDto) {
+    public boolean scoreExists(Score scoreDto) {
         List<Score> entity = entityManager.createQuery(
                         "SELECT s FROM Score s " +
                                 "WHERE s.game.id = :gameId " +
                                 "AND s.user.id =:userId ", Score.class)
-                .setParameter("gameId", scoreDto.gameId())
-                .setParameter("userId", scoreDto.userId())
+                .setParameter("gameId", scoreDto.getGame().getId())
+                .setParameter("userId", scoreDto.getUser().getId())
                 .getResultList();
-        log.info("Score with userId: {} and gameId: {} exists: {}", scoreDto.userId(), scoreDto.gameId(), !entity.isEmpty());
+        log.info("Score with userId: {} and gameId: {} exists: {}", scoreDto.getUser().getId(), scoreDto.getGame().getId(), !entity.isEmpty());
 
         return !entity.isEmpty();
     }

@@ -1,8 +1,6 @@
 package com.gepardec.core.repository;
 
 import com.gepardec.model.User;
-import com.gepardec.model.dto.UserDto;
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,10 +9,10 @@ import java.util.Optional;
 public interface UserRepository {
 
 
-  Optional<User> saveUser(UserDto userDto);
-  Optional<User> updateUser(UserDto userDto);
+  Optional<User> saveUser(User user);
+  Optional<User> updateUser(User user);
 
-  void deleteUser(UserDto userDto);
+  void deleteUser(User user);
   void deleteAllUsers();
 
   List<User> findAllUsers();

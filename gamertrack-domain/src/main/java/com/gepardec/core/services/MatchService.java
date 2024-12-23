@@ -1,13 +1,13 @@
 package com.gepardec.core.services;
 
 import com.gepardec.model.Match;
-import com.gepardec.model.dto.MatchDto;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface MatchService {
 
-  Optional<Match> saveMatch(MatchDto gameOutcomeDto);
+  Optional<Match> saveMatch(Match gameOutcomeDto);
 
   List<Match> findAllMatches();
 
@@ -15,7 +15,7 @@ public interface MatchService {
 
   Optional<Match> deleteMatch(Long gameOutcomeId);
 
-  Optional<Match> updateMatch(MatchDto gameOutcomeDto);
+  Optional<Match> updateMatch(Match gameOutcomeDto);
 
   List<Match> findMatchesByUserId(Long userId);
 

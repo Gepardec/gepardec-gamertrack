@@ -12,9 +12,6 @@ import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.GameDto;
-import com.gepardec.model.dto.ScoreDto;
-import com.gepardec.model.dto.UserDto;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -50,80 +47,80 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
   void beforeEach() throws Exception {
-    super.removeTableData(Score.class);
-    super.removeTableData(Game.class);
-    super.removeTableData(User.class);
+    super.removeTableData(com.gepardec.adapter.output.persistence.entity.Score.class);
+    super.removeTableData(com.gepardec.adapter.output.persistence.entity.Game.class);
+    super.removeTableData(com.gepardec.adapter.output.persistence.entity.User.class);
   }
 
   @Test
   void ensureSaveScoreWorks() {
-    Game game = TestFixtures.game(1L);
-    GameDto gameDto = TestFixtures.gameToGameDto(game);
+    com.gepardec.adapter.output.persistence.entity.Game game = TestFixtures.game(1L);
+    Game gameDto = TestFixtures.gameToGameDto(game);
 
-    User user = TestFixtures.user(1L);
-    UserDto userDto = new UserDto(user);
+    com.gepardec.adapter.output.persistence.entity.User user = TestFixtures.user(1L);
+    User userDto = new User(user);
 
     Long savedGameId = gameRepository.saveGame(gameDto).get().getId();
     Long savedUserId = userRepository.saveUser(userDto).get().getId();
 
-    ScoreDto scoreDto = new ScoreDto(1, savedUserId, savedGameId, 10.0);
+    Score score = new Score(1, savedUserId, savedGameId, 10.0);
 
-    Long savedId = scoreRepository.saveScore(scoreDto).get().getId();
+    Long savedId = scoreRepository.saveScore(score).get().getId();
     assertTrue(scoreRepository.findScoreById(savedId).isPresent());
 
   }
 
   @Test
   void ensureUpdateScoreWorks() {
-    Game game = TestFixtures.game(1L);
-    GameDto gameDto = TestFixtures.gameToGameDto(game);
+    com.gepardec.adapter.output.persistence.entity.Game game = TestFixtures.game(1L);
+    Game gameDto = TestFixtures.gameToGameDto(game);
 
-    User user = TestFixtures.user(1L);
-    UserDto userDto = new UserDto(user);
+    com.gepardec.adapter.output.persistence.entity.User user = TestFixtures.user(1L);
+    User userDto = new User(user);
 
     Long savedGameId = gameRepository.saveGame(gameDto).get().getId();
     Long savedUserId = userRepository.saveUser(userDto).get().getId();
 
-    ScoreDto scoreDto = new ScoreDto(1, savedUserId, savedGameId, 10.0);
+    Score score = new Score(1, savedUserId, savedGameId, 10.0);
 
-    Long savedId = scoreRepository.saveScore(scoreDto).get().getId();
+    Long savedId = scoreRepository.saveScore(score).get().getId();
 
-    ScoreDto updatedScoreDto = new ScoreDto(savedId, savedUserId, savedGameId, 20.0);
+    Score updatedScore = new Score(savedId, savedUserId, savedGameId, 20.0);
 
-    scoreRepository.updateScore(updatedScoreDto);
+    scoreRepository.updateScore(updatedScore);
 
-    Optional<Score> foundScore = scoreRepository.findScoreById(savedId);
+    Optional<com.gepardec.adapter.output.persistence.entity.Score> foundScore = scoreRepository.findScoreById(savedId);
     assertTrue(foundScore.isPresent());
-    assertEquals(foundScore.get().getScorePoints(), updatedScoreDto.scorePoints());
+    assertEquals(foundScore.get().getScorePoints(), updatedScore.scorePoints());
   }
 
   @Test
   void ensureFindAllScoresWorks() {
-    User user1 = TestFixtures.user(1L);
-    User user2 = TestFixtures.user(2L);
-    User user3 = TestFixtures.user(3L);
+    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
+    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
+    com.gepardec.adapter.output.persistence.entity.User user3 = TestFixtures.user(3L);
 
-    UserDto userDto1 = new UserDto(user1);
-    UserDto userDto2 = new UserDto(user2);
-    UserDto userDto3 = new UserDto(user3);
+    User userDto1 = new User(user1);
+    User userDto2 = new User(user2);
+    User userDto3 = new User(user3);
 
     Long savedUserId1 = userRepository.saveUser(userDto1).get().getId();
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
     Long savedUserId3 = userRepository.saveUser(userDto3).get().getId();
 
-    Game game1 = TestFixtures.game();
+    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
 
-    GameDto gameDto1 = TestFixtures.gameToGameDto(game1);
+    Game gameDto1 = TestFixtures.gameToGameDto(game1);
 
     Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
 
-    ScoreDto scoreDto1 = new ScoreDto(1L, savedUserId1, savedGameId1, 10.0);
-    ScoreDto scoreDto2 = new ScoreDto(2L, savedUserId2, savedGameId1, 30.0);
-    ScoreDto scoreDto3 = new ScoreDto(3L, savedUserId3, savedGameId1, 10.0);
+    Score score1 = new Score(1L, savedUserId1, savedGameId1, 10.0);
+    Score score2 = new Score(2L, savedUserId2, savedGameId1, 30.0);
+    Score score3 = new Score(3L, savedUserId3, savedGameId1, 10.0);
 
-    scoreRepository.saveScore(scoreDto1).get().getId();
-    scoreRepository.saveScore(scoreDto2).get().getId();
-    scoreRepository.saveScore(scoreDto3).get().getId();
+    scoreRepository.saveScore(score1).get().getId();
+    scoreRepository.saveScore(score2).get().getId();
+    scoreRepository.saveScore(score3).get().getId();
 
     assertFalse(scoreRepository.findAllScores().isEmpty());
     assertEquals(3, scoreRepository.findAllScores().size());
@@ -132,62 +129,62 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureFindScoreByIdWorks() {
-    User user1 = TestFixtures.user(1L);
-    User user2 = TestFixtures.user(2L);
+    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
+    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
 
-    UserDto userDto1 = new UserDto(user1);
-    UserDto userDto2 = new UserDto(user2);
+    User userDto1 = new User(user1);
+    User userDto2 = new User(user2);
 
     Long savedUserId1 = userRepository.saveUser(userDto1).get().getId();
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
 
-    Game game1 = TestFixtures.game();
-    Game game2 = TestFixtures.game();
+    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
+    com.gepardec.adapter.output.persistence.entity.Game game2 = TestFixtures.game();
 
-    GameDto gameDto1 = TestFixtures.gameToGameDto(game1);
-    GameDto gameDto2 = TestFixtures.gameToGameDto(game2);
+    Game gameDto1 = TestFixtures.gameToGameDto(game1);
+    Game gameDto2 = TestFixtures.gameToGameDto(game2);
 
     Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
     Long savedGameId2 = gameRepository.saveGame(gameDto2).get().getId();
 
-    ScoreDto scoreDto1 = new ScoreDto(1L, savedUserId1, savedGameId1, 10.0);
-    ScoreDto scoreDto2 = new ScoreDto(2L, savedUserId2, savedGameId2, 30.0);
+    Score score1 = new Score(1L, savedUserId1, savedGameId1, 10.0);
+    Score score2 = new Score(2L, savedUserId2, savedGameId2, 30.0);
 
-    Long savedId1 = scoreRepository.saveScore(scoreDto1).get().getId();
-    scoreRepository.saveScore(scoreDto2);
+    Long savedId1 = scoreRepository.saveScore(score1).get().getId();
+    scoreRepository.saveScore(score2);
 
     assertFalse(scoreRepository.findAllScores().isEmpty());
-    assertEquals(scoreDto1.scorePoints(),
+    assertEquals(score1.scorePoints(),
         scoreRepository.findScoreById(savedId1).get().getScorePoints());
   }
 
   @Test
   void ensureFindTopScoresByGameWorks() {
-    User user1 = TestFixtures.user(1L);
-    User user2 = TestFixtures.user(2L);
-    User user3 = TestFixtures.user(3L);
+    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
+    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
+    com.gepardec.adapter.output.persistence.entity.User user3 = TestFixtures.user(3L);
 
-    UserDto userDto1 = new UserDto(user1);
-    UserDto userDto2 = new UserDto(user2);
-    UserDto userDto3 = new UserDto(user3);
+    User userDto1 = new User(user1);
+    User userDto2 = new User(user2);
+    User userDto3 = new User(user3);
 
     Long savedUserId1 = userRepository.saveUser(userDto1).get().getId();
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
     Long savedUserId3 = userRepository.saveUser(userDto3).get().getId();
 
-    Game game1 = TestFixtures.game();
+    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
 
-    GameDto gameDto1 = TestFixtures.gameToGameDto(game1);
+    Game gameDto1 = TestFixtures.gameToGameDto(game1);
 
     Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
 
-    ScoreDto scoreDto1 = new ScoreDto(1L, savedUserId1, savedGameId1, 10.0);
-    ScoreDto scoreDto2 = new ScoreDto(2L, savedUserId2, savedGameId1, 30.0);
-    ScoreDto scoreDto3 = new ScoreDto(3L, savedUserId3, savedGameId1, 10.0);
+    Score score1 = new Score(1L, savedUserId1, savedGameId1, 10.0);
+    Score score2 = new Score(2L, savedUserId2, savedGameId1, 30.0);
+    Score score3 = new Score(3L, savedUserId3, savedGameId1, 10.0);
 
-    scoreRepository.saveScore(scoreDto1);
-    scoreRepository.saveScore(scoreDto2);
-    scoreRepository.saveScore(scoreDto3);
+    scoreRepository.saveScore(score1);
+    scoreRepository.saveScore(score2);
+    scoreRepository.saveScore(score3);
 
     assertEquals(3, scoreRepository.findAllScores().size());
     assertFalse(scoreRepository.findTopScoreByGame(savedGameId1, 2).isEmpty());
@@ -196,31 +193,31 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureFindTopScoresByUserWorks() {
-    User user1 = TestFixtures.user(1L);
-    User user2 = TestFixtures.user(2L);
-    User user3 = TestFixtures.user(3L);
+    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
+    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
+    com.gepardec.adapter.output.persistence.entity.User user3 = TestFixtures.user(3L);
 
-    UserDto userDto1 = new UserDto(user1);
-    UserDto userDto2 = new UserDto(user2);
-    UserDto userDto3 = new UserDto(user3);
+    User userDto1 = new User(user1);
+    User userDto2 = new User(user2);
+    User userDto3 = new User(user3);
 
     Long savedUserId1 = userRepository.saveUser(userDto1).get().getId();
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
     Long savedUserId3 = userRepository.saveUser(userDto3).get().getId();
 
-    Game game1 = TestFixtures.game();
+    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
 
-    GameDto gameDto1 = TestFixtures.gameToGameDto(game1);
+    Game gameDto1 = TestFixtures.gameToGameDto(game1);
 
     Long savedGameId1 = gameRepository.saveGame(gameDto1).get().getId();
 
-    ScoreDto scoreDto1 = new ScoreDto(1L, savedUserId1, savedGameId1, 10.0);
-    ScoreDto scoreDto2 = new ScoreDto(2L, savedUserId2, savedGameId1, 30.0);
-    ScoreDto scoreDto3 = new ScoreDto(3L, savedUserId3, savedGameId1, 10.0);
+    Score score1 = new Score(1L, savedUserId1, savedGameId1, 10.0);
+    Score score2 = new Score(2L, savedUserId2, savedGameId1, 30.0);
+    Score score3 = new Score(3L, savedUserId3, savedGameId1, 10.0);
 
-    Long savedId1 = scoreRepository.saveScore(scoreDto1).get().getId();
-    Long savedId2 = scoreRepository.saveScore(scoreDto2).get().getId();
-    Long savedId3 = scoreRepository.saveScore(scoreDto3).get().getId();
+    Long savedId1 = scoreRepository.saveScore(score1).get().getId();
+    Long savedId2 = scoreRepository.saveScore(score2).get().getId();
+    Long savedId3 = scoreRepository.saveScore(score3).get().getId();
 
     assertTrue(userRepository.existsByUserId(List.of(savedId1, savedId2, savedId3)));
     assertFalse(userRepository.existsByUserId(List.of(1000L, 1001L)));

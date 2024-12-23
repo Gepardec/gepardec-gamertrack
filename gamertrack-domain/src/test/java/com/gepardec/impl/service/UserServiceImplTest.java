@@ -4,7 +4,6 @@ import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.UserDto;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,23 +34,21 @@ public class UserServiceImplTest {
     @Test
     void ensureSaveAndReadGameWorksAndReturnsUser() {
         User user = TestFixtures.user(1L);
-        UserDto userDto = new UserDto(user);
 
-        when(userRepository.saveUser(userDto)).thenReturn(Optional.of(user));
-        assertEquals(userService.saveUser(userDto).get().getFirstname(), user.getFirstname());
+        when(userRepository.saveUser(user)).thenReturn(Optional.of(user));
+        assertEquals(userService.saveUser(user).get().getFirstname(), user.getFirstname());
     }
 
     @Test
     void ensureUpdatingExistingUserWorksAndReturnsUser() {
         User userEdit = TestFixtures.user(1L);
-        UserDto userDto = new UserDto(userEdit);
 
         //User was found
         when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.of(userEdit));
 
-        when(userRepository.updateUser(userDto)).thenReturn(Optional.of(userEdit));
+        when(userRepository.updateUser(userEdit)).thenReturn(Optional.of(userEdit));
 
-        Optional<User> updatedUser = userService.updateUser(userDto);
+        Optional<User> updatedUser = userService.updateUser(userEdit);
 
         assertTrue(updatedUser.isPresent());
         assertEquals(userEdit.getFirstname(), updatedUser.get().getFirstname());
@@ -62,12 +59,11 @@ public class UserServiceImplTest {
     @Test
     void ensureUpdatingNonExistingUserWorksAndReturnsEmpty() {
         User userEdit = TestFixtures.user(1L);
-        UserDto userDto = new UserDto(userEdit);
 
         //User was not found
         when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.empty());
 
-        Optional<User> updatedUser = userService.updateUser(userDto);
+        Optional<User> updatedUser = userService.updateUser(userEdit);
 
         assertFalse(updatedUser.isPresent());
 

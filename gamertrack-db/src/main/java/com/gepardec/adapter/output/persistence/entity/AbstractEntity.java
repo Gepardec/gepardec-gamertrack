@@ -1,4 +1,4 @@
-package com.gepardec.model;
+package com.gepardec.adapter.output.persistence.entity;
 
 import jakarta.persistence.*;
 

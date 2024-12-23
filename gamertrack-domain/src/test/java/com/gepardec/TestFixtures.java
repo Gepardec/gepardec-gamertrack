@@ -4,8 +4,7 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.GameDto;
-import com.gepardec.model.dto.MatchDto;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class TestFixtures {
 
     for (int i = 0; i < gameCount; i++) {
       Game game = TestFixtures.game((long) 1 + i);
-      game.setName(game.getName() + " " + i);
+      game.setTitle(game.getTitle() + " " + i);
       games.add(game);
     }
     return games;
@@ -28,24 +27,21 @@ public class TestFixtures {
   }
 
   public static Game game(Long id) {
-    Game game = new Game("Game Fixture", "Game Fixture Rules");
-    game.setId(id);
+    Game game = new Game(id,"Game Fixture", "Game Fixture Rules");
     return game;
   }
 
-  public static GameDto gameToGameDto(Game game) {
-    return new GameDto(game.getId(), game.getName(), game.getRules());
+  public static Game gameToGameDto(Game game) {
+    return new Game(game.getId(), game.getTitle(), game.getRules());
   }
 
-  public static MatchDto matchToMatchDto(Match match) {
-    return new MatchDto(match.getId(), match.getGame().getId(),
-        match.getUsers().stream().map(User::getId).toList());
+  public static Match matchToMatchDto(Match match) {
+    return new Match(match.getId(), match.getGame(),
+        match.getUsers());
   }
 
-  public static Game gameDtoToGame(GameDto gameDto) {
-    Game game = new Game(gameDto.title(), gameDto.rules());
-
-    game.setId(gameDto.id());
+  public static Game gameDtoToGame(Game gameDto) {
+    Game game = new Game(gameDto.getId(),gameDto.getTitle(), gameDto.getRules());
 
     return game;
   }
@@ -57,9 +53,7 @@ public class TestFixtures {
 
 
   public static Match match(Long id, Game game, List<User> users) {
-    Match match = new Match(game, users.stream().toList());
-    match.setId(id);
-
+    Match match = new Match(id,game, users.stream().toList());
     return match;
   }
 
@@ -75,8 +69,7 @@ public class TestFixtures {
   }
 
   public static User user(Long id) {
-    User user = new User("User", "Testfixture");
-    user.setId(id);
+    User user = new User(id,"User", "Testfixture",false);
     return user;
   }
 
@@ -92,15 +85,14 @@ public class TestFixtures {
     List<Match> matches = new ArrayList<>();
     for (int i = 0; i < matchCount; i++) {
       Match match = match((long) i + 1);
-      match.getGame().setName(String.valueOf(i + 1));
+      match.getGame().setTitle(String.valueOf(i + 1));
       matches.add(match);
     }
     return matches;
   }
 
   public static Score score(Long scoreId, Long userId, Long gameId) {
-    Score score = new Score(user(userId), game(gameId), 10L);
-    score.setId(scoreId);
+    Score score = new Score(scoreId, user(userId), game(gameId), 10L);
     return score;
   }
 

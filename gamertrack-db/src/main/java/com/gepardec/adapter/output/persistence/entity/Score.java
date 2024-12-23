@@ -1,30 +1,31 @@
-package com.gepardec.model;
+package com.gepardec.adapter.output.persistence.entity;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-public class Score{
-    private Long id;
-    private User user;
-    private Game game;
-    private double scorePoints;
+@Entity
+public class Score extends AbstractEntity{
 
-    public Score(Long id) {
-        this.id = id;
-    }
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    public User user;
 
-    public Score(Long id, User user, Game game, double scorePoints) {
-        this.id = id;
+    @NotNull
+    @ManyToOne()
+    @JoinColumn(name = "fk_game_score", foreignKey = @ForeignKey(name = "fk_game_score"))
+    public Game game;
+
+    @NotNull
+    public double scorePoints;
+
+    public Score(User user, Game game, double scorePoints) {
         this.user = user;
         this.game = game;
         this.scorePoints = scorePoints;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Score() {
 
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public User getUser() {
@@ -42,11 +43,9 @@ public class Score{
     public void setGame(Game game) {
         this.game = game;
     }
-
     public double getScorePoints() {
         return scorePoints;
     }
-
     public void setScorePoints(double scorePoints) {
         this.scorePoints = scorePoints;
     }
