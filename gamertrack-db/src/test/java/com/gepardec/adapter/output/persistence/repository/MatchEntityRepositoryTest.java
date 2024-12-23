@@ -1,6 +1,9 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
+import com.gepardec.adapter.output.persistence.entity.MatchEntity;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
@@ -18,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ArquillianExtension.class)
-public class MatchRepositoryTest extends GamertrackDbIT {
+public class MatchEntityRepositoryTest extends GamertrackDbIT {
 
   @Inject
   private MatchRepository matchRepository;
@@ -32,18 +35,18 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
   public void before() throws Exception {
-    removeTableData(com.gepardec.adapter.output.persistence.entity.Match.class, com.gepardec.adapter.output.persistence.entity.Game.class, com.gepardec.adapter.output.persistence.entity.User.class);
+    removeTableData(MatchEntity.class, GameEntity.class, UserEntity.class);
   }
 
   @Test
   public void ensureSaveAndReadMatchWorks() {
-    com.gepardec.adapter.output.persistence.entity.Match match = new com.gepardec.adapter.output.persistence.entity.Match();
-    com.gepardec.adapter.output.persistence.entity.Game game = new com.gepardec.adapter.output.persistence.entity.Game();
+    MatchEntity match = new MatchEntity();
+    GameEntity game = new GameEntity();
     game.setName("testname");
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(
         new Game(null, game.getName(), game.getRules()));
     match.setGame(savedGame.get());
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
     match.setUsers(List.of(savedUser.get()));
     Match matchDto = TestFixtures.matchToMatchDto(match);
@@ -66,21 +69,21 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureFindAllMatchesReturnsForExistingMatchesAllMatches() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame1 = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame2 = gameRepository.saveGame(new Game(null, "TestName2", "No"));
+    Optional<GameEntity> savedGame1 = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<GameEntity> savedGame2 = gameRepository.saveGame(new Game(null, "TestName2", "No"));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser1 = userRepository.saveUser(
+    Optional<UserEntity> savedUser1 = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser2 = userRepository.saveUser(
+    Optional<UserEntity> savedUser2 = userRepository.saveUser(
         new User(0, "Tesname", "No", false));
 
-    com.gepardec.adapter.output.persistence.entity.Match match1 = new com.gepardec.adapter.output.persistence.entity.Match(savedGame1.get(), List.of(savedUser1.get()));
-    com.gepardec.adapter.output.persistence.entity.Match match2 = new com.gepardec.adapter.output.persistence.entity.Match(savedGame2.get(), List.of(savedUser2.get()));
+    MatchEntity match1 = new MatchEntity(savedGame1.get(), List.of(savedUser1.get()));
+    MatchEntity match2 = new MatchEntity(savedGame2.get(), List.of(savedUser2.get()));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> savedMatch1 = matchRepository.saveMatch(new Match(match1));
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> savedMatch2 = matchRepository.saveMatch(new Match(match2));
+    Optional<MatchEntity> savedMatch1 = matchRepository.saveMatch(new Match(match1));
+    Optional<MatchEntity> savedMatch2 = matchRepository.saveMatch(new Match(match2));
 
-    List<com.gepardec.adapter.output.persistence.entity.Match> foundMatches = matchRepository.findAllMatches();
+    List<MatchEntity> foundMatches = matchRepository.findAllMatches();
 
     Assertions.assertEquals(2, foundMatches.size());
   }
@@ -94,11 +97,11 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureFindMatchByIdForExistingMatchReturnsMatch() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
-    com.gepardec.adapter.output.persistence.entity.Match match = new com.gepardec.adapter.output.persistence.entity.Match(savedGame.get(), List.of(savedUser.get()));
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> savedMatch1 = matchRepository.saveMatch(new Match(match));
+    MatchEntity match = new MatchEntity(savedGame.get(), List.of(savedUser.get()));
+    Optional<MatchEntity> savedMatch1 = matchRepository.saveMatch(new Match(match));
 
     var foundMatch = matchRepository.findMatchById(savedMatch1.get().getId());
 
@@ -115,12 +118,12 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureDeleteMatchByIdForExistingMatchWorks() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
-    com.gepardec.adapter.output.persistence.entity.Match match = new com.gepardec.adapter.output.persistence.entity.Match(savedGame.get(), List.of(savedUser.get()));
+    MatchEntity match = new MatchEntity(savedGame.get(), List.of(savedUser.get()));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> savedMatch = matchRepository.saveMatch(new Match(match));
+    Optional<MatchEntity> savedMatch = matchRepository.saveMatch(new Match(match));
 
     matchRepository.deleteMatch(savedMatch.get().getId());
 
@@ -129,16 +132,16 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureUpdateMatchForExistingMatchReturnsUpdatedMatch() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.User> anotherSavedUser = userRepository.saveUser(
+    Optional<UserEntity> anotherSavedUser = userRepository.saveUser(
         new User(0, "Tesname1", "LastName", false));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> oldSavedMatch = matchRepository.saveMatch(
+    Optional<MatchEntity> oldSavedMatch = matchRepository.saveMatch(
         new Match(null, savedGame.get().getId(), List.of(savedUser.get().getId())));
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> newUpdatedMatch = matchRepository.updateMatch(
+    Optional<MatchEntity> newUpdatedMatch = matchRepository.updateMatch(
         new Match(oldSavedMatch.get().getId(), savedGame.get()
             .getId(), List.of(savedUser.get().getId(), anotherSavedUser.get().getId())));
 
@@ -149,8 +152,8 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureUpdateMatchForNonExistingMatchReturnsEmptyOptional() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
 
     Assertions.assertTrue(matchRepository.updateMatch(
@@ -161,14 +164,14 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureFindMatchByGameIdForExistingMatchReturnsMatch() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> savedMatch = matchRepository.saveMatch(
+    Optional<MatchEntity> savedMatch = matchRepository.saveMatch(
         new Match(null, savedGame.get().getId(), List.of(savedUser.get().getId())));
 
-    List<com.gepardec.adapter.output.persistence.entity.Match> foundMatches = matchRepository.findMatchByGameId(
+    List<MatchEntity> foundMatches = matchRepository.findMatchByGameId(
         savedMatch.get().getGame().getId());
 
     Assertions.assertEquals(1, foundMatches.size());
@@ -178,20 +181,20 @@ public class MatchRepositoryTest extends GamertrackDbIT {
   @Test
   public void ensureFindMatchByGameIdForNonExistingMatchReturnsEmptyList() {
 
-    List<com.gepardec.adapter.output.persistence.entity.Match> foundMatches = matchRepository.findMatchByGameId(1L);
+    List<MatchEntity> foundMatches = matchRepository.findMatchByGameId(1L);
     Assertions.assertTrue(foundMatches.isEmpty());
   }
 
   @Test
   public void ensureFindMatchByUserIdForExistingMatchReturnsMatch() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> savedMatch = matchRepository.saveMatch(
+    Optional<MatchEntity> savedMatch = matchRepository.saveMatch(
         new Match(null, savedGame.get().getId(), List.of(savedUser.get().getId())));
 
-    List<com.gepardec.adapter.output.persistence.entity.Match> foundMatches = matchRepository.findMatchByUserId(savedUser.get().getId());
+    List<MatchEntity> foundMatches = matchRepository.findMatchByUserId(savedUser.get().getId());
 
     Assertions.assertEquals(1, foundMatches.size());
     Assertions.assertEquals(savedMatch.get().getId(), foundMatches.get(0).getId());
@@ -201,17 +204,17 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureFindMatchByUserIdForNonExistingMatchReturnsEmptyList() {
-    List<com.gepardec.adapter.output.persistence.entity.Match> foundMatches = matchRepository.findMatchByUserId(1L);
+    List<MatchEntity> foundMatches = matchRepository.findMatchByUserId(1L);
     Assertions.assertTrue(foundMatches.isEmpty());
   }
 
   @Test
   public void ensureExistsMatchByIdForExistingMatchReturnsTrue() {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<com.gepardec.adapter.output.persistence.entity.User> savedUser = userRepository.saveUser(
+    Optional<GameEntity> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
+    Optional<UserEntity> savedUser = userRepository.saveUser(
         new User(0, "Tesname", "LastName", false));
 
-    Optional<com.gepardec.adapter.output.persistence.entity.Match> savedMatch = matchRepository.saveMatch(
+    Optional<MatchEntity> savedMatch = matchRepository.saveMatch(
         new Match(null, savedGame.get().getId(), List.of(savedUser.get().getId())));
 
     Assertions.assertTrue(matchRepository.existsMatchById(savedMatch.get().getId()));

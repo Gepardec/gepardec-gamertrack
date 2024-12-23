@@ -1,6 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
 import jakarta.inject.Inject;
@@ -13,11 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ArquillianExtension.class)
-class GameRepositoryTest extends GamertrackDbIT {
+class GameEntityRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
   void beforeEach() throws Exception {
-    super.removeTableData(com.gepardec.adapter.output.persistence.entity.Game.class);
+    super.removeTableData(GameEntity.class);
   }
 
   @Inject
@@ -103,7 +104,7 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureFindAllGamesForExistingGamesReturnsAllGames() {
-    List<com.gepardec.adapter.output.persistence.entity.Game> games = TestFixtures.games(10);
+    List<GameEntity> games = TestFixtures.games(10);
     List<Game> gameDtos = games.stream()
         .map(TestFixtures::gameToGameDto)
         .peek(repository::saveGame)
@@ -114,7 +115,7 @@ class GameRepositoryTest extends GamertrackDbIT {
     Assertions.assertEquals(games.size(), foundGames.size());
     Assertions.assertTrue(foundGames
         .stream()
-        .map(com.gepardec.adapter.output.persistence.entity.Game::getName)
+        .map(GameEntity::getName)
         .toList()
         .containsAll(gameDtos
             .stream()
@@ -129,7 +130,7 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureGameExistsByGameNameForExistingGameReturnsGame() {
-    com.gepardec.adapter.output.persistence.entity.Game game = TestFixtures.game(null);
+    GameEntity game = TestFixtures.game(null);
     game.setName("NewTitle");
 
     var savedGame = repository.saveGame(TestFixtures.gameToGameDto(game));

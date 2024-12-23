@@ -1,6 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.User;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(ArquillianExtension.class)
-public class UserRepositoryTest extends GamertrackDbIT{
+public class UserEntityRepositoryTest extends GamertrackDbIT{
     /*
 
 --------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ public class UserRepositoryTest extends GamertrackDbIT{
 
         userRepository.updateUser(updatedUser);
 
-        Optional<com.gepardec.adapter.output.persistence.entity.User> foundUser = userRepository.findUserById(savedId);
+        Optional<UserEntity> foundUser = userRepository.findUserById(savedId);
 
         assertTrue(foundUser.isPresent());
         assertEquals(foundUser.get().getFirstname(), updatedUser.firstname());
@@ -83,7 +84,7 @@ public class UserRepositoryTest extends GamertrackDbIT{
 
     @Test
     void ensureDeleteAllUsersWorks(){
-        List<com.gepardec.adapter.output.persistence.entity.User> users = TestFixtures.users(4);
+        List<UserEntity> users = TestFixtures.users(4);
         userRepository.saveUser(new User(users.get(0)));
         userRepository.saveUser(new User(users.get(1)));
         userRepository.saveUser(new User(users.get(2)));
@@ -144,9 +145,9 @@ public class UserRepositoryTest extends GamertrackDbIT{
     @Test
     void ensureFindUserByIdWorksIncludedDeleted(){
 
-        com.gepardec.adapter.output.persistence.entity.User user1 = new com.gepardec.adapter.output.persistence.entity.User(1L,"Max","Muster",false);
-        com.gepardec.adapter.output.persistence.entity.User user2 = new com.gepardec.adapter.output.persistence.entity.User(2L,"Max","Muster",false);
-        com.gepardec.adapter.output.persistence.entity.User user3 = new com.gepardec.adapter.output.persistence.entity.User(3L,"test","deleted",true);
+        UserEntity user1 = new UserEntity(1L,"Max","Muster",false);
+        UserEntity user2 = new UserEntity(2L,"Max","Muster",false);
+        UserEntity user3 = new UserEntity(3L,"test","deleted",true);
 
         User userDto1 = new User(user1);
         User userDto2 = new User(user2);
@@ -163,7 +164,7 @@ public class UserRepositoryTest extends GamertrackDbIT{
     @Test
     void ensureExistsByUserIdWorks(){
 
-        List<com.gepardec.adapter.output.persistence.entity.User> users = TestFixtures.users(4);
+        List<UserEntity> users = TestFixtures.users(4);
         Long savedId1 = userRepository.saveUser(new User(users.get(0))).get().getId();
         Long savedId2 = userRepository.saveUser(new User(users.get(1))).get().getId();
         Long savedId3 = userRepository.saveUser(new User(users.get(2))).get().getId();

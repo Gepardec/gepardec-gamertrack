@@ -1,7 +1,8 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
+import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.model.Score;
 import jakarta.inject.Inject;
@@ -40,11 +41,11 @@ public class GamertrackDbIT {
   public static Archive<?> createDeployment() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(EntityManager.class)
-        .addPackage(com.gepardec.adapter.output.persistence.entity.Score.class.getPackage())
+        .addPackage(ScoreEntity.class.getPackage())
         .addPackage(ScoreRepository.class.getPackage())
         .addPackage(ScoreRepositoryImpl.class.getPackage())
         .addPackage(Score.class.getPackage())
-        .addPackage(Mapper.class.getPackage())
+        .addPackage(EntityMapper.class.getPackage())
         .addPackage(TestFixtures.class.getPackage())
         .addAsManifestResource("beans.xml")
         .addAsManifestResource("persistence.xml");

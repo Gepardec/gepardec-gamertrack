@@ -1,8 +1,10 @@
 package com.gepardec.adapter.output.persistence.repository;
 
+import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
 import com.gepardec.core.repository.ScoreRepository;
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
-import com.gepardec.model.Game;
+import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,15 +28,15 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     protected EntityManager entityManager;
 
     @Inject
-    Mapper mapper;
+    EntityMapper entityMapper;
     @Override
     public Optional<Score> saveScore(Score scoreDto) {
-        if(entityManager.find(Game.class, scoreDto.getGame().getId()) != null) {
-            if(entityManager.find(User.class, scoreDto.getUser().getId()) != null) {
-                Score score = mapper.toScore(scoreDto);
+        if(entityManager.find(GameEntity.class, scoreDto.getGame().getId()) != null) {
+            if(entityManager.find(UserEntity.class, scoreDto.getUser().getId()) != null) {
+                ScoreEntity score = entityMapper.toScore(scoreDto);
                 entityManager.persist(score);
 
-                Score scoreSaved = entityManager.find(Score.class, score.getId());
+                ScoreEntity scoreSaved = entityManager.find(ScoreEntity.class, score.getId());
                 log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
                 return Optional.of(scoreSaved);
             }
@@ -47,12 +49,12 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public Optional<Score> updateScore(Score scoreDto) {
-        if(entityManager.find(Game.class, scoreDto.getGame().getId()) != null) {
-            if(entityManager.find(User.class, scoreDto.getUser().getId()) != null) {
-                Score score = mapper.toExistingScore(scoreDto, entityManager.find(Score.class, scoreDto.id()));
+        if(entityManager.find(GameEntity.class, scoreDto.getGame().getId()) != null) {
+            if(entityManager.find(UserEntity.class, scoreDto.getUser().getId()) != null) {
+                ScoreEntity score = entityMapper.toExistingScore(scoreDto, entityManager.find(ScoreEntity.class, scoreDto.getId()));
                 entityManager.merge(score);
 
-                Score scoreMerged = entityManager.find(Score.class, score.getId());
+                ScoreEntity scoreMerged = entityManager.find(ScoreEntity.class, score.getId());
                 log.info("Updated score with userId: {}, gameId: {} and {} scorePoints.", scoreDto.userId(), scoreDto.gameId(), scoreDto.scorePoints());
                 return Optional.of(scoreMerged);
             }
@@ -65,9 +67,9 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public Optional<Score> findScoreById(Long id) {
-        List<Score> resultList = entityManager.createQuery(
-                "SELECT s FROM Score s " +
-                        "WHERE s.id = :id ", Score.class)
+        List<ScoreEntity> resultList = entityManager.createQuery(
+                "SELECT s FROM ScoreEntity s " +
+                        "WHERE s.id = :id ", ScoreEntity.class)
                 .setParameter("id", id)
                 .getResultList();
         log.info("Find score with id: {}. Returned list of size:{}", id, resultList.size());
@@ -77,14 +79,14 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId, Boolean includeDeactivatedUsers) {
-        List<Score> resultList = entityManager.createQuery(
-                "SELECT s FROM Score s " +
+        List<ScoreEntity> resultList = entityManager.createQuery(
+                "SELECT s FROM ScoreEntity s " +
                         "WHERE (:minPoints is null OR :minPoints <= s.scorePoints) " +
                         "AND (:maxPoints is null OR s.scorePoints <= :maxPoints) " +
                         "AND (:includeDeactivatedUsers = true OR s.user.deactivated = false) " +
                         "AND (:userId is null OR s.user.id = :userId) " +
                         "AND (:gameId is null OR s.game.id = :gameId) " +
-                        "order by s.scorePoints", Score.class)
+                        "order by s.scorePoints", ScoreEntity.class)
                 .setParameter("minPoints", minPoints)
                 .setParameter("maxPoints", maxPoints)
                 .setParameter("includeDeactivatedUsers", includeDeactivatedUsers)
@@ -102,11 +104,11 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     public List<Score> findTopScoreByGame(Long gameId, int top, Boolean includeDeactivatedUsers) {
         if(top<=0){return List.of();}
 
-        List<Score> resultList = entityManager.createQuery(
-                "SELECT s FROM Score s " +
+        List<ScoreEntity> resultList = entityManager.createQuery(
+                "SELECT s FROM ScoreEntity s " +
                         "WHERE s.game.id = :gameId " +
                         "AND (:includeDeactivatedUsers = true OR s.user.deactivated = false) " +
-                        "order by s.scorePoints DESC", Score.class)
+                        "order by s.scorePoints DESC", ScoreEntity.class)
                 .setParameter("gameId", gameId)
                 .setParameter("includeDeactivatedUsers", includeDeactivatedUsers)
                 .setMaxResults(top)
@@ -117,10 +119,10 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public List<Score> findScoreByScorePoints(double scorePoints, Boolean includeDeactivatedUsers) {
-        List<Score> resultList = entityManager.createQuery(
-                "SELECT s FROM Score s " +
+        List<ScoreEntity> resultList = entityManager.createQuery(
+                "SELECT s FROM ScoreEntity s " +
                         "WHERE s.scorePoints = :scorePoints " +
-                        "AND (:includeDeactivatedUsers = true OR s.user.deactivated = false) ", Score.class)
+                        "AND (:includeDeactivatedUsers = true OR s.user.deactivated = false) ", ScoreEntity.class)
                 .setParameter("scorePoints", scorePoints)
                 .setParameter("includeDeactivatedUsers", includeDeactivatedUsers)
                 .getResultList();
@@ -131,10 +133,10 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
     @Override
     public boolean scoreExists(Score scoreDto) {
-        List<Score> entity = entityManager.createQuery(
-                        "SELECT s FROM Score s " +
+        List<ScoreEntity> entity = entityManager.createQuery(
+                        "SELECT s FROM ScoreEntity s " +
                                 "WHERE s.game.id = :gameId " +
-                                "AND s.user.id =:userId ", Score.class)
+                                "AND s.user.id =:userId ", ScoreEntity.class)
                 .setParameter("gameId", scoreDto.getGame().getId())
                 .setParameter("userId", scoreDto.getUser().getId())
                 .getResultList();

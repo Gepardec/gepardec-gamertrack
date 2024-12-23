@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
+import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.ScoreRepository;
@@ -24,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ArquillianExtension.class)
-public class ScoreRepositoryTest extends GamertrackDbIT {
+public class ScoreEntityRepositoryTest extends GamertrackDbIT {
 
   @PersistenceContext
   EntityManager entityManager;
@@ -47,17 +50,17 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
   void beforeEach() throws Exception {
-    super.removeTableData(com.gepardec.adapter.output.persistence.entity.Score.class);
-    super.removeTableData(com.gepardec.adapter.output.persistence.entity.Game.class);
-    super.removeTableData(com.gepardec.adapter.output.persistence.entity.User.class);
+    super.removeTableData(ScoreEntity.class);
+    super.removeTableData(GameEntity.class);
+    super.removeTableData(UserEntity.class);
   }
 
   @Test
   void ensureSaveScoreWorks() {
-    com.gepardec.adapter.output.persistence.entity.Game game = TestFixtures.game(1L);
+    GameEntity game = TestFixtures.game(1L);
     Game gameDto = TestFixtures.gameToGameDto(game);
 
-    com.gepardec.adapter.output.persistence.entity.User user = TestFixtures.user(1L);
+    UserEntity user = TestFixtures.user(1L);
     User userDto = new User(user);
 
     Long savedGameId = gameRepository.saveGame(gameDto).get().getId();
@@ -72,10 +75,10 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureUpdateScoreWorks() {
-    com.gepardec.adapter.output.persistence.entity.Game game = TestFixtures.game(1L);
+    GameEntity game = TestFixtures.game(1L);
     Game gameDto = TestFixtures.gameToGameDto(game);
 
-    com.gepardec.adapter.output.persistence.entity.User user = TestFixtures.user(1L);
+    UserEntity user = TestFixtures.user(1L);
     User userDto = new User(user);
 
     Long savedGameId = gameRepository.saveGame(gameDto).get().getId();
@@ -89,16 +92,16 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     scoreRepository.updateScore(updatedScore);
 
-    Optional<com.gepardec.adapter.output.persistence.entity.Score> foundScore = scoreRepository.findScoreById(savedId);
+    Optional<ScoreEntity> foundScore = scoreRepository.findScoreById(savedId);
     assertTrue(foundScore.isPresent());
     assertEquals(foundScore.get().getScorePoints(), updatedScore.scorePoints());
   }
 
   @Test
   void ensureFindAllScoresWorks() {
-    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
-    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
-    com.gepardec.adapter.output.persistence.entity.User user3 = TestFixtures.user(3L);
+    UserEntity user1 = TestFixtures.user(1L);
+    UserEntity user2 = TestFixtures.user(2L);
+    UserEntity user3 = TestFixtures.user(3L);
 
     User userDto1 = new User(user1);
     User userDto2 = new User(user2);
@@ -108,7 +111,7 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
     Long savedUserId3 = userRepository.saveUser(userDto3).get().getId();
 
-    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
+    GameEntity game1 = TestFixtures.game();
 
     Game gameDto1 = TestFixtures.gameToGameDto(game1);
 
@@ -129,8 +132,8 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureFindScoreByIdWorks() {
-    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
-    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
+    UserEntity user1 = TestFixtures.user(1L);
+    UserEntity user2 = TestFixtures.user(2L);
 
     User userDto1 = new User(user1);
     User userDto2 = new User(user2);
@@ -138,8 +141,8 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Long savedUserId1 = userRepository.saveUser(userDto1).get().getId();
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
 
-    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
-    com.gepardec.adapter.output.persistence.entity.Game game2 = TestFixtures.game();
+    GameEntity game1 = TestFixtures.game();
+    GameEntity game2 = TestFixtures.game();
 
     Game gameDto1 = TestFixtures.gameToGameDto(game1);
     Game gameDto2 = TestFixtures.gameToGameDto(game2);
@@ -160,9 +163,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureFindTopScoresByGameWorks() {
-    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
-    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
-    com.gepardec.adapter.output.persistence.entity.User user3 = TestFixtures.user(3L);
+    UserEntity user1 = TestFixtures.user(1L);
+    UserEntity user2 = TestFixtures.user(2L);
+    UserEntity user3 = TestFixtures.user(3L);
 
     User userDto1 = new User(user1);
     User userDto2 = new User(user2);
@@ -172,7 +175,7 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
     Long savedUserId3 = userRepository.saveUser(userDto3).get().getId();
 
-    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
+    GameEntity game1 = TestFixtures.game();
 
     Game gameDto1 = TestFixtures.gameToGameDto(game1);
 
@@ -193,9 +196,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureFindTopScoresByUserWorks() {
-    com.gepardec.adapter.output.persistence.entity.User user1 = TestFixtures.user(1L);
-    com.gepardec.adapter.output.persistence.entity.User user2 = TestFixtures.user(2L);
-    com.gepardec.adapter.output.persistence.entity.User user3 = TestFixtures.user(3L);
+    UserEntity user1 = TestFixtures.user(1L);
+    UserEntity user2 = TestFixtures.user(2L);
+    UserEntity user3 = TestFixtures.user(3L);
 
     User userDto1 = new User(user1);
     User userDto2 = new User(user2);
@@ -205,7 +208,7 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Long savedUserId2 = userRepository.saveUser(userDto2).get().getId();
     Long savedUserId3 = userRepository.saveUser(userDto3).get().getId();
 
-    com.gepardec.adapter.output.persistence.entity.Game game1 = TestFixtures.game();
+    GameEntity game1 = TestFixtures.game();
 
     Game gameDto1 = TestFixtures.gameToGameDto(game1);
 

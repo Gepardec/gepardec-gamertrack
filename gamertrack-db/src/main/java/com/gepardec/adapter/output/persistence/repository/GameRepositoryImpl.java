@@ -1,6 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
+import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,42 +21,42 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   private EntityManager em;
 
   @Inject
-  private Mapper mapper;
+  private EntityMapper entityMapper;
 
   @Override
-  public Optional<com.gepardec.adapter.output.persistence.entity.Game> saveGame(Game gameDto) {
-    com.gepardec.adapter.output.persistence.entity.Game game = mapper.toGame(gameDto);
+  public Optional<GameEntity> saveGame(Game gameDto) {
+    GameEntity game = entityMapper.toGame(gameDto);
 
     em.persist(game);
     em.flush();
-    return Optional.ofNullable(em.find(com.gepardec.adapter.output.persistence.entity.Game.class, game.getId()));
+    return Optional.ofNullable(em.find(GameEntity.class, game.getId()));
   }
 
   @Override
   public void deleteGame(Long gameId) {
-    em.remove(em.find(com.gepardec.adapter.output.persistence.entity.Game.class, gameId));
+    em.remove(em.find(GameEntity.class, gameId));
   }
 
   @Override
-  public Optional<com.gepardec.adapter.output.persistence.entity.Game> updateGame(Game gameDto) {
-    Optional<com.gepardec.adapter.output.persistence.entity.Game> gameOld = findGameById(gameDto.id());
-    return gameOld.map(game -> mapper.toGame(gameDto, game)).map(em::merge);
+  public Optional<GameEntity> updateGame(Game gameDto) {
+    Optional<GameEntity> gameOld = findGameById(gameDto.id());
+    return gameOld.map(game -> entityMapper.toGame(gameDto, game)).map(em::merge);
   }
 
   @Override
-  public Optional<com.gepardec.adapter.output.persistence.entity.Game> findGameById(long id) {
-    return Optional.ofNullable(em.find(com.gepardec.adapter.output.persistence.entity.Game.class, id));
+  public Optional<GameEntity> findGameById(long id) {
+    return Optional.ofNullable(em.find(GameEntity.class, id));
 
   }
 
   @Override
-  public List<com.gepardec.adapter.output.persistence.entity.Game> findAllGames() {
-    return em.createQuery("select g from Game g", com.gepardec.adapter.output.persistence.entity.Game.class).getResultList();
+  public List<GameEntity> findAllGames() {
+    return em.createQuery("select g from GameEntity g", GameEntity.class).getResultList();
   }
 
   @Override
   public Boolean gameExistsByGameName(String gameName) {
-    Query query = em.createQuery("select g from Game g where g.name = :gameName", com.gepardec.adapter.output.persistence.entity.Game.class);
+    Query query = em.createQuery("select g from GameEntity g where g.name = :gameName", GameEntity.class);
     query.setParameter("gameName", gameName);
 
     return !query.getResultList().isEmpty();
