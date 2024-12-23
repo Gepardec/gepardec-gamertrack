@@ -36,23 +36,27 @@ public class UserResourceImpl implements UserResource {
     @Override
     public Response getUser(Long id){
         return userService.findUserById(id).map(UserRestDto::new).map(Response::ok)
-                .orElseGet(() ->  Response.status(Status.NO_CONTENT)).build();
+                .orElseGet(() ->  Response.status(Status.NOT_FOUND)).build();
     }
 
 
     @Override
     public Response getUsers(){
-        return userService.findAllUsers().stream().map(UserRestDto::new).toList().isEmpty()
-                ? Response.status(Status.NO_CONTENT).build()
-                : Response.ok().entity(userService.findAllUsers().stream().map(UserRestDto::new).toList()).build();
+        return Response.ok(userService.findAllUsers()
+                .stream()
+                .map(UserRestDto::new)
+                .toList())
+                .build();
 
     }
 
     @Override
     public Response getUsersIncludeDeleted() {
-        return userService.findAllUsersIncludeDeleted().stream().map(UserRestDto::new).toList().isEmpty()
-                ? Response.status(Status.NO_CONTENT).build()
-                : Response.ok().entity(userService.findAllUsersIncludeDeleted().stream().map(UserRestDto::new).toList()).build();
+        return Response.ok(userService.findAllUsersIncludeDeleted()
+                        .stream()
+                        .map(UserRestDto::new)
+                        .toList())
+                .build();
     }
 
     @Override

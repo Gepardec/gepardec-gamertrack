@@ -9,6 +9,8 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Optional;
+
 @RequestScoped
 public class ScoreResourceImpl implements ScoreResource {
 
@@ -18,16 +20,12 @@ public class ScoreResourceImpl implements ScoreResource {
     private RestMapper mapper;
 
     @Override
-    public Response getScores(double minScore, double maxScore) {
-        if (minScore == 0 && maxScore == 0) {
-            return scoreService.findAllScores().stream().map(ScoreRestDto::new).toList().isEmpty()
-                    ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.ok().entity(scoreService.findAllScores().stream().map(ScoreRestDto::new).toList()).build();
-        } else {
-            return scoreService.findScoreByMinMaxScorePoints(minScore,maxScore).stream().map(ScoreRestDto::new).toList().isEmpty()
-                    ? Response.status(Response.Status.NO_CONTENT).build()
-                    : Response.ok().entity(scoreService.findScoreByMinMaxScorePoints(minScore,maxScore).stream().map(ScoreRestDto::new).toList()).build();
-        }
+    public Response getScores(Double minPoints, Double maxPoints, Long userId, Long gameId,Boolean includeDeactivated) {
+        return Response.ok(scoreService.filterScores(minPoints,maxPoints, userId,gameId,includeDeactivated)
+                        .stream()
+                        .map(ScoreRestDto::new)
+                        .toList())
+                .build();
     }
 
     @Override
@@ -38,26 +36,12 @@ public class ScoreResourceImpl implements ScoreResource {
     }
 
     @Override
-    public Response getScoreByUser(Long userId) {
-        return scoreService.findScoreByUser(userId).stream().map(ScoreRestDto::new).toList().isEmpty()
-                ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findScoreByUser(userId).stream().map(ScoreRestDto::new).toList()).build();
-
-    }
-
-    @Override
-    public Response getScoreByGame(Long gameId) {
-        return scoreService.findScoreByGame(gameId).stream().map(ScoreRestDto::new).toList().isEmpty()
-                ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findScoreByGame(gameId).stream().map(ScoreRestDto::new).toList()).build();
-
-    }
-
-    @Override
-    public Response getScoreByScorePoints(double points) {
-        return scoreService.findScoreByScorePoints(points).stream().map(ScoreRestDto::new).toList().isEmpty()
-                ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findScoreByScorePoints(points).stream().map(ScoreRestDto::new).toList()).build();
+    public Response getScoreByScorePoints(double points, Boolean includeDeactivated) {
+        return Response.ok(scoreService.findScoreByScoresPoints(points, includeDeactivated)
+                        .stream()
+                        .map(ScoreRestDto::new)
+                        .toList())
+                .build();
     }
 
     //Only temporary for testing

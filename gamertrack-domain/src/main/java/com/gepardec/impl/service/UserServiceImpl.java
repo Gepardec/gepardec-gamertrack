@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService, Serializable {
 
             if(user.isPresent()){
                 log.info("deleting: user with the id {} is present", id);
-                List<Score> scoresByUser = scoreService.findScoreByUser(user.get().getId());
+                List<Score> scoresByUser = scoreService.findScoresByUser(user.get().getId(),true);
                 if(scoresByUser.isEmpty()){
                     log.info("user with the id {} has no scores stored. deleting user", id);
 

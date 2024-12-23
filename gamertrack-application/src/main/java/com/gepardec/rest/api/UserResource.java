@@ -57,7 +57,6 @@ public interface UserResource {
     @Operation(summary = "Get all users including the deleted User", description = "Returns a list of users including deleted users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "204", description = "No Content - No users were found")
     })
     @Path("/includeDeleted")
     @GET
@@ -66,7 +65,6 @@ public interface UserResource {
     @Operation(summary = "Get User by id", description = "Returns user by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "204", description = "No Content - The user was not found")
     })
     @Path("{id}")
     @GET

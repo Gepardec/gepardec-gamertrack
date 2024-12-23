@@ -1,5 +1,6 @@
 package com.gepardec.impl.service;
 
+import static com.gepardec.TestFixtures.matches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,7 +81,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindAllMatchesReturnsAllMatches() {
-    List<Match> matches = TestFixtures.matches(10);
+    List<Match> matches = matches(10);
 
     when(matchRepository.findAllMatches()).thenReturn(matches);
 
@@ -157,10 +158,10 @@ class MatchServiceImplTest {
   void ensureFindMatchByUserIdReturnsListOfMatchesForExistingMatchWithUserId() {
     Match match = TestFixtures.match();
 
-    when(matchRepository.findMatchByUserId(anyLong())).thenReturn(
+    when(matchRepository.findMatchesByUserId(anyLong())).thenReturn(
         List.of(match));
 
-    var foundMatches = matchService.findMatchByUserId(
+    var foundMatches = matchService.findMatchesByUserId(
         match.getUsers().getFirst().getId());
 
     assertTrue(foundMatches.contains(match));
@@ -169,9 +170,9 @@ class MatchServiceImplTest {
   @Test
   void ensureFindMatchByUserIdReturnsEmptyListForNonExistingMatch() {
     Match match = TestFixtures.match();
-    when(matchRepository.findMatchByUserId(anyLong())).thenReturn(List.of());
+    when(matchRepository.findMatchesByUserId(anyLong())).thenReturn(List.of());
 
-    var foundMatches = matchService.findMatchByUserId(
+    var foundMatches = matchService.findMatchesByUserId(
         match.getUsers().getFirst().getId());
 
     assertTrue(foundMatches.isEmpty());
@@ -182,9 +183,9 @@ class MatchServiceImplTest {
   void ensureFindMatchByGameIdReturnsListOfMatchesForExistingMatch() {
     Match match = TestFixtures.match();
 
-    when(matchRepository.findMatchByGameId(anyLong())).thenReturn(List.of(match));
+    when(matchRepository.findMatchesByGameId(anyLong())).thenReturn(List.of(match));
 
-    var matches = matchService.findMatchsByGameId(match.getGame().getId());
+    var matches = matchService.findMatchesByGameId(match.getGame().getId());
 
     assertTrue(matches.contains(match));
   }
@@ -193,12 +194,73 @@ class MatchServiceImplTest {
   void ensureFindMatchByGameIdReturnsEmptyListForNonExistingMatch() {
     Match match = TestFixtures.match();
 
-    when(matchRepository.findMatchByGameId(anyLong())).thenReturn(List.of());
+    when(matchRepository.findMatchesByGameId(anyLong())).thenReturn(List.of());
 
-    var foundGameOutcomes = matchService.findMatchsByGameId(
+    var foundGameOutcomes = matchService.findMatchesByGameId(
         match.getGame().getId());
 
     assertTrue(foundGameOutcomes.isEmpty());
 
+  }
+
+  @Test
+  void ensureFindMatchByUserIdAndGameIdReturnsListOfMatchesForExistingMatch() {
+    List<Match> matches = TestFixtures.matches(5);
+    when(matchRepository.findMatchesByUserIdAndGameId(anyLong(), anyLong())).thenReturn(matches);
+
+    var foundMatches = matchService.findMatchesByUserIdAndGameId(Optional.of(1L), Optional.of(2L));
+    assertTrue(matches.contains(matches.get(0)));
+    assertEquals(matches.size(), foundMatches.size());
+  }
+
+  @Test
+  void ensureFindMatchByUserIdAndGameIdReturnsEmptyListForNonExistingMatch() {
+    List<Match> matches = TestFixtures.matches(5);
+    when(matchRepository.findMatchesByUserIdAndGameId(anyLong(), anyLong())).thenReturn(List.of());
+    var foundMatches = matchService.findMatchesByUserIdAndGameId(Optional.of(1L), Optional.of(2L));
+
+    assertTrue(foundMatches.isEmpty());
+  }
+
+  @Test
+  void ensureFindMatchByUserIdAndGameIdReturnsExistingMatchForUserIdNotBeingSpecified() {
+    Match match = TestFixtures.match();
+    List<Match> matches = new ArrayList<>();
+    matches.add(match);
+    when(matchRepository.findMatchesByGameId(anyLong())).thenReturn(matches);
+
+    var foundMatches = matchService.findMatchesByUserIdAndGameId(Optional.empty(),
+        Optional.of(match.getId()));
+
+    assertTrue(foundMatches.contains(match));
+    assertEquals(foundMatches.size(), matches.size());
+    assertEquals(match, foundMatches.stream().findFirst().get());
+
+  }
+
+  @Test
+  void ensureFindMatchByUserIdAndGameIdReturnsExistingMatchForGameIdNotBeingSpecified() {
+    Match match = TestFixtures.match();
+    List<Match> matches = new ArrayList<>();
+    matches.add(match);
+
+    when(matchRepository.findMatchesByUserId(anyLong())).thenReturn(matches);
+
+    var foundmatches = matchService.findMatchesByUserIdAndGameId(
+        Optional.of(match.getUsers().getFirst().getId()),
+        Optional.empty());
+
+    assertTrue(foundmatches.contains(match));
+    assertEquals(foundmatches.size(), matches.size());
+    assertEquals(match, foundmatches.stream().findFirst().get());
+  }
+
+  @Test
+  void ensureFindMatchByUserIdAndGameReturnsEmptyListForBothEmptyParameters() {
+
+    var foundMatches = matchService.findMatchesByUserIdAndGameId(Optional.empty(),
+        Optional.empty());
+
+    assertTrue(foundMatches.isEmpty());
   }
 }
