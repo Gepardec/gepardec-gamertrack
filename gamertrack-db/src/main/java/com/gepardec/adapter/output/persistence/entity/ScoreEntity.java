@@ -4,43 +4,43 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-public class Score extends AbstractEntity{
+public class ScoreEntity extends AbstractEntity{
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    public User user;
+    private UserEntity user;
 
     @NotNull
     @ManyToOne()
     @JoinColumn(name = "fk_game_score", foreignKey = @ForeignKey(name = "fk_game_score"))
-    public Game game;
+    private GameEntity game;
 
     @NotNull
-    public double scorePoints;
+    private double scorePoints;
 
-    public Score(User user, Game game, double scorePoints) {
+    public ScoreEntity(UserEntity user, GameEntity game, double scorePoints) {
         this.user = user;
         this.game = game;
         this.scorePoints = scorePoints;
     }
 
-    public Score() {
+    public ScoreEntity() {
 
     }
 
-    public User getUser() {
+    public UserEntity getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserEntity user) {
         this.user = user;
     }
 
-    public Game getGame() {
+    public GameEntity getGame() {
         return game;
     }
 
-    public void setGame(Game game) {
+    public void setGame(GameEntity game) {
         this.game = game;
     }
     public double getScorePoints() {

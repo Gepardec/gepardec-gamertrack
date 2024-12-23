@@ -13,40 +13,40 @@ import java.util.List;
 
 @Entity
 @Table(name = "matches")
-public class Match extends AbstractEntity {
+public class MatchEntity extends AbstractEntity {
 
   @ManyToOne()
   @JoinColumn(name = "fk_game_match", foreignKey = @ForeignKey(name = "fk_game_match"))
-  private Game game;
+  private GameEntity game;
 
   @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
   @JoinTable(name = "matches_users", joinColumns =
   @JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")), inverseJoinColumns =
   @JoinColumn(name = "fk_match", foreignKey = @ForeignKey(name = "fk_match")))
-  private List<User> users;
+  private List<UserEntity> users;
 
-  public Match() {
+  public MatchEntity() {
 
   }
 
-  public Match(Game game, List<User> users) {
+  public MatchEntity(GameEntity game, List<UserEntity> users) {
     this.game = game;
     this.users = users;
   }
 
-  public Game getGame() {
+  public GameEntity getGame() {
     return game;
   }
 
-  public void setGame(Game game) {
+  public void setGame(GameEntity game) {
     this.game = game;
   }
 
-  public List<User> getUsers() {
+  public List<UserEntity> getUsers() {
     return users;
   }
 
-  public void setUsers(List<User> users) {
+  public void setUsers(List<UserEntity> users) {
     this.users = users;
   }
 }

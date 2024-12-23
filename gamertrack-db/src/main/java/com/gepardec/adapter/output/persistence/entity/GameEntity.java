@@ -6,19 +6,19 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "games")
-public class Game extends AbstractEntity {
+public class GameEntity extends AbstractEntity {
 
   @NotBlank
   private String name;
   private String rules;
 
 
-  public Game(String name, String rules) {
+  public GameEntity(String name, String rules) {
     this.name = name;
     this.rules = rules;
   }
 
-  public Game() {
+  public GameEntity() {
 
   }
 

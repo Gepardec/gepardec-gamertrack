@@ -7,37 +7,37 @@ import java.util.List;
 
 @Entity()
 @Table(name = "users")
-public class User extends AbstractEntity{
+public class UserEntity extends AbstractEntity{
 
     @NotEmpty(message = "Firstname must be set")
-    public String firstname;
+    private String firstname;
     @NotEmpty(message = "Lastname must be set")
-    public String lastname;
+    private String lastname;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
-    public List<Score> scores;
+    private List<ScoreEntity> scores;
 
-    public boolean deactivated;
+    private boolean deactivated;
 
-    public User(String firstname, String lastname) {
+    public UserEntity(String firstname, String lastname) {
         this.firstname = firstname;
         this.lastname = lastname;
     }
     //temp
-    public User(String firstname, String lastname, boolean deactivated) {
+    public UserEntity(String firstname, String lastname, boolean deactivated) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.deactivated = deactivated;
     }
 
-    public User(long id, String firstname, String lastname, boolean deactivated) {
+    public UserEntity(long id, String firstname, String lastname, boolean deactivated) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.deactivated = deactivated;
     }
 
-    public User() {}
+    public UserEntity() {}
 
     public String getFirstname() {
         return firstname;
