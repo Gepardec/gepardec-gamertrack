@@ -1,5 +1,9 @@
 package com.gepardec.adapter.output.persistence.repository.mapper;
 
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
+import com.gepardec.adapter.output.persistence.entity.MatchEntity;
+import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
@@ -16,64 +20,74 @@ public class EntityMapper {
   @PersistenceContext()
   protected EntityManager entityManager;
 
-  public com.gepardec.adapter.output.persistence.entity.User toUser(User user) {
-    return new com.gepardec.adapter.output.persistence.entity.User(user.firstname(), user.lastname(), user.deactivated());
+  public UserEntity UserModelToUserEntity(User user) {
+    return new UserEntity(user.getFirstname(), user.getLastname(), user.isDeactivated());
   }
 
-  public com.gepardec.adapter.output.persistence.entity.User toExistingUser(User userDTO, com.gepardec.adapter.output.persistence.entity.User user) {
-    user.setFirstname(userDTO.firstname());
-    user.setLastname(userDTO.lastname());
-    user.setDeactivated(userDTO.deactivated());
-    return user;
+  public User UserEntityToUserModel(UserEntity userEntity) {
+    return new User(userEntity.getId(), userEntity.getFirstname(), userEntity.getLastname(), userEntity.isDeactivated());
   }
 
-  public com.gepardec.adapter.output.persistence.entity.Score toScore(Score score) {
-    return new com.gepardec.adapter.output.persistence.entity.Score(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.User.class, score.userId()),
-        entityManager.getReference(com.gepardec.adapter.output.persistence.entity.Game.class, score.gameId()), score.scorePoints());
+  public UserEntity UserModeltoExistingUserEntity(User user, UserEntity userEntity) {
+    userEntity.setFirstname(user.getFirstname());
+    userEntity.setLastname(user.getLastname());
+    userEntity.setDeactivated(user.isDeactivated());
+    return userEntity;
   }
 
-  public com.gepardec.adapter.output.persistence.entity.Score toExistingScore(Score scoreDto, com.gepardec.adapter.output.persistence.entity.Score score) {
-    score.setUser(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.User.class, scoreDto.userId()));
-    score.setGame(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.Game.class, scoreDto.gameId()));
-    score.setScorePoints(scoreDto.scorePoints());
-    return score;
+  public ScoreEntity ScoreModeltoScoreEntity(Score score) {
+    return new ScoreEntity(entityManager.getReference(UserEntity.class, score.getUser().getId()),
+        entityManager.getReference(GameEntity.class, score.getGame().getId()), score.getScorePoints());
+  }
+  public Score ScoreEntityToScoreModel(ScoreEntity scoreEntity) {
+    return new Score(scoreEntity.getId(), UserEntityToUserModel(scoreEntity.getUser()), GameEntityToGameModel(scoreEntity.getGame()), scoreEntity.getScorePoints());
+  }
+
+  public ScoreEntity ScoreModeltoExistingScoreEntity(Score score, ScoreEntity scoreEntity) {
+    scoreEntity.setUser(entityManager.getReference(UserEntity.class, score.getUser().getId()));
+    scoreEntity.setGame(entityManager.getReference(GameEntity.class, score.getGame().getId()));
+    scoreEntity.setScorePoints(score.getScorePoints());
+    return scoreEntity;
   }
 
 
-  public com.gepardec.adapter.output.persistence.entity.Match toMatchWithReference(Match match) {
-    return toMatchWithReference(match, new com.gepardec.adapter.output.persistence.entity.Match());
+  public MatchEntity MatchModeltoModelEntiyWithReference(Match match) {
+    return MatchModeltoMatchEntityWithReference(match, new MatchEntity());
   }
 
-  public com.gepardec.adapter.output.persistence.entity.Match toMatchWithReference(Match matchDto,
-                                                                                   com.gepardec.adapter.output.persistence.entity.Match match) {
-    if (matchDto == null && match == null) {
+  public Match MatchEntityToMatchModel(MatchEntity matchEntity) {
+    return new Match(matchEntity.getId(),GameEntityToGameModel(matchEntity.getGame()),matchEntity.getUsers().stream().map(this::UserEntityToUserModel).toList());
+  }
+
+  public MatchEntity MatchModeltoMatchEntityWithReference(Match match, MatchEntity matchEntity) {
+    if (match == null && match == null) {
       return null;
     }
 
-    List<com.gepardec.adapter.output.persistence.entity.User> users = new ArrayList<>();
+    List<UserEntity> users = new ArrayList<>();
 
-    if (matchDto.id() != null) {
-      match.setId(matchDto.id());
+    if (match.getId() != null) {
+      match.setId(match.getId());
     }
 
-    matchDto.userIds()
-        .forEach(userid -> users.add(
-            entityManager.getReference(com.gepardec.adapter.output.persistence.entity.User.class, userid)));
-
-    match.setGame(entityManager.getReference(com.gepardec.adapter.output.persistence.entity.Game.class, matchDto.gameId()));
-    match.setUsers(users);
-    return match;
+    matchEntity.setGame(GameModelToGameEntity(match.getGame()));
+    matchEntity.setUsers(match.getUsers().stream().map(this::UserModelToUserEntity).toList());
+    return matchEntity;
   }
 
-  public com.gepardec.adapter.output.persistence.entity.Game toGame(Game game) {
-    return toGame(game, new com.gepardec.adapter.output.persistence.entity.Game());
+  public GameEntity GameModelToGameEntity(Game game) {
+    return new GameEntity(game.getRules(), game.getTitle());
   }
 
-  public com.gepardec.adapter.output.persistence.entity.Game toGame(Game gameDto, com.gepardec.adapter.output.persistence.entity.Game game) {
-    game.setRules(gameDto.rules());
-    game.setName(gameDto.title());
+  public Game GameEntityToGameModel(GameEntity gameEntity) {
+    return new Game(gameEntity.getId(),gameEntity.getName(),gameEntity.getRules());
+  }
 
-    return game;
+  public GameEntity GameModelToExitstingGameEntity(Game game, GameEntity gameEntity) {
+    gameEntity.setRules(game.getRules());
+    gameEntity.setName(game.getTitle());
+
+    return gameEntity;
   }
 
 }
