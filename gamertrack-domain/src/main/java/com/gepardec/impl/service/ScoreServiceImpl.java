@@ -3,7 +3,6 @@ package com.gepardec.impl.service;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.services.ScoreService;
 import com.gepardec.model.Score;
-import com.gepardec.model.dto.ScoreDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,7 +23,7 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     private ScoreRepository scoreRepository;
 
     @Override
-    public Optional<Score> saveScore(ScoreDto score) {
+    public Optional<Score> saveScore(Score score) {
 
         if(!scoreExists(score)) {
             return scoreRepository.saveScore(score);

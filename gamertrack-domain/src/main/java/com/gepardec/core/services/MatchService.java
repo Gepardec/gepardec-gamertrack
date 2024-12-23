@@ -7,15 +7,15 @@ import java.util.Optional;
 
 public interface MatchService {
 
-  Optional<Match> saveMatch(Match gameOutcomeDto);
+  Optional<Match> saveMatch(Match match);
 
   List<Match> findAllMatches();
 
   Optional<Match> findMatchById(Long id);
 
-  Optional<Match> deleteMatch(Long gameOutcomeId);
+  Optional<Match> deleteMatch(Long matchId);
 
-  Optional<Match> updateMatch(Match gameOutcomeDto);
+  Optional<Match> updateMatch(Match matchDto);
 
   List<Match> findMatchesByUserId(Long userId);
 
