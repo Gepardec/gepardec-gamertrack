@@ -47,7 +47,7 @@ public class ScoreResourceImpl implements ScoreResource {
     //Only temporary for testing
     @Override
     public Response createScore(CreateScoreCommand score) {
-        return scoreService.saveScore(mapper.toScore(score)).map(ScoreRestDto::new)
+        return scoreService.saveScore(mapper.createScoreCommandtoScore(score)).map(ScoreRestDto::new)
                 .map(score1 -> Response.status(Response.Status.CREATED).entity(score1))
                 .orElseGet(() ->  Response.status(Response.Status.NOT_FOUND)).build();
     }

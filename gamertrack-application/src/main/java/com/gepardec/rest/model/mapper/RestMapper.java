@@ -24,7 +24,7 @@ public class RestMapper {
     return new User(null, createUserCommand.firstname(), createUserCommand.lastname(), false);
   }
 
-  public User updateUserCommandtoUserDto(Long id, UpdateUserCommand updateUserCommand) {
+  public User updateUserCommandtoUser(Long id, UpdateUserCommand updateUserCommand) {
     return new User(id, updateUserCommand.firstname(), updateUserCommand.lastname(),
         updateUserCommand.deactivated());
   }
@@ -39,11 +39,11 @@ public class RestMapper {
     return new Match(null, createGameCommand.game(), createGameCommand.users());
   }
 
-  public Game updateGameCommandtoGameDto(Long id, UpdateGameCommand updateGameCommand) {
+  public Game updateGameCommandtoGame(Long id, UpdateGameCommand updateGameCommand) {
     return new Game(id, updateGameCommand.title(), updateGameCommand.rules());
   }
 
-  public Game createGameCommandtoGameDto(CreateGameCommand createGameCommand) {
+  public Game createGameCommandtoGame(CreateGameCommand createGameCommand) {
     return new Game(null, createGameCommand.title(), createGameCommand.rules());
   }
 }

@@ -10,9 +10,10 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 @RequestScoped
 public class MatchResourceImpl implements MatchResource {
@@ -61,7 +62,7 @@ public class MatchResourceImpl implements MatchResource {
   @Override
   public Response createMatch(CreateMatchCommand matchCmd) {
     logger.info("Creating match: %s".formatted(matchCmd));
-    return matchService.saveMatch(restMapper.toMatchDto(matchCmd))
+    return matchService.saveMatch(restMapper.createMatchCommandtoMatch(matchCmd))
         .map(MatchRestDto::new)
         .map(go -> Response.status(Status.CREATED).entity(go))
         .orElseGet(() -> Response.status(Status.BAD_REQUEST)).build();
@@ -74,7 +75,7 @@ public class MatchResourceImpl implements MatchResource {
       return Response.status(Status.BAD_REQUEST).build();
     }
 
-    return matchService.updateMatch(restMapper.toMatchDto(id, matchCommand))
+    return matchService.updateMatch(restMapper.updateMatchCommandtoMatch(id, matchCommand))
         .map(MatchRestDto::new)
         .map(Response::ok)
         .orElseGet(() -> Response.status(Status.BAD_REQUEST)).build();
