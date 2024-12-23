@@ -24,12 +24,14 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   private EntityMapper entityMapper;
 
   @Override
-  public Optional<GameEntity> saveGame(Game gameDto) {
-    GameEntity game = entityMapper.toGame(gameDto);
+  public Optional<Game> saveGame(Game game) {
+    GameEntity gameEntity = entityMapper.GameModelToGameEntity(game);
 
-    em.persist(game);
+    em.persist(gameEntity);
     em.flush();
-    return Optional.ofNullable(em.find(GameEntity.class, game.getId()));
+
+    GameEntity foundGameEntity = em.find(GameEntity.class, game.getId());
+    return Optional.ofNullable(entityMapper.GameEntityToGameModel(foundGameEntity));
   }
 
   @Override
@@ -38,25 +40,33 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   }
 
   @Override
-  public Optional<GameEntity> updateGame(Game gameDto) {
-    Optional<GameEntity> gameOld = findGameById(gameDto.id());
-    return gameOld.map(game -> entityMapper.toGame(gameDto, game)).map(em::merge);
+  public Optional<Game> updateGame(Game game) {
+    GameEntity gameEntityOld = findGameById(game.getId()).map(entityMapper::GameModelToGameEntity)
+        .get();
+    GameEntity gameEntityUpdated = entityMapper.GameModelToExitstingGameEntity(game, gameEntityOld);
+
+    return Optional.of(em.merge(gameEntityUpdated)).map(entityMapper::GameEntityToGameModel);
   }
 
   @Override
-  public Optional<GameEntity> findGameById(long id) {
-    return Optional.ofNullable(em.find(GameEntity.class, id));
+  public Optional<Game> findGameById(long id) {
+    return Optional.ofNullable(entityMapper.GameEntityToGameModel(em.find(GameEntity.class, id)));
 
   }
 
   @Override
-  public List<GameEntity> findAllGames() {
-    return em.createQuery("select g from GameEntity g", GameEntity.class).getResultList();
+  public List<Game> findAllGames() {
+    return em.createQuery("select g from GameEntity g", GameEntity.class)
+        .getResultList()
+        .stream()
+        .map(entityMapper::GameEntityToGameModel)
+        .toList();
   }
 
   @Override
   public Boolean gameExistsByGameName(String gameName) {
-    Query query = em.createQuery("select g from GameEntity g where g.name = :gameName", GameEntity.class);
+    Query query = em.createQuery("select g from GameEntity g where g.name = :gameName",
+        GameEntity.class);
     query.setParameter("gameName", gameName);
 
     return !query.getResultList().isEmpty();

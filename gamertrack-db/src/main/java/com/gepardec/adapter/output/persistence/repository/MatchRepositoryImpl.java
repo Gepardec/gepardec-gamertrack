@@ -29,7 +29,7 @@ public class MatchRepositoryImpl implements MatchRepository {
   public Optional<Match> saveMatch(Match matchDto) {
     logger.info("  match {}", matchDto);
 
-    MatchEntity match = entityMapper.toMatchWithReference(matchDto);
+    MatchEntity match = entityMapper.matchModelToMatchEntity(matchDto);
 
     em.persist(match);
 
@@ -39,14 +39,19 @@ public class MatchRepositoryImpl implements MatchRepository {
   @Override
   public List<Match> findAllMatches() {
     logger.info("Finding all matches");
-    return em.createQuery("select go from MatchEntity go", MatchEntity.class).getResultList();
+    return em.createQuery("select go from MatchEntity go", MatchEntity.class)
+        .getResultList()
+        .stream()
+        .map(entityMapper::matchEntityToMatchModel)
+        .toList();
   }
 
   @Override
   public Optional<Match> findMatchById(Long id) {
     logger.info("Finding game outcome by id: %s".formatted(id));
-    System.out.println(id);
-    return Optional.ofNullable(em.find(MatchEntity.class, id));
+
+    return Optional.ofNullable(em.find(MatchEntity.class, id))
+        .map(entityMapper::matchEntityToMatchModel);
   }
 
   @Override
@@ -64,14 +69,16 @@ public class MatchRepositoryImpl implements MatchRepository {
   }
 
   @Override
-  public Optional<Match> updateMatch(Match matchDto) {
-    logger.info("updating game outcome with id: %s".formatted(matchDto.id()));
+  public Optional<Match> updateMatch(Match matchNew) {
+    logger.info("updating game outcome with id: %s".formatted(matchNew.getId()));
 
-    Optional<Match> match = findMatchById(matchDto.getId());
+    Optional<Match> match = findMatchById(matchNew.getId());
 
     return match
-        .map(game -> entityMapper.toMatchWithReference(matchDto, game))
-        .map(em::merge);
+        .map(game -> entityMapper.matchModelToMatchEntityWithReference(matchNew,
+            entityMapper.matchModelToMatchEntity(game)))
+        .map(em::merge)
+        .map(entityMapper::matchEntityToMatchModel);
 
   }
 
@@ -83,7 +90,7 @@ public class MatchRepositoryImpl implements MatchRepository {
         MatchEntity.class);
 
     query.setParameter("userId", userId);
-    return query.getResultList();
+    return query.getResultList().stream().map(entityMapper::matchEntityToMatchModel).toList();
   }
 
   @Override
@@ -93,7 +100,7 @@ public class MatchRepositoryImpl implements MatchRepository {
         MatchEntity.class);
 
     query.setParameter("gameId", gameId);
-    return query.getResultList();
+    return query.getResultList().stream().map(entityMapper::matchEntityToMatchModel).toList();
   }
 
   @Override
@@ -104,7 +111,7 @@ public class MatchRepositoryImpl implements MatchRepository {
         MatchEntity.class);
     query.setParameter("userId", userId);
     query.setParameter("gameId", gameId);
-    return query.getResultList();
+    return query.getResultList().stream().map(entityMapper::matchEntityToMatchModel).toList();
   }
 
   @Override

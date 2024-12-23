@@ -25,7 +25,8 @@ public class EntityMapper {
   }
 
   public User UserEntityToUserModel(UserEntity userEntity) {
-    return new User(userEntity.getId(), userEntity.getFirstname(), userEntity.getLastname(), userEntity.isDeactivated());
+    return new User(userEntity.getId(), userEntity.getFirstname(), userEntity.getLastname(),
+        userEntity.isDeactivated());
   }
 
   public UserEntity UserModeltoExistingUserEntity(User user, UserEntity userEntity) {
@@ -37,10 +38,13 @@ public class EntityMapper {
 
   public ScoreEntity ScoreModeltoScoreEntity(Score score) {
     return new ScoreEntity(entityManager.getReference(UserEntity.class, score.getUser().getId()),
-        entityManager.getReference(GameEntity.class, score.getGame().getId()), score.getScorePoints());
+        entityManager.getReference(GameEntity.class, score.getGame().getId()),
+        score.getScorePoints());
   }
+
   public Score ScoreEntityToScoreModel(ScoreEntity scoreEntity) {
-    return new Score(scoreEntity.getId(), UserEntityToUserModel(scoreEntity.getUser()), GameEntityToGameModel(scoreEntity.getGame()), scoreEntity.getScorePoints());
+    return new Score(scoreEntity.getId(), UserEntityToUserModel(scoreEntity.getUser()),
+        GameEntityToGameModel(scoreEntity.getGame()), scoreEntity.getScorePoints());
   }
 
   public ScoreEntity ScoreModeltoExistingScoreEntity(Score score, ScoreEntity scoreEntity) {
@@ -51,15 +55,21 @@ public class EntityMapper {
   }
 
 
-  public MatchEntity MatchModeltoModelEntiyWithReference(Match match) {
-    return MatchModeltoMatchEntityWithReference(match, new MatchEntity());
+  public MatchEntity matchModelToMatchEntityWithReference(Match match) {
+    return matchModelToMatchEntityWithReference(match, new MatchEntity());
   }
 
-  public Match MatchEntityToMatchModel(MatchEntity matchEntity) {
-    return new Match(matchEntity.getId(),GameEntityToGameModel(matchEntity.getGame()),matchEntity.getUsers().stream().map(this::UserEntityToUserModel).toList());
+  public Match matchEntityToMatchModel(MatchEntity matchEntity) {
+    return new Match(matchEntity.getId(), GameEntityToGameModel(matchEntity.getGame()),
+        matchEntity.getUsers().stream().map(this::UserEntityToUserModel).toList());
   }
 
-  public MatchEntity MatchModeltoMatchEntityWithReference(Match match, MatchEntity matchEntity) {
+  public MatchEntity matchModelToMatchEntity(Match match) {
+    return new MatchEntity(GameModelToGameEntity(match.getGame()),
+        match.getUsers().stream().map(this::UserModelToUserEntity).toList());
+  }
+
+  public MatchEntity matchModelToMatchEntityWithReference(Match match, MatchEntity matchEntity) {
     if (match == null && match == null) {
       return null;
     }
@@ -80,7 +90,7 @@ public class EntityMapper {
   }
 
   public Game GameEntityToGameModel(GameEntity gameEntity) {
-    return new Game(gameEntity.getId(),gameEntity.getName(),gameEntity.getRules());
+    return new Game(gameEntity.getId(), gameEntity.getName(), gameEntity.getRules());
   }
 
   public GameEntity GameModelToExitstingGameEntity(Game game, GameEntity gameEntity) {
