@@ -28,29 +28,29 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
 
   @Override
   public Optional<User> saveUser(User user) {
-    UserEntity userEntity = entityMapper.UserModelToUserEntity(user);
+    UserEntity userEntity = entityMapper.userModelToUserEntity(user);
 
     entityManager.persist(userEntity);
     UserEntity userSaved = entityManager.find(UserEntity.class, userEntity.getId());
     log.info("Saved user with id: {}", userEntity.getId());
-    return Optional.ofNullable(entityMapper.UserEntityToUserModel(userSaved));
+    return Optional.ofNullable(entityMapper.userEntityToUserModel(userSaved));
   }
 
   @Override
   public Optional<User> updateUser(User user) {
     log.info("updating user with id: {}", user.getId());
 
-    UserEntity userEntity = entityMapper.UserModeltoExistingUserEntity(user, entityManager.find(UserEntity.class, user.getId()));
+    UserEntity userEntity = entityMapper.userModeltoExistingUserEntity(user, entityManager.find(UserEntity.class, user.getId()));
     entityManager.merge(userEntity);
     UserEntity usermerged = entityManager.find(UserEntity.class, user.getId());
     log.info("Updated user with id: {}", usermerged.getId());
-    return Optional.ofNullable(entityMapper.UserEntityToUserModel(usermerged));
+    return Optional.ofNullable(entityMapper.userEntityToUserModel(usermerged));
   }
 
 
   @Override
   public void deleteUser(User user) {
-    UserEntity userEntity = entityMapper.UserModeltoExistingUserEntity(user,entityManager.find(UserEntity.class, user.getId()));
+    UserEntity userEntity = entityMapper.userModeltoExistingUserEntity(user,entityManager.find(UserEntity.class, user.getId()));
     log.info("Deleted user with id: {}", user.getId());
     log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", userEntity.getId(),userEntity.getFirstname(),userEntity.getLastname(),userEntity.isDeactivated());
     entityManager.remove(userEntity);
@@ -68,7 +68,7 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
         .getResultList();
     log.info("Find all users including deleted user. Returned list of size:{}", resultList.size());
 
-    return resultList.stream().map(entityMapper::UserEntityToUserModel).collect(Collectors.toList());
+    return resultList.stream().map(entityMapper::userEntityToUserModel).collect(Collectors.toList());
   }
 
   @Override
@@ -77,7 +77,7 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
             "SELECT u FROM UserEntity u Where u.deactivated = false", UserEntity.class)
         .getResultList();
     log.info("Find all users. Returned list of size:{}", resultList.size());
-    return resultList.stream().map(entityMapper::UserEntityToUserModel).collect(Collectors.toList());
+    return resultList.stream().map(entityMapper::userEntityToUserModel).collect(Collectors.toList());
 
   }
 
@@ -91,7 +91,7 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
     log.info("Find user with id: {}. Returned list of size:{}", id, resultList.size());
     return resultList.isEmpty()
             ? Optional.empty()
-            : Optional.of(entityMapper.UserEntityToUserModel(resultList.getFirst()));
+            : Optional.of(entityMapper.userEntityToUserModel(resultList.getFirst()));
   }
 
   @Override
@@ -104,7 +104,7 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
         resultList.size());
     return resultList.isEmpty()
             ? Optional.empty()
-            : Optional.of(entityMapper.UserEntityToUserModel(resultList.getFirst()));
+            : Optional.of(entityMapper.userEntityToUserModel(resultList.getFirst()));
   }
 
   @Override
