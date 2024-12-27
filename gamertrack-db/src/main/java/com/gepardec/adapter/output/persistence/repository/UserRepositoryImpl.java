@@ -29,10 +29,10 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   @Override
   public Optional<User> saveUser(User user) {
     UserEntity userEntity = entityMapper.UserModelToUserEntity(user);
-    //User user = entityManager.getReference(User.class,userDto.id());
-    entityManager.persist(user);
-    UserEntity userSaved = entityManager.find(UserEntity.class, user.getId());
-    log.info("Saved user with id: {}", userSaved.getId());
+
+    entityManager.persist(userEntity);
+    UserEntity userSaved = entityManager.find(UserEntity.class, userEntity.getId());
+    log.info("Saved user with id: {}", userEntity.getId());
     return Optional.ofNullable(entityMapper.UserEntityToUserModel(userSaved));
   }
 
@@ -58,7 +58,7 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
 
   @Override
   public void deleteAllUsers() {
-    entityManager.createNativeQuery("DELETE FROM users").executeUpdate();
+    entityManager.createQuery("DELETE FROM UserEntity ").executeUpdate();
     log.info("Deleted all users. size: {}", findAllUsers().size());
   }
 
