@@ -40,15 +40,9 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureSaveAndReadMatchWorks() {
-    Game game = TestFixtures.game(null);
-    User user = TestFixtures.user(null);
-    Optional<Game> savedGame = gameRepository.saveGame(game);
-    System.out.println("gameid: " + savedGame.get().getId());
-    Optional<User> savedUser = userRepository.saveUser(user);
-    System.out.println("userid: " + savedUser.get().getId());
-    Match match = new Match();
-    match.setGame(savedGame.get());
-    match.setUsers(List.of(savedUser.get()));
+    Optional<Game> savedGame = gameRepository.saveGame(TestFixtures.game(null));
+    Optional<User> savedUser = userRepository.saveUser(TestFixtures.user(null));
+    Match match = new Match(null, savedGame.get(), List.of(savedUser.get()));
 
     var savedAndReadMatch = matchRepository.saveMatch(match);
 

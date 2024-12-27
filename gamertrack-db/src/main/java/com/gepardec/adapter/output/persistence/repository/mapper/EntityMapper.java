@@ -13,6 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class EntityMapper {
@@ -65,23 +66,22 @@ public class EntityMapper {
   }
 
   public MatchEntity matchModelToMatchEntity(Match match) {
-    return new MatchEntity(gameModelToGameEntity(match.getGame()),
-        match.getUsers().stream().map(this::userModelToUserEntity).toList());
+    List<UserEntity> users = new ArrayList<>();
+    match.getUsers().forEach(user -> users.add(
+        new UserEntity(user.getId(), user.getFirstname(), user.getLastname(),
+            user.isDeactivated())));
+
+    return new MatchEntity(gameModelToGameEntity(match.getGame()), users);
   }
 
   public MatchEntity matchModelToMatchEntityWithReference(Match match, MatchEntity matchEntity) {
-    if (match == null && matchEntity == null) {
-      return null;
-    }
 
-    List<UserEntity> users = new ArrayList<>();
-
-    if (match.getId() != null) {
-      matchEntity.setId(match.getId());
-    }
-
-    matchEntity.setGame(gameModelToGameEntity(match.getGame()));
-    matchEntity.setUsers(match.getUsers().stream().map(this::userModelToUserEntity).toList());
+    matchEntity.setGame(
+        entityManager.getReference(GameEntity.class, match.getGame().getId()));
+    matchEntity.setUsers(
+        match.getUsers().stream()
+            .map(u -> entityManager.getReference(UserEntity.class, u.getId()))
+            .collect(Collectors.toList()));
     return matchEntity;
   }
 
