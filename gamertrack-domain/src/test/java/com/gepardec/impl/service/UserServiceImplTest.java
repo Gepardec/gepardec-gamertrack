@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @EnableAutoWeld
@@ -129,7 +128,6 @@ public class UserServiceImplTest {
     @Test
     void ensureFindUserByIdWorks() {
         List<User> users = TestFixtures.users(3);
-
         when(userRepository.findUserById(2)).thenReturn(Optional.of(users.get(1)));
 
         User foundUser = userService.findUserById(2).get();

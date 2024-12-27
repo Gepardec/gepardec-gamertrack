@@ -57,7 +57,8 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      new User(null, "FirstName" + i, "LastName" + 1, false);
+      users.add(new User(null, "FirstName" + i, "LastName" + 1, false));
+
     }
 
     return users;
