@@ -28,7 +28,7 @@ public class TestFixtures {
   }
 
   public static Game gameToGameDto(Game game) {
-    return new Game(game.getId(), game.getTitle(), game.getRules());
+    return new Game(game.getId(), game.getName(), game.getRules());
   }
 
   public static Match matchToMatchDto(Match match) {
@@ -37,7 +37,7 @@ public class TestFixtures {
   }
 
   public static Game gameDtoToGame(Game gameDto) {
-    Game game = new Game(gameDto.getId(), gameDto.getTitle(), gameDto.getRules());
+    Game game = new Game(gameDto.getId(), gameDto.getName(), gameDto.getRules());
 
     return game;
   }
@@ -57,8 +57,7 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      User user = TestFixtures.user((long) i + 1);
-      users.add(user);
+      new User(null, "FirstName" + i, "LastName" + 1, false);
     }
 
     return users;
@@ -81,7 +80,7 @@ public class TestFixtures {
     List<Match> matches = new ArrayList<>();
     for (int i = 0; i < matchCount; i++) {
       Match match = match((long) i + 1);
-      match.getGame().setTitle(String.valueOf(i + 1));
+      match.getGame().setName(String.valueOf(i + 1));
       matches.add(match);
     }
     return matches;

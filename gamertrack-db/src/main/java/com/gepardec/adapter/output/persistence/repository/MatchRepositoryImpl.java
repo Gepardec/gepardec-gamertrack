@@ -1,6 +1,8 @@
 package com.gepardec.adapter.output.persistence.repository;
 
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.model.Match;
@@ -10,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +29,21 @@ public class MatchRepositoryImpl implements MatchRepository {
   EntityMapper entityMapper;
 
   @Override
-  public Optional<Match> saveMatch(Match matchDto) {
-    logger.info("  match {}", matchDto);
+  public Optional<Match> saveMatch(Match match) {
+    logger.info("Saving  match {}", match);
 
-    MatchEntity match = entityMapper.matchModelToMatchEntity(matchDto);
+    MatchEntity matchToSave = entityMapper.matchModelToMatchEntity(match);
 
-    em.persist(match);
+    matchToSave.setGame(em.getReference(GameEntity.class, match.getGame().getId()));
+    matchToSave.setUsers(
+        matchToSave.getUsers().stream().map(u -> em.getReference(UserEntity.class, u.getId()))
+            .collect(
+                Collectors.toList()));
 
-    return findMatchById(match.getId());
+    em.persist(matchToSave);
+    em.flush();
+
+    return findMatchById(matchToSave.getId());
   }
 
   @Override
@@ -48,7 +58,7 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Override
   public Optional<Match> findMatchById(Long id) {
-    logger.info("Finding game outcome by id: %s".formatted(id));
+    logger.info("Finding match by id: %s".formatted(id));
 
     return Optional.ofNullable(em.find(MatchEntity.class, id))
         .map(entityMapper::matchEntityToMatchModel);
@@ -56,30 +66,31 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Override
   public void deleteMatch(Long matchId) {
-    logger.info("Looking up matches by id: %s in order to delet".formatted(matchId));
-    Optional<Match> matchToDelete = findMatchById(matchId);
+    logger.info("Looking up matches by id: %s in order to delete".formatted(matchId));
+    MatchEntity matchToDelete = em.find(MatchEntity.class, matchId);
 
-    if (matchToDelete.isEmpty()) {
+    if (matchToDelete == null) {
       logger.info(
           "Could not find match with ID %s".formatted(matchId));
     }
 
     logger.info("Deleting match with id: %s".formatted(matchId));
-    matchToDelete.ifPresent(match -> em.remove(match));
+    em.remove(matchToDelete);
   }
 
   @Override
   public Optional<Match> updateMatch(Match matchNew) {
-    logger.info("updating game outcome with id: %s".formatted(matchNew.getId()));
+    logger.info("updating match with id: %s".formatted(matchNew.getId()));
 
-    Optional<Match> match = findMatchById(matchNew.getId());
+    MatchEntity match = em.find(MatchEntity.class, matchNew.getId());
+    if (match == null) {
+      return Optional.empty();
+    }
 
-    return match
-        .map(game -> entityMapper.matchModelToMatchEntityWithReference(matchNew,
-            entityMapper.matchModelToMatchEntity(game)))
-        .map(em::merge)
-        .map(entityMapper::matchEntityToMatchModel);
+    MatchEntity updatedMatch = em.merge(
+        entityMapper.matchModelToMatchEntityWithReference(matchNew, match));
 
+    return Optional.of(entityMapper.matchEntityToMatchModel(updatedMatch));
   }
 
   @Override
