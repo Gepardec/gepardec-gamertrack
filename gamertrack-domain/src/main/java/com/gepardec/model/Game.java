@@ -3,15 +3,15 @@ package com.gepardec.model;
 public class Game {
 
   private Long id;
-  private String title;
+  private String name;
   private String rules;
 
   public Game() {
   }
 
-  public Game(Long id, String title, String rules) {
+  public Game(Long id, String name, String rules) {
     this.id = id;
-    this.title = title;
+    this.name = name;
     this.rules = rules;
   }
 
@@ -23,12 +23,12 @@ public class Game {
     this.id = id;
   }
 
-  public String getTitle() {
-    return title;
+  public String getName() {
+    return name;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getRules() {

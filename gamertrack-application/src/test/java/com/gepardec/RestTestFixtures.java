@@ -13,10 +13,12 @@ import com.gepardec.rest.model.dto.MatchRestDto;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gepardec.TestFixtures.user;
+
 public class RestTestFixtures {
 
   public static CreateScoreCommand createScoreCommand(Long id) {
-    CreateScoreCommand createScoreCommand = new CreateScoreCommand(1L, 1L, 10);
+    CreateScoreCommand createScoreCommand = new CreateScoreCommand(user(1L), game(), 10);
     return createScoreCommand;
   }
 
@@ -31,13 +33,11 @@ public class RestTestFixtures {
   }
 
   public static UpdateMatchCommand updateMatchCommand() {
-    return new UpdateMatchCommand(game().getId(),
-        users(5).stream().map(User::getId).toList());
+    return new UpdateMatchCommand(game(), users(5));
   }
 
   public static CreateMatchCommand createMatchCommand() {
-    return new CreateMatchCommand(game().getId(),
-        users(5).stream().map(User::getId).toList());
+    return new CreateMatchCommand(game(),users(5));
   }
 
   public static CreateGameCommand createGameCommand() {
@@ -54,7 +54,7 @@ public class RestTestFixtures {
   }
 
   public static Game game(Long id) {
-    Game game = new Game("Game Fixture", "Game Fixture Rules");
+    Game game = new Game(null,"Game Fixture", "Game Fixture Rules");
     game.setId(id);
     return game;
   }
@@ -63,7 +63,7 @@ public class RestTestFixtures {
     List<User> users = new ArrayList<>();
 
     for (int i = 0; i < userCount; i++) {
-      users.add(TestFixtures.user((long) i++));
+      users.add(user((long) i++));
     }
 
     return users;

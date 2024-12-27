@@ -1,15 +1,10 @@
 package com.gepardec.rest.model.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.gepardec.RestTestFixtures;
-import com.gepardec.model.Score;
-import com.gepardec.model.User;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
+import com.gepardec.model.Score;
+import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
@@ -17,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class RestMapperTest {
@@ -27,59 +24,59 @@ class RestMapperTest {
   @Test
   void ensureCreateMatchCmdToMatchDtoWorks() {
     Match mappedMatch =
-        restMapper.toMatchDto(RestTestFixtures.createMatchCommand());
+        restMapper.createMatchCommandtoMatch(RestTestFixtures.createMatchCommand());
 
     assertNotNull(mappedMatch);
-    assertEquals(mappedMatch.gameId(),
-        RestTestFixtures.createMatchCommand().gameId());
-    assertTrue(mappedMatch.userIds()
-        .containsAll(RestTestFixtures.createMatchCommand().userIds()));
+    assertEquals(mappedMatch.getGame().getId(),
+        RestTestFixtures.createMatchCommand().game().getId());
+    assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
+        .containsAll(RestTestFixtures.createMatchCommand().users().stream().map(User::getId).toList()));
   }
 
   @Test
   void ensureUpdateMatchCmdToMatchDtoWorks() {
     Match mappedMatch = restMapper
-        .toMatchDto(RestTestFixtures.updateMatchCommand().gameId(),
+        .updateMatchCommandtoMatch(RestTestFixtures.updateMatchCommand().game().getId(),
             RestTestFixtures.updateMatchCommand());
 
     assertDoesNotThrow(() -> NullPointerException.class);
     assertNotNull(mappedMatch);
-    assertEquals(mappedMatch.gameId(),
-        RestTestFixtures.updateMatchCommand().gameId());
-    assertTrue(mappedMatch.userIds()
-        .containsAll(RestTestFixtures.updateMatchCommand().userIds()));
+    assertEquals(mappedMatch.getGame().getId(),
+        RestTestFixtures.updateMatchCommand().game().getId());
+    assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
+        .containsAll(RestTestFixtures.updateMatchCommand().users().stream().map(User::getId).toList()));
   }
 
   @Test
   void ensureCreateGameCommandToGameCommandDtoWorks() {
-    Game mappedGame = restMapper.toGameDto(RestTestFixtures.createGameCommand());
+    Game mappedGame = restMapper.createGameCommandtoGame(RestTestFixtures.createGameCommand());
 
     assertDoesNotThrow(() -> NullPointerException.class);
     assertNotNull(mappedGame);
-    assertEquals(RestTestFixtures.createGameCommand().title(), mappedGame.title());
-    assertEquals(RestTestFixtures.createGameCommand().rules(), mappedGame.rules());
+    assertEquals(RestTestFixtures.createGameCommand().title(), mappedGame.getName());
+    assertEquals(RestTestFixtures.createGameCommand().rules(), mappedGame.getRules());
   }
 
   @Test
   void ensureUpdateGameCommandToGameCommandDtoWorks() {
-    Game mappedGame = restMapper.toGameDto(RestTestFixtures.game().getId(),
+    Game mappedGame = restMapper.updateGameCommandtoGame(RestTestFixtures.game().getId(),
         RestTestFixtures.updateGameCommand());
 
     assertDoesNotThrow(() -> NullPointerException.class);
     assertNotNull(mappedGame);
-    assertEquals(RestTestFixtures.updateGameCommand().title(), mappedGame.title());
-    assertEquals(RestTestFixtures.updateGameCommand().rules(), mappedGame.rules());
+    assertEquals(RestTestFixtures.updateGameCommand().title(), mappedGame.getName());
+    assertEquals(RestTestFixtures.updateGameCommand().rules(), mappedGame.getRules());
   }
 
   @Test
   public void ensureMapCreateScoreCommandToScoreDtoWorks() {
     CreateScoreCommand scoreCommand = RestTestFixtures.createScoreCommand(1L);
 
-    Score mappedScore = restMapper.toScore(scoreCommand);
+    Score mappedScore = restMapper.createScoreCommandtoScore(scoreCommand);
 
-    assertEquals(scoreCommand.userId(), mappedScore.userId());
-    assertEquals(scoreCommand.gameId(), mappedScore.gameId());
-    assertEquals(scoreCommand.scorePoints(), mappedScore.scorePoints());
+    assertEquals(scoreCommand.user().getId(), mappedScore.getUser().getId());
+    assertEquals(scoreCommand.game().getId(), mappedScore.getGame().getId());
+    assertEquals(scoreCommand.scorePoints(), mappedScore.getScorePoints());
 
   }
 
@@ -87,10 +84,10 @@ class RestMapperTest {
   public void ensureMapCreateUserCommandDtoToUserDtoWorks() {
     CreateUserCommand userCommand = RestTestFixtures.createUserCommand(1L);
 
-    User mappedUser = restMapper.CreateUserCommandtoUser(userCommand);
+    User mappedUser = restMapper.createUserCommandtoUser(userCommand);
 
-    assertEquals(userCommand.firstname(), mappedUser.firstname());
-    assertEquals(userCommand.lastname(), mappedUser.lastname());
+    assertEquals(userCommand.firstname(), mappedUser.getFirstname());
+    assertEquals(userCommand.lastname(), mappedUser.getLastname());
 
   }
 
@@ -99,12 +96,12 @@ class RestMapperTest {
 
     UpdateUserCommand updateUserCommand = RestTestFixtures.updateUserCommand(1L);
 
-    User mappedUser = restMapper.UpdateUserCommandtoUser(1L, updateUserCommand);
+    User mappedUser = restMapper.updateUserCommandtoUser(1L, updateUserCommand);
 
-    assertEquals(1L, mappedUser.id());
-    assertEquals(updateUserCommand.firstname(), mappedUser.firstname());
-    assertEquals(updateUserCommand.lastname(), mappedUser.lastname());
-    assertEquals(updateUserCommand.deactivated(), mappedUser.deactivated());
+    assertEquals(1L, mappedUser.getId());
+    assertEquals(updateUserCommand.firstname(), mappedUser.getFirstname());
+    assertEquals(updateUserCommand.lastname(), mappedUser.getLastname());
+    assertEquals(updateUserCommand.deactivated(), mappedUser.isDeactivated());
 
   }
 }
