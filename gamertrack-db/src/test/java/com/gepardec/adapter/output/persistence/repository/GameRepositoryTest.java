@@ -6,12 +6,13 @@ import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
-import java.util.List;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.List;
 
 @ExtendWith(ArquillianExtension.class)
 class GameRepositoryTest extends GamertrackDbIT {
@@ -31,7 +32,7 @@ class GameRepositoryTest extends GamertrackDbIT {
 
     var savedGame = repository.saveGame(game);
     Assertions.assertNotNull(savedGame);
-    Assertions.assertEquals(game.getTitle(), savedGame.get().getTitle());
+    Assertions.assertEquals(game.getName(), savedGame.get().getName());
     Assertions.assertEquals(game.getRules(), savedGame.get().getRules());
   }
 
@@ -74,7 +75,7 @@ class GameRepositoryTest extends GamertrackDbIT {
     var persistedUpdatedGame = repository.updateGame(newGame);
     System.out.println(persistedUpdatedGame.get());
     Assertions.assertTrue(persistedUpdatedGame.isPresent());
-    Assertions.assertEquals(newGame.getTitle(), persistedUpdatedGame.get().getTitle());
+    Assertions.assertEquals(newGame.getName(), persistedUpdatedGame.get().getName());
     Assertions.assertEquals(newGame.getRules(), persistedUpdatedGame.get().getRules());
   }
 
@@ -94,7 +95,7 @@ class GameRepositoryTest extends GamertrackDbIT {
     var foundGame = repository.findGameById(persistedGame.get().getId());
 
     Assertions.assertTrue(foundGame.isPresent());
-    Assertions.assertEquals(game.getTitle(), foundGame.get().getTitle());
+    Assertions.assertEquals(game.getName(), foundGame.get().getName());
     Assertions.assertEquals(game.getRules(), foundGame.get().getRules());
   }
 
@@ -118,11 +119,11 @@ class GameRepositoryTest extends GamertrackDbIT {
     Assertions.assertEquals(games.size(), foundGames.size());
     Assertions.assertTrue(foundGames
         .stream()
-        .map(Game::getTitle)
+        .map(Game::getName)
         .toList()
         .containsAll(gameDtos
             .stream()
-            .map(Game::getTitle)
+            .map(Game::getName)
             .toList()));
   }
 
@@ -134,14 +135,14 @@ class GameRepositoryTest extends GamertrackDbIT {
   @Test
   void ensureGameExistsByGameNameForExistingGameReturnsGame() {
     Game game = TestFixtures.game(null);
-    game.setTitle("NewTitle");
+    game.setName("NewTitle");
 
     var savedGame = repository.saveGame(TestFixtures.gameToGameDto(game));
 
-    boolean existsByGameName = repository.gameExistsByGameName(savedGame.get().getTitle());
+    boolean existsByGameName = repository.gameExistsByGameName(savedGame.get().getName());
 
     Assertions.assertTrue(savedGame.isPresent());
-    Assertions.assertEquals(savedGame.get().getTitle(), game.getTitle());
+    Assertions.assertEquals(savedGame.get().getName(), game.getName());
     Assertions.assertTrue(existsByGameName);
   }
 
