@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ArquillianExtension.class)
-class GameEntityRepositoryTest extends GamertrackDbIT {
+class GameRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
   void beforeEach() throws Exception {
@@ -27,12 +27,12 @@ class GameEntityRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureWriteAndReadValidGameWorks() {
-    Game game = TestFixtures.gameToGameDto(TestFixtures.game(null));
+    Game game = TestFixtures.game(null);
 
     var savedGame = repository.saveGame(game);
     Assertions.assertNotNull(savedGame);
-    Assertions.assertEquals(game.title(), savedGame.get().getName());
-    Assertions.assertEquals(game.rules(), savedGame.get().getRules());
+    Assertions.assertEquals(game.getTitle(), savedGame.get().getTitle());
+    Assertions.assertEquals(game.getRules(), savedGame.get().getRules());
   }
 
   @Test
@@ -58,25 +58,29 @@ class GameEntityRepositoryTest extends GamertrackDbIT {
     Game notExisingGame = TestFixtures.gameToGameDto(TestFixtures.game());
 
     Assertions.assertThrows(IllegalArgumentException.class,
-        () -> repository.deleteGame(notExisingGame.id()));
+        () -> repository.deleteGame(notExisingGame.getId()));
   }
 
   @Test
   void ensureUpdateValidGameWorks() {
-    Game oldGame = TestFixtures.gameToGameDto(TestFixtures.game(null));
+    Game oldGame = TestFixtures.game(null);
     var persistedOldGame = repository.saveGame(oldGame);
 
-    Game newGame = new Game(persistedOldGame.get().getId(), "NewTitle", "NewRules");
+    System.out.println(persistedOldGame.get().getId());
 
+    Game newGame = new Game(persistedOldGame.get().getId(), "NewTitleTest", "NewRules");
+
+    System.out.println(newGame.getId());
     var persistedUpdatedGame = repository.updateGame(newGame);
+    System.out.println(persistedUpdatedGame.get());
     Assertions.assertTrue(persistedUpdatedGame.isPresent());
-    Assertions.assertEquals(newGame.title(), persistedUpdatedGame.get().getName());
-    Assertions.assertEquals(newGame.rules(), persistedUpdatedGame.get().getRules());
+    Assertions.assertEquals(newGame.getTitle(), persistedUpdatedGame.get().getTitle());
+    Assertions.assertEquals(newGame.getRules(), persistedUpdatedGame.get().getRules());
   }
 
   @Test
   void ensureUpdateNotExistingGameReturnsOptionalEmpty() {
-    Game newGame = new Game(100L, "NewTitle", "NewRules");
+    Game newGame = new Game(100000L, "NewTitle", "NewRules");
     var persistedUpdatedGame = repository.updateGame(newGame);
 
     Assertions.assertTrue(persistedUpdatedGame.isEmpty());
@@ -90,23 +94,22 @@ class GameEntityRepositoryTest extends GamertrackDbIT {
     var foundGame = repository.findGameById(persistedGame.get().getId());
 
     Assertions.assertTrue(foundGame.isPresent());
-    Assertions.assertEquals(game.title(), foundGame.get().getName());
-    Assertions.assertEquals(game.rules(), foundGame.get().getRules());
+    Assertions.assertEquals(game.getTitle(), foundGame.get().getTitle());
+    Assertions.assertEquals(game.getRules(), foundGame.get().getRules());
   }
 
   @Test
   void ensureFindGameByIdForNotExistingGameReturnsOptionalEmpty() {
     Game notExistingGame = TestFixtures.gameToGameDto(TestFixtures.game());
 
-    var foundGame = repository.findGameById(notExistingGame.id());
+    var foundGame = repository.findGameById(notExistingGame.getId());
     Assertions.assertTrue(foundGame.isEmpty());
   }
 
   @Test
   void ensureFindAllGamesForExistingGamesReturnsAllGames() {
-    List<GameEntity> games = TestFixtures.games(10);
+    List<Game> games = TestFixtures.games(10);
     List<Game> gameDtos = games.stream()
-        .map(TestFixtures::gameToGameDto)
         .peek(repository::saveGame)
         .toList();
 
@@ -115,11 +118,11 @@ class GameEntityRepositoryTest extends GamertrackDbIT {
     Assertions.assertEquals(games.size(), foundGames.size());
     Assertions.assertTrue(foundGames
         .stream()
-        .map(GameEntity::getName)
+        .map(Game::getTitle)
         .toList()
         .containsAll(gameDtos
             .stream()
-            .map(Game::title)
+            .map(Game::getTitle)
             .toList()));
   }
 
@@ -130,15 +133,15 @@ class GameEntityRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureGameExistsByGameNameForExistingGameReturnsGame() {
-    GameEntity game = TestFixtures.game(null);
-    game.setName("NewTitle");
+    Game game = TestFixtures.game(null);
+    game.setTitle("NewTitle");
 
     var savedGame = repository.saveGame(TestFixtures.gameToGameDto(game));
 
-    boolean existsByGameName = repository.gameExistsByGameName(savedGame.get().getName());
+    boolean existsByGameName = repository.gameExistsByGameName(savedGame.get().getTitle());
 
     Assertions.assertTrue(savedGame.isPresent());
-    Assertions.assertEquals(savedGame.get().getName(), game.getName());
+    Assertions.assertEquals(savedGame.get().getTitle(), game.getTitle());
     Assertions.assertTrue(existsByGameName);
   }
 

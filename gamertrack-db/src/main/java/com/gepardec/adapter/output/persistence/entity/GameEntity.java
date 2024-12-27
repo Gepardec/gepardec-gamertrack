@@ -13,7 +13,8 @@ public class GameEntity extends AbstractEntity {
   private String rules;
 
 
-  public GameEntity(String name, String rules) {
+  public GameEntity(Long id, String name, String rules) {
+    this.id = id;
     this.name = name;
     this.rules = rules;
   }

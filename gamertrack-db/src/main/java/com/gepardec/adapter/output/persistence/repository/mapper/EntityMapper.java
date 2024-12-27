@@ -44,7 +44,7 @@ public class EntityMapper {
 
   public Score ScoreEntityToScoreModel(ScoreEntity scoreEntity) {
     return new Score(scoreEntity.getId(), UserEntityToUserModel(scoreEntity.getUser()),
-        GameEntityToGameModel(scoreEntity.getGame()), scoreEntity.getScorePoints());
+        gameEntityToGameModel(scoreEntity.getGame()), scoreEntity.getScorePoints());
   }
 
   public ScoreEntity ScoreModeltoExistingScoreEntity(Score score, ScoreEntity scoreEntity) {
@@ -60,12 +60,12 @@ public class EntityMapper {
   }
 
   public Match matchEntityToMatchModel(MatchEntity matchEntity) {
-    return new Match(matchEntity.getId(), GameEntityToGameModel(matchEntity.getGame()),
+    return new Match(matchEntity.getId(), gameEntityToGameModel(matchEntity.getGame()),
         matchEntity.getUsers().stream().map(this::UserEntityToUserModel).toList());
   }
 
   public MatchEntity matchModelToMatchEntity(Match match) {
-    return new MatchEntity(GameModelToGameEntity(match.getGame()),
+    return new MatchEntity(gameModelToGameEntity(match.getGame()),
         match.getUsers().stream().map(this::UserModelToUserEntity).toList());
   }
 
@@ -80,23 +80,26 @@ public class EntityMapper {
       match.setId(match.getId());
     }
 
-    matchEntity.setGame(GameModelToGameEntity(match.getGame()));
+    matchEntity.setGame(gameModelToGameEntity(match.getGame()));
     matchEntity.setUsers(match.getUsers().stream().map(this::UserModelToUserEntity).toList());
     return matchEntity;
   }
 
-  public GameEntity GameModelToGameEntity(Game game) {
-    return new GameEntity(game.getRules(), game.getTitle());
+  public GameEntity gameModelToGameEntity(Game game) {
+    return game.getId() != null
+        ? new GameEntity(game.getId(), game.getTitle(), game.getRules())
+        : new GameEntity(null, game.getTitle(), game.getRules());
   }
 
-  public Game GameEntityToGameModel(GameEntity gameEntity) {
-    return new Game(gameEntity.getId(), gameEntity.getName(), gameEntity.getRules());
+  public Game gameEntityToGameModel(GameEntity gameEntity) {
+    return gameEntity.getId() != null
+        ? new Game(gameEntity.getId(), gameEntity.getName(), gameEntity.getRules())
+        : new Game(null, gameEntity.getName(), gameEntity.getRules());
   }
 
-  public GameEntity GameModelToExitstingGameEntity(Game game, GameEntity gameEntity) {
+  public GameEntity gameModelToExitstingGameEntity(Game game, GameEntity gameEntity) {
     gameEntity.setRules(game.getRules());
     gameEntity.setName(game.getTitle());
-
     return gameEntity;
   }
 

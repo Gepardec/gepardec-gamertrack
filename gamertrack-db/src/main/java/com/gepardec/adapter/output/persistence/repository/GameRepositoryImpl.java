@@ -25,13 +25,12 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
 
   @Override
   public Optional<Game> saveGame(Game game) {
-    GameEntity gameEntity = entityMapper.GameModelToGameEntity(game);
+    GameEntity gameEntity = entityMapper.gameModelToGameEntity(game);
 
     em.persist(gameEntity);
     em.flush();
-
-    GameEntity foundGameEntity = em.find(GameEntity.class, game.getId());
-    return Optional.ofNullable(entityMapper.GameEntityToGameModel(foundGameEntity));
+    GameEntity foundGameEntity = em.find(GameEntity.class, gameEntity.getId());
+    return Optional.ofNullable(entityMapper.gameEntityToGameModel(foundGameEntity));
   }
 
   @Override
@@ -41,17 +40,22 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
 
   @Override
   public Optional<Game> updateGame(Game game) {
-    GameEntity gameEntityOld = findGameById(game.getId()).map(entityMapper::GameModelToGameEntity)
-        .get();
-    GameEntity gameEntityUpdated = entityMapper.GameModelToExitstingGameEntity(game, gameEntityOld);
+    GameEntity gameEntityOld = em.find(GameEntity.class, game.getId());
 
-    return Optional.of(em.merge(gameEntityUpdated)).map(entityMapper::GameEntityToGameModel);
+    return gameEntityOld != null
+        ? Optional.of(entityMapper.gameEntityToGameModel(
+        em.merge(entityMapper.gameModelToExitstingGameEntity(game, gameEntityOld))))
+        : Optional.empty();
   }
 
   @Override
   public Optional<Game> findGameById(long id) {
-    return Optional.ofNullable(entityMapper.GameEntityToGameModel(em.find(GameEntity.class, id)));
 
+    GameEntity gameEntity = em.find(GameEntity.class, id);
+
+    return gameEntity != null
+        ? Optional.of(entityMapper.gameEntityToGameModel(gameEntity))
+        : Optional.empty();
   }
 
   @Override
@@ -59,7 +63,7 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
     return em.createQuery("select g from GameEntity g", GameEntity.class)
         .getResultList()
         .stream()
-        .map(entityMapper::GameEntityToGameModel)
+        .map(entityMapper::gameEntityToGameModel)
         .toList();
   }
 

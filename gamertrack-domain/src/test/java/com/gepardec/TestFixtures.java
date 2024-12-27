@@ -4,7 +4,6 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +14,7 @@ public class TestFixtures {
     List<Game> games = new ArrayList<>();
 
     for (int i = 0; i < gameCount; i++) {
-      Game game = TestFixtures.game((long) 1 + i);
-      game.setTitle(game.getTitle() + " " + i);
-      games.add(game);
+      games.add(new Game(null, "TestGameTitle" + i, "TestGameRules" + i));
     }
     return games;
   }
@@ -27,8 +24,7 @@ public class TestFixtures {
   }
 
   public static Game game(Long id) {
-    Game game = new Game(id,"Game Fixture", "Game Fixture Rules");
-    return game;
+    return new Game(id, "Game Fixture", "Game Fixture Rules");
   }
 
   public static Game gameToGameDto(Game game) {
@@ -41,7 +37,7 @@ public class TestFixtures {
   }
 
   public static Game gameDtoToGame(Game gameDto) {
-    Game game = new Game(gameDto.getId(),gameDto.getTitle(), gameDto.getRules());
+    Game game = new Game(gameDto.getId(), gameDto.getTitle(), gameDto.getRules());
 
     return game;
   }
@@ -53,7 +49,7 @@ public class TestFixtures {
 
 
   public static Match match(Long id, Game game, List<User> users) {
-    Match match = new Match(id,game, users.stream().toList());
+    Match match = new Match(id, game, users.stream().toList());
     return match;
   }
 
@@ -69,7 +65,7 @@ public class TestFixtures {
   }
 
   public static User user(Long id) {
-    User user = new User(id,"User", "Testfixture",false);
+    User user = new User(id, "User", "Testfixture", false);
     return user;
   }
 

@@ -1,41 +1,41 @@
 package com.gepardec.model;
 
-public class Game{
-    private Long id;
-    private String title;
-    private String rules;
+public class Game {
 
-    public Game(Long id) {
-        this.id = id;
-    }
+  private Long id;
+  private String title;
+  private String rules;
 
-    public Game(Long id, String title, String rules) {
-        this.id = id;
-        this.title = title;
-        this.rules = rules;
-    }
+  public Game() {
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Game(Long id, String title, String rules) {
+    this.id = id;
+    this.title = title;
+    this.rules = rules;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public String getRules() {
-        return rules;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public void setRules(String rules) {
-        this.rules = rules;
-    }
+  public String getRules() {
+    return rules;
+  }
+
+  public void setRules(String rules) {
+    this.rules = rules;
+  }
 }
