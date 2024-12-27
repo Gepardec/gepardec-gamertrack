@@ -13,7 +13,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class EntityMapper {
@@ -21,34 +20,34 @@ public class EntityMapper {
   @PersistenceContext()
   protected EntityManager entityManager;
 
-  public UserEntity UserModelToUserEntity(User user) {
+  public UserEntity userModelToUserEntity(User user) {
     return new UserEntity(user.getFirstname(), user.getLastname(), user.isDeactivated());
   }
 
-  public User UserEntityToUserModel(UserEntity userEntity) {
+  public User userEntityToUserModel(UserEntity userEntity) {
     return new User(userEntity.getId(), userEntity.getFirstname(), userEntity.getLastname(),
         userEntity.isDeactivated());
   }
 
-  public UserEntity UserModeltoExistingUserEntity(User user, UserEntity userEntity) {
+  public UserEntity userModeltoExistingUserEntity(User user, UserEntity userEntity) {
     userEntity.setFirstname(user.getFirstname());
     userEntity.setLastname(user.getLastname());
     userEntity.setDeactivated(user.isDeactivated());
     return userEntity;
   }
 
-  public ScoreEntity ScoreModeltoScoreEntity(Score score) {
+  public ScoreEntity scoreModeltoScoreEntity(Score score) {
     return new ScoreEntity(entityManager.getReference(UserEntity.class, score.getUser().getId()),
         entityManager.getReference(GameEntity.class, score.getGame().getId()),
         score.getScorePoints());
   }
 
-  public Score ScoreEntityToScoreModel(ScoreEntity scoreEntity) {
-    return new Score(scoreEntity.getId(), UserEntityToUserModel(scoreEntity.getUser()),
+  public Score scoreEntityToScoreModel(ScoreEntity scoreEntity) {
+    return new Score(scoreEntity.getId(), userEntityToUserModel(scoreEntity.getUser()),
         gameEntityToGameModel(scoreEntity.getGame()), scoreEntity.getScorePoints());
   }
 
-  public ScoreEntity ScoreModeltoExistingScoreEntity(Score score, ScoreEntity scoreEntity) {
+  public ScoreEntity scoreModeltoExistingScoreEntity(Score score, ScoreEntity scoreEntity) {
     scoreEntity.setUser(entityManager.getReference(UserEntity.class, score.getUser().getId()));
     scoreEntity.setGame(entityManager.getReference(GameEntity.class, score.getGame().getId()));
     scoreEntity.setScorePoints(score.getScorePoints());
@@ -62,26 +61,27 @@ public class EntityMapper {
 
   public Match matchEntityToMatchModel(MatchEntity matchEntity) {
     return new Match(matchEntity.getId(), gameEntityToGameModel(matchEntity.getGame()),
-        matchEntity.getUsers().stream().map(this::UserEntityToUserModel).toList());
+        matchEntity.getUsers().stream().map(this::userEntityToUserModel).toList());
   }
 
   public MatchEntity matchModelToMatchEntity(Match match) {
-    List<UserEntity> users = new ArrayList<>();
-    match.getUsers().forEach(user -> users.add(
-        new UserEntity(user.getId(), user.getFirstname(), user.getLastname(),
-            user.isDeactivated())));
-
-    return new MatchEntity(gameModelToGameEntity(match.getGame()), users);
+    return new MatchEntity(gameModelToGameEntity(match.getGame()),
+        match.getUsers().stream().map(this::userModelToUserEntity).toList());
   }
 
   public MatchEntity matchModelToMatchEntityWithReference(Match match, MatchEntity matchEntity) {
+    if (match == null && matchEntity == null) {
+      return null;
+    }
 
-    matchEntity.setGame(
-        entityManager.getReference(GameEntity.class, match.getGame().getId()));
-    matchEntity.setUsers(
-        match.getUsers().stream()
-            .map(u -> entityManager.getReference(UserEntity.class, u.getId()))
-            .collect(Collectors.toList()));
+    List<UserEntity> users = new ArrayList<>();
+
+    if (match.getId() != null) {
+      matchEntity.setId(match.getId());
+    }
+
+    matchEntity.setGame(gameModelToGameEntity(match.getGame()));
+    matchEntity.setUsers(match.getUsers().stream().map(this::userModelToUserEntity).toList());
     return matchEntity;
   }
 
