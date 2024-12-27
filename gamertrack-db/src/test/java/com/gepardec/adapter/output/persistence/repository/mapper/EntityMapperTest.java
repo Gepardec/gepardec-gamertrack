@@ -1,5 +1,13 @@
 package com.gepardec.adapter.output.persistence.repository.mapper;
 
+import static com.gepardec.TestFixtures.game;
+import static com.gepardec.TestFixtures.user;
+import static com.gepardec.TestFixtures.usersWithId;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
 import com.gepardec.TestFixtures;
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
@@ -15,10 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static com.gepardec.TestFixtures.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class EntityMapperTest {
@@ -44,7 +48,7 @@ public class EntityMapperTest {
   public void ensureUserModelToExistingUserEntityMappingWorks() {
     User user = user(1L);
 
-    UserEntity existingUser = new UserEntity(3,"firstname", "lastname",false);
+    UserEntity existingUser = new UserEntity(3, "firstname", "lastname", false);
 
     UserEntity mappedUser = entityMapper.userModeltoExistingUserEntity(user, existingUser);
 
@@ -58,13 +62,13 @@ public class EntityMapperTest {
   public void ensureScoreModelToScoreEntityMappingWorks() {
     Score score = TestFixtures.score(1L, 3L, 4L);
 
-    UserEntity userEntity = new UserEntity(3,"firstname", "lastname",false);
-    GameEntity gameEntity = new GameEntity(4L,"4Gewinnt", "Nicht Schummeln");
+    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false);
+    GameEntity gameEntity = new GameEntity(4L, "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(
-            userEntity);
+        userEntity);
     when(entityManager.getReference(GameEntity.class, score.getGame().getId())).thenReturn(
-            gameEntity);
+        gameEntity);
 
     ScoreEntity mappedScore = entityMapper.scoreModeltoScoreEntity(score);
 
@@ -76,17 +80,16 @@ public class EntityMapperTest {
   @Test
   public void ensureScoreModelToExistingScoreEntityWorks() {
     Score score = TestFixtures.score(1L, 3L, 4L);
-    ScoreEntity existingScore = new ScoreEntity(null,null,10L);
+    ScoreEntity existingScore = new ScoreEntity(null, null, 10L);
     existingScore.setId(1L);
 
-    UserEntity userEntity = new UserEntity(3,"firstname", "lastname",false);
-    GameEntity gameEntity = new GameEntity(4L,"4Gewinnt", "Nicht Schummeln");
-
+    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false);
+    GameEntity gameEntity = new GameEntity(4L, "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(
-            userEntity);
+        userEntity);
     when(entityManager.getReference(GameEntity.class, score.getGame().getId())).thenReturn(
-            gameEntity);
+        gameEntity);
 
     ScoreEntity mappedScore = entityMapper.scoreModeltoExistingScoreEntity(score, existingScore);
 
@@ -99,7 +102,7 @@ public class EntityMapperTest {
 
   @Test
   void ensureMatchModelToMatchWithReferenceEntityMappingWorks() {
-    Match match = new Match(1L,game(), users(3));
+    Match match = new Match(1L, game(1L), usersWithId(3));
 
     MatchEntity mappedMatch = entityMapper.matchModelToMatchEntity(match);
 
@@ -107,24 +110,29 @@ public class EntityMapperTest {
     //assertEquals(match.getId(), mappedMatch.getId());
     assertEquals(match.getGame().getId(), mappedMatch.getGame().getId());
     assertTrue(match.getUsers().stream().map(User::getId).toList()
-            .containsAll(mappedMatch.getUsers().stream().map(UserEntity::getId).toList()));
+        .containsAll(mappedMatch.getUsers().stream().map(UserEntity::getId).toList()));
   }
 
   @Test
   void ensureMatchModelToMatchWithReferenceEntityMappingWorksProvidingModelAndEntity() {
-    Match match = new Match(1L, game(), users(3));
-    MatchEntity matchEntity = new MatchEntity();
+    Match match = new Match(1L, game(30L), usersWithId(3));
+    MatchEntity matchEntity = entityMapper.matchModelToMatchEntity(match);
     matchEntity.setId(1L);
+
+    when(entityManager.getReference(UserEntity.class, matchEntity.getId()))
+        .thenReturn(matchEntity.getUsers().get(0))
+        .thenReturn(matchEntity.getUsers().get(1))
+        .thenReturn(matchEntity.getUsers().get(2));
+
+    when(entityManager.getReference(GameEntity.class, matchEntity.getGame().getId())).thenReturn(
+        matchEntity.getGame());
 
     MatchEntity mappedMatch = entityMapper.matchModelToMatchEntityWithReference(match, matchEntity);
 
     assertDoesNotThrow(() -> NullPointerException.class);
     assertEquals(match.getId(), mappedMatch.getId());
     assertEquals(match.getGame().getId(), mappedMatch.getGame().getId());
-    //assertEquals(4, match.getUsers().size());
-    //assertEquals(match.getUsers().size(), mappedMatch.getUsers().size());
-    assertTrue(match.getUsers().stream().map(User::getId).toList()
-            .containsAll(mappedMatch.getUsers().stream().map(UserEntity::getId).toList()));
+    assertEquals(matchEntity.getUsers(), mappedMatch.getUsers());
   }
 
   @Test
@@ -142,7 +150,7 @@ public class EntityMapperTest {
   void ensureGameModelToGameWithReferenceMappingWorksProvidingModelAndEntity() {
     Game game = TestFixtures.gameToGameDto(game());
 
-    GameEntity existingGameEntity = new GameEntity(1L,"4Gewinnt", "Nicht Schummeln");
+    GameEntity existingGameEntity = new GameEntity(1L, "4Gewinnt", "Nicht Schummeln");
 
     GameEntity mappedGame = entityMapper.gameModelToExitstingGameEntity(game, existingGameEntity);
 

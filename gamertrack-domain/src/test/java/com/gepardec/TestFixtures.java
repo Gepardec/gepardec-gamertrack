@@ -64,6 +64,15 @@ public class TestFixtures {
     return users;
   }
 
+  public static List<User> usersWithId(int userCount) {
+    List<User> users = new ArrayList<>(userCount);
+
+    for (int i = 0; i <= userCount; i++) {
+      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true));
+    }
+    return users;
+  }
+
   public static User user(Long id) {
     User user = new User(id, "User", "Testfixture", false);
     return user;
