@@ -37,7 +37,7 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
                 ScoreEntity scoreEntity = entityMapper.ScoreModeltoScoreEntity(score);
                 entityManager.persist(scoreEntity);
 
-                ScoreEntity scoreSaved = entityManager.find(ScoreEntity.class, score.getId());
+                ScoreEntity scoreSaved = entityManager.find(ScoreEntity.class, scoreEntity.getId());
                 log.info("Save score with userId: {}, gameId: {} and {} scorePoints.", scoreSaved.getUser().getId(), scoreSaved.getGame().getId(), scoreSaved.getScorePoints());
                 return Optional.of(entityMapper.ScoreEntityToScoreModel(scoreSaved));
             }
