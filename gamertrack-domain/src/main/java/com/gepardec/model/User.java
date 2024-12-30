@@ -5,6 +5,8 @@ public class User{
     private  String firstname;
     private  String lastname;
     private boolean deactivated;
+    private String token;
+
 
     public User() {
     }
@@ -46,6 +48,12 @@ public class User{
 
     public void setDeactivated(boolean deactivated) {
         this.deactivated = deactivated;
+    }
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
     }
 }
 

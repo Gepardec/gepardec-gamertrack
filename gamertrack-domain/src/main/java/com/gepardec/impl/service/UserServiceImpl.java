@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.ScoreService;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.core.services.UserService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
@@ -25,10 +26,12 @@ public class UserServiceImpl implements UserService, Serializable {
 
     @Inject
     private ScoreService scoreService;
+    @Inject
+    private TokenService tokenService;
 
     @Override
     public Optional<User> saveUser(User user) {
-
+        user.setToken(tokenService.generateToken());
         return userRepository.saveUser(user);
     }
 

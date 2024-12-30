@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.services.ScoreService;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
@@ -21,11 +22,14 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     private static final Logger log = LoggerFactory.getLogger(ScoreServiceImpl.class);
     @Inject
     private ScoreRepository scoreRepository;
+    @Inject
+    private TokenService tokenService;
 
     @Override
     public Optional<Score> saveScore(Score score) {
 
         if(!scoreExists(score)) {
+            score.setToken(tokenService.generateToken());
             return scoreRepository.saveScore(score);
         }
 
