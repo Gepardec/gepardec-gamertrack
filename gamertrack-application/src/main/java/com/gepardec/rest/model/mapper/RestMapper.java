@@ -1,9 +1,9 @@
 package com.gepardec.rest.model.mapper;
 
-import com.gepardec.model.Score;
-import com.gepardec.model.User;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
+import com.gepardec.model.Score;
+import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.CreateScoreCommand;
@@ -17,7 +17,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class RestMapper {
 
   public Score createScoreCommandtoScore(CreateScoreCommand scoreCommand) {
-    return new Score(null,scoreCommand.user(), scoreCommand.game(), scoreCommand.scorePoints());
+    return new Score(null, scoreCommand.user(), scoreCommand.game(), scoreCommand.scorePoints());
   }
 
   public User createUserCommandtoUser(CreateUserCommand createUserCommand) {
@@ -40,10 +40,10 @@ public class RestMapper {
   }
 
   public Game updateGameCommandtoGame(Long id, UpdateGameCommand updateGameCommand) {
-    return new Game(id, updateGameCommand.title(), updateGameCommand.rules());
+    return new Game(id, updateGameCommand.name(), updateGameCommand.rules());
   }
 
   public Game createGameCommandtoGame(CreateGameCommand createGameCommand) {
-    return new Game(null, createGameCommand.title(), createGameCommand.rules());
+    return new Game(null, createGameCommand.name(), createGameCommand.rules());
   }
 }

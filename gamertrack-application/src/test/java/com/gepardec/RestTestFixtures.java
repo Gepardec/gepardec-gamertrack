@@ -1,5 +1,7 @@
 package com.gepardec;
 
+import static com.gepardec.TestFixtures.user;
+
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateGameCommand;
@@ -12,8 +14,6 @@ import com.gepardec.rest.model.command.UpdateUserCommand;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.gepardec.TestFixtures.user;
 
 public class RestTestFixtures {
 
@@ -37,7 +37,7 @@ public class RestTestFixtures {
   }
 
   public static CreateMatchCommand createMatchCommand() {
-    return new CreateMatchCommand(game(),users(5));
+    return new CreateMatchCommand(game(), users(5));
   }
 
   public static CreateGameCommand createGameCommand() {
@@ -45,8 +45,8 @@ public class RestTestFixtures {
   }
 
 
-  public static MatchRestDto matchRestDto(Long id, Long gameid, List<Long> userIds) {
-    return new MatchRestDto(id, gameid, userIds);
+  public static MatchRestDto matchRestDto(Long id, Game game, List<User> users) {
+    return new MatchRestDto(id, game, users);
   }
 
   public static Game game() {
@@ -54,7 +54,7 @@ public class RestTestFixtures {
   }
 
   public static Game game(Long id) {
-    Game game = new Game(null,"Game Fixture", "Game Fixture Rules");
+    Game game = new Game(null, "Game Fixture", "Game Fixture Rules");
     game.setId(id);
     return game;
   }

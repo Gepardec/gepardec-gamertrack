@@ -1,5 +1,10 @@
 package com.gepardec.rest.model.mapper;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gepardec.RestTestFixtures;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
@@ -12,8 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class RestMapperTest {
@@ -30,7 +33,8 @@ class RestMapperTest {
     assertEquals(mappedMatch.getGame().getId(),
         RestTestFixtures.createMatchCommand().game().getId());
     assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
-        .containsAll(RestTestFixtures.createMatchCommand().users().stream().map(User::getId).toList()));
+        .containsAll(
+            RestTestFixtures.createMatchCommand().users().stream().map(User::getId).toList()));
   }
 
   @Test
@@ -44,7 +48,8 @@ class RestMapperTest {
     assertEquals(mappedMatch.getGame().getId(),
         RestTestFixtures.updateMatchCommand().game().getId());
     assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
-        .containsAll(RestTestFixtures.updateMatchCommand().users().stream().map(User::getId).toList()));
+        .containsAll(
+            RestTestFixtures.updateMatchCommand().users().stream().map(User::getId).toList()));
   }
 
   @Test
@@ -53,7 +58,7 @@ class RestMapperTest {
 
     assertDoesNotThrow(() -> NullPointerException.class);
     assertNotNull(mappedGame);
-    assertEquals(RestTestFixtures.createGameCommand().title(), mappedGame.getName());
+    assertEquals(RestTestFixtures.createGameCommand().name(), mappedGame.getName());
     assertEquals(RestTestFixtures.createGameCommand().rules(), mappedGame.getRules());
   }
 
@@ -64,7 +69,7 @@ class RestMapperTest {
 
     assertDoesNotThrow(() -> NullPointerException.class);
     assertNotNull(mappedGame);
-    assertEquals(RestTestFixtures.updateGameCommand().title(), mappedGame.getName());
+    assertEquals(RestTestFixtures.updateGameCommand().name(), mappedGame.getName());
     assertEquals(RestTestFixtures.updateGameCommand().rules(), mappedGame.getRules());
   }
 
