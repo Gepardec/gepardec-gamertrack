@@ -1,8 +1,6 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
-import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.model.Match;
@@ -12,7 +10,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +27,8 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Override
   public Optional<Match> saveMatch(Match match) {
-    logger.info("Saving  match {}", match);
-
-    MatchEntity matchToSave = entityMapper.matchModelToMatchEntity(match);
-
-    matchToSave.setGame(em.getReference(GameEntity.class, match.getGame().getId()));
-    matchToSave.setUsers(
-        matchToSave.getUsers().stream().map(u -> em.getReference(UserEntity.class, u.getId()))
-            .collect(
-                Collectors.toList()));
+    MatchEntity matchToSave = entityMapper.matchModelToMatchEntityWithReference(match);
+    logger.info("Saving  match {}", matchToSave);
 
     em.persist(matchToSave);
     em.flush();

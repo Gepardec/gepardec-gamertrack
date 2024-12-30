@@ -157,6 +157,7 @@ class MatchServiceImplTest {
   @Test
   void ensureFindMatchByUserIdReturnsListOfMatchesForExistingMatchWithUserId() {
     Match match = TestFixtures.match();
+    match.setUsers(TestFixtures.usersWithId(10));
 
     when(matchRepository.findMatchesByUserId(anyLong())).thenReturn(
         List.of(match));
