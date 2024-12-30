@@ -2,10 +2,9 @@ package com.gepardec.rest.model.dto;
 
 
 import com.gepardec.model.User;
-import jakarta.validation.constraints.NotEmpty;
 
-public record UserRestDto(@NotEmpty String firstname, @NotEmpty String lastname) {
+public record UserRestDto(Long id, String firstname, String lastname, boolean deactivated ) {
     public UserRestDto(User user){
-        this(user.getFirstname(),user.getLastname());
+        this(user.getId(),user.getFirstname(),user.getLastname(),user.isDeactivated());
     }
 }

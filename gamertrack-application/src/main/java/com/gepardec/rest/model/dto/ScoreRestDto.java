@@ -1,11 +1,12 @@
 package com.gepardec.rest.model.dto;
 
+import com.gepardec.model.Game;
 import com.gepardec.model.Score;
-import jakarta.validation.constraints.NotNull;
+import com.gepardec.model.User;
 
-public record ScoreRestDto(@NotNull long userId, @NotNull long gameId, @NotNull double score) {
+public record ScoreRestDto(Long id, User user, Game game, double score) {
     public ScoreRestDto(Score score){
-        this(score.getUser().getId(),score.getGame().getId(), score.getScorePoints());
+        this(score.getId(), score.getUser(), score.getGame(), score.getScorePoints());
     }
 
 }
