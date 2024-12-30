@@ -1,7 +1,11 @@
 package com.gepardec.adapter.output.persistence.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -17,17 +21,17 @@ public class UserEntity extends AbstractEntity{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<ScoreEntity> scores;
 
+    @NotNull(message = "Deactivated must be set")
     private boolean deactivated;
 
-    public UserEntity(String firstname, String lastname) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-    }
-    //temp
-    public UserEntity(String firstname, String lastname, boolean deactivated) {
+    @NotEmpty(message = "Token must be set")
+    private String token;
+
+    public UserEntity(String firstname, String lastname, boolean deactivated, String token) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.deactivated = deactivated;
+        this.token = token;
     }
 
     public UserEntity(long id, String firstname, String lastname, boolean deactivated) {
@@ -61,5 +65,11 @@ public class UserEntity extends AbstractEntity{
 
     public void setDeactivated(boolean deactivated) {
         this.deactivated = deactivated;
+    }
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
     }
 }

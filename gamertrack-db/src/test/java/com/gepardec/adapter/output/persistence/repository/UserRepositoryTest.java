@@ -1,7 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.UserMapper;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.User;
 import jakarta.inject.Inject;
@@ -19,8 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(ArquillianExtension.class)
-public class UserRepositoryTest extends GamertrackDbIT{
-    /*
+public class UserRepositoryTest extends GamertrackDbIT {
+
+  /*
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -28,146 +29,146 @@ public class UserRepositoryTest extends GamertrackDbIT{
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-     */
-    @PersistenceContext
-    EntityManager entityManager;
+   */
+  @PersistenceContext
+  EntityManager entityManager;
 
-    @Inject
-    UserRepository userRepository;
+  @Inject
+  UserRepository userRepository;
 
-    @Inject
-    EntityMapper entityMapper;
+  @Inject
+  UserMapper userMapper;
 
-    @BeforeEach
-    public void before() {
-        userRepository.deleteAllUsers();
-        entityManager.clear();
-    }
+  @BeforeEach
+  public void before() {
+    userRepository.deleteAllUsers();
+    entityManager.clear();
+  }
 
-    @Test
-    void ensureSaveUserWorks(){
-        User user = TestFixtures.user(1L);
-        Long savedId = userRepository.saveUser(user).get().getId();
-        assertTrue(userRepository.findUserById(savedId).isPresent());
-    }
+  @Test
+  void ensureSaveUserWorks() {
+    User user = TestFixtures.user(1L);
+    Long savedId = userRepository.saveUser(user).get().getId();
+    assertTrue(userRepository.findUserById(savedId).isPresent());
+  }
 
-    @Test
-    void ensureUpdateUserWorks(){
-        User user = new User(1L,"OLD","USER",false);
-        Long savedId = userRepository.saveUser(user).get().getId();
+  @Test
+  void ensureUpdateUserWorks() {
+    User user = new User(1L, "OLD", "USER", false,null);
+    Long savedId = userRepository.saveUser(user).get().getId();
 
-        User updatedUser = new User(savedId,"NEW","USER",false);
+    User updatedUser = new User(savedId, "NEW", "USER", false,null);
 
-        userRepository.updateUser(updatedUser);
+    userRepository.updateUser(updatedUser);
 
-        Optional<User> foundUser = userRepository.findUserById(savedId);
+    Optional<User> foundUser = userRepository.findUserById(savedId);
 
-        assertTrue(foundUser.isPresent());
-        assertEquals(foundUser.get().getFirstname(), updatedUser.getFirstname());
-    }
+    assertTrue(foundUser.isPresent());
+    assertEquals(foundUser.get().getFirstname(), updatedUser.getFirstname());
+  }
 
-    @Test
-    void ensureDeleteUserWorks(){
-        User user = TestFixtures.user(1L);
-        userRepository.saveUser(user);
+  @Test
+  void ensureDeleteUserWorks() {
+    User user = TestFixtures.user(1L);
+    userRepository.saveUser(user);
 
-        int sizeBefore = userRepository.findAllUsers().size();
+    int sizeBefore = userRepository.findAllUsers().size();
 
-        userRepository.deleteUser(user);
+    userRepository.deleteUser(user);
 
-        assertEquals(1, sizeBefore);
-        assertEquals(0, userRepository.findAllUsers().size());
-        assertFalse(userRepository.findUserById(1L).isPresent());
-    }
+    assertEquals(1, sizeBefore);
+    assertEquals(0, userRepository.findAllUsers().size());
+    assertFalse(userRepository.findUserById(1L).isPresent());
+  }
 
-    @Test
-    void ensureDeleteAllUsersWorks(){
-        List<User> users = TestFixtures.users(4);
-        userRepository.saveUser(users.get(0));
-        userRepository.saveUser(users.get(1));
-        userRepository.saveUser(users.get(2));
-        userRepository.saveUser(users.get(3));
+  @Test
+  void ensureDeleteAllUsersWorks() {
+    List<User> users = TestFixtures.users(4);
+    userRepository.saveUser(users.get(0));
+    userRepository.saveUser(users.get(1));
+    userRepository.saveUser(users.get(2));
+    userRepository.saveUser(users.get(3));
 
-        int sizeBefore = userRepository.findAllUsers().size();
+    int sizeBefore = userRepository.findAllUsers().size();
 
-        userRepository.deleteAllUsers();
+    userRepository.deleteAllUsers();
 
-        assertEquals(4, sizeBefore);
-        assertEquals(0, userRepository.findAllUsers().size());
-        assertFalse(userRepository.findUserById(1L).isPresent());
-    }
+    assertEquals(4, sizeBefore);
+    assertEquals(0, userRepository.findAllUsers().size());
+    assertFalse(userRepository.findUserById(1L).isPresent());
+  }
 
-    @Test
-    void ensureFindAllUsers(){
+  @Test
+  void ensureFindAllUsers() {
 
-        User user1 = TestFixtures.user(1L);
-        User user2 = TestFixtures.user(2L);
-        User user3 = new User(3L,"Test","Arbeit",true);
+    User user1 = TestFixtures.user(1L);
+    User user2 = TestFixtures.user(2L);
+    User user3 = new User(3L, "Test", "Arbeit", true,null);
 
-        userRepository.saveUser(user1);
-        userRepository.saveUser(user2);
-        userRepository.saveUser(user3);
+    userRepository.saveUser(user1);
+    userRepository.saveUser(user2);
+    userRepository.saveUser(user3);
 
-        assertEquals(2, userRepository.findAllUsers().size());
-    }
+    assertEquals(2, userRepository.findAllUsers().size());
+  }
 
-    @Test
-    void ensureFindAllUsersIncludeDeleted(){
+  @Test
+  void ensureFindAllUsersIncludeDeleted() {
 
-        User user1 = TestFixtures.user(1L);
-        User user2 = TestFixtures.user(2L);
-        User user3 = new User(3L,"Test","deleted",true);
+    User user1 = TestFixtures.user(1L);
+    User user2 = TestFixtures.user(2L);
+    User user3 = new User(3L, "Test", "deleted", true,null);
 
-        userRepository.saveUser(user1);
-        userRepository.saveUser(user2);
-        userRepository.saveUser(user3);
+    userRepository.saveUser(user1);
+    userRepository.saveUser(user2);
+    userRepository.saveUser(user3);
 
-        assertEquals(3, userRepository.findAllUsersIncludeDeleted().size());
-    }
+    assertEquals(3, userRepository.findAllUsersIncludeDeleted().size());
+  }
 
-    @Test
-    void ensureFindUserByIdWorks(){
+  @Test
+  void ensureFindUserByIdWorks() {
 
-        User user1 = TestFixtures.user(1L);
-        User user2 = TestFixtures.user(2L);
-        User user3 = TestFixtures.user(3L);
+    User user1 = TestFixtures.user(1L);
+    User user2 = TestFixtures.user(2L);
+    User user3 = TestFixtures.user(3L);
 
-        Long savedId1 = userRepository.saveUser(user1).get().getId();
-        userRepository.saveUser(user2);
-        userRepository.saveUser(user3);
+    Long savedId1 = userRepository.saveUser(user1).get().getId();
+    userRepository.saveUser(user2);
+    userRepository.saveUser(user3);
 
-        assertEquals(3, userRepository.findAllUsers().size());
-        assertTrue(userRepository.findUserById(savedId1).isPresent());
-    }
+    assertEquals(3, userRepository.findAllUsers().size());
+    assertTrue(userRepository.findUserById(savedId1).isPresent());
+  }
 
-    @Test
-    void ensureFindUserByIdWorksIncludedDeleted(){
+  @Test
+  void ensureFindUserByIdWorksIncludedDeleted() {
 
-        User user1 = TestFixtures.user(1L);
-        User user2 = TestFixtures.user(2L);
-        User user3 = TestFixtures.user(3L);
-        user3.setDeactivated(true);
+    User user1 = TestFixtures.user(1L);
+    User user2 = TestFixtures.user(2L);
+    User user3 = TestFixtures.user(3L);
+    user3.setDeactivated(true);
 
-        userRepository.saveUser(user1);
-        userRepository.saveUser(user2);
-        Long savedId3 = userRepository.saveUser(user3).get().getId();
+    userRepository.saveUser(user1);
+    userRepository.saveUser(user2);
+    Long savedId3 = userRepository.saveUser(user3).get().getId();
 
-        assertTrue(userRepository.findUserByIdIncludeDeleted(savedId3).isPresent());
-        assertTrue(userRepository.findUserById(savedId3).isEmpty());
-    }
+    assertTrue(userRepository.findUserByIdIncludeDeleted(savedId3).isPresent());
+    assertTrue(userRepository.findUserById(savedId3).isEmpty());
+  }
 
-    @Test
-    void ensureExistsByUserIdWorks(){
+  @Test
+  void ensureExistsByUserIdWorks() {
 
-        List<User> users = TestFixtures.users(4);
-        Long savedId1 = userRepository.saveUser(users.get(0)).get().getId();
-        Long savedId2 = userRepository.saveUser(users.get(1)).get().getId();
-        Long savedId3 = userRepository.saveUser(users.get(2)).get().getId();
-        Long savedId4 = userRepository.saveUser(users.get(3)).get().getId();
+    List<User> users = TestFixtures.users(4);
+    Long savedId1 = userRepository.saveUser(users.get(0)).get().getId();
+    Long savedId2 = userRepository.saveUser(users.get(1)).get().getId();
+    Long savedId3 = userRepository.saveUser(users.get(2)).get().getId();
+    Long savedId4 = userRepository.saveUser(users.get(3)).get().getId();
 
-        assertTrue(userRepository.existsByUserId(List.of(savedId1,savedId2,savedId3,savedId4)));
-        assertFalse(userRepository.existsByUserId(List.of(1000L,1001L)));
+    assertTrue(userRepository.existsByUserId(List.of(savedId1, savedId2, savedId3, savedId4)));
+    assertFalse(userRepository.existsByUserId(List.of(1000L, 1001L)));
 
-    }
+  }
 
 }

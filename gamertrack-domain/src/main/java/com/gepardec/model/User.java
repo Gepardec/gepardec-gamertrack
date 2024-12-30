@@ -11,11 +11,12 @@ public class User{
     public User() {
     }
 
-    public User(Long id, String firstname, String lastname, boolean deactivated) {
+    public User(Long id, String firstname, String lastname, boolean deactivated, String token) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.deactivated = deactivated;
+        this.token = token;
     }
 
     public Long getId() {

@@ -1,7 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.adapter.output.persistence.entity.UserEntity;
-import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.UserMapper;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,35 +24,39 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   @Inject
   protected EntityManager entityManager;
   @Inject
-  EntityMapper entityMapper;
+  UserMapper userMapper;
 
   @Override
   public Optional<User> saveUser(User user) {
-    UserEntity userEntity = entityMapper.userModelToUserEntity(user);
-
+    UserEntity userEntity = userMapper.userModelToUserEntity(user);
     entityManager.persist(userEntity);
     UserEntity userSaved = entityManager.find(UserEntity.class, userEntity.getId());
     log.info("Saved user with id: {}", userEntity.getId());
-    return Optional.ofNullable(entityMapper.userEntityToUserModel(userSaved));
+    return Optional.ofNullable(userMapper.userEntityToUserModel(userSaved));
   }
 
   @Override
   public Optional<User> updateUser(User user) {
     log.info("updating user with id: {}", user.getId());
 
-    UserEntity userEntity = entityMapper.userModeltoExistingUserEntity(user, entityManager.find(UserEntity.class, user.getId()));
+    UserEntity userEntity = userMapper.userModeltoExistingUserEntity(user,
+        entityManager.find(UserEntity.class, user.getId()));
     entityManager.merge(userEntity);
     UserEntity usermerged = entityManager.find(UserEntity.class, user.getId());
     log.info("Updated user with id: {}", usermerged.getId());
-    return Optional.ofNullable(entityMapper.userEntityToUserModel(usermerged));
+    return Optional.ofNullable(userMapper.userEntityToUserModel(usermerged));
   }
 
 
   @Override
   public void deleteUser(User user) {
-    UserEntity userEntity = entityMapper.userModeltoExistingUserEntity(user,entityManager.find(UserEntity.class, user.getId()));
+    UserEntity userEntity = userMapper.userModeltoExistingUserEntity(user,
+        entityManager.find(UserEntity.class, user.getId()));
     log.info("Deleted user with id: {}", user.getId());
-    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", userEntity.getId(),userEntity.getFirstname(),userEntity.getLastname(),userEntity.isDeactivated());
+    log.info(
+        "deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present",
+        userEntity.getId(), userEntity.getFirstname(), userEntity.getLastname(),
+        userEntity.isDeactivated());
     entityManager.remove(userEntity);
   }
 
@@ -64,11 +68,13 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
 
   @Override
   public List<User> findAllUsersIncludeDeleted() {
-    List<UserEntity> resultList = entityManager.createQuery("SELECT u FROM UserEntity u", UserEntity.class)
+    List<UserEntity> resultList = entityManager.createQuery("SELECT u FROM UserEntity u",
+            UserEntity.class)
         .getResultList();
     log.info("Find all users including deleted user. Returned list of size:{}", resultList.size());
 
-    return resultList.stream().map(entityMapper::userEntityToUserModel).collect(Collectors.toList());
+    return resultList.stream().map(userMapper::userEntityToUserModel)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -77,7 +83,8 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
             "SELECT u FROM UserEntity u Where u.deactivated = false", UserEntity.class)
         .getResultList();
     log.info("Find all users. Returned list of size:{}", resultList.size());
-    return resultList.stream().map(entityMapper::userEntityToUserModel).collect(Collectors.toList());
+    return resultList.stream().map(userMapper::userEntityToUserModel)
+        .collect(Collectors.toList());
 
   }
 
@@ -90,29 +97,30 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
         .getResultList();
     log.info("Find user with id: {}. Returned list of size:{}", id, resultList.size());
     return resultList.isEmpty()
-            ? Optional.empty()
-            : Optional.of(entityMapper.userEntityToUserModel(resultList.getFirst()));
+        ? Optional.empty()
+        : Optional.of(userMapper.userEntityToUserModel(resultList.getFirst()));
   }
 
   @Override
   public Optional<User> findUserByIdIncludeDeleted(long id) {
-    List<UserEntity> resultList = entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.id = :id",
+    List<UserEntity> resultList = entityManager.createQuery(
+            "SELECT u FROM UserEntity u WHERE u.id = :id",
             UserEntity.class)
         .setParameter("id", id)
         .getResultList();
     log.info("Find user including deleted with id: {}. Returned list of size:{}", id,
         resultList.size());
     return resultList.isEmpty()
-            ? Optional.empty()
-            : Optional.of(entityMapper.userEntityToUserModel(resultList.getFirst()));
+        ? Optional.empty()
+        : Optional.of(userMapper.userEntityToUserModel(resultList.getFirst()));
   }
 
   @Override
   public Boolean existsByUserId(List<Long> userIds) {
     long foundUserIds = userIds.stream()
-            .map(this::findUserById)
-            .filter(Optional::isPresent)
-            .count();
+        .map(this::findUserById)
+        .filter(Optional::isPresent)
+        .count();
     return foundUserIds == userIds.size();
   }
 }

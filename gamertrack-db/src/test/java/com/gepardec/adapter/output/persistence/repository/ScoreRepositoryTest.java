@@ -4,7 +4,7 @@ import com.gepardec.TestFixtures;
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
 import com.gepardec.adapter.output.persistence.entity.UserEntity;
-import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.ScoreMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.repository.UserRepository;
@@ -41,7 +41,7 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
   UserRepository userRepository;
 
   @Inject
-  EntityMapper entityMapper;
+  ScoreMapper scoreMapper;
 
   @Inject
   private UserTransaction utx;
@@ -61,10 +61,10 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     User user = TestFixtures.user(1L);
 
     Score score = new Score(
-            0L,
-            userRepository.saveUser(user).get(),
-            gameRepository.saveGame(game).get(),
-            10);
+        0L,
+        userRepository.saveUser(user).get(),
+        gameRepository.saveGame(game).get(),
+        10, null);
 
     Long savedId = scoreRepository.saveScore(score).get().getId();
     assertTrue(scoreRepository.findScoreById(savedId).isPresent());
@@ -77,11 +77,11 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     User user = userRepository.saveUser(TestFixtures.user(1L)).get();
     Game game = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score = new Score(null, user, game, 10.0);
+    Score score = new Score(null, user, game, 10.0, null);
 
     Long savedId = scoreRepository.saveScore(score).get().getId();
 
-    Score updatedScore = new Score(savedId, user, game, 20.0);
+    Score updatedScore = new Score(savedId, user, game, 20.0, null);
 
     scoreRepository.updateScore(updatedScore);
 
@@ -99,19 +99,16 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0);
-    Score score2 = new Score(2L, user2, game1, 30.0);
-    Score score3 = new Score(3L, user3, game1, 10.0);
+    Score score1 = new Score(1L, user1, game1, 10.0, null);
+    Score score2 = new Score(2L, user2, game1, 30.0, null);
+    Score score3 = new Score(3L, user3, game1, 10.0, null);
 
     scoreRepository.saveScore(score1);
     scoreRepository.saveScore(score2);
     scoreRepository.saveScore(score3);
 
-    List<Score> result = scoreRepository
-            .filterScores(null,null,null,null,true);
-
-    assertFalse(result.isEmpty());
-    assertEquals(3, result.size());
+    assertFalse(scoreRepository.findAllScores().isEmpty());
+    assertEquals(3, scoreRepository.findAllScores().size());
 
   }
 
@@ -122,12 +119,13 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0);
-    Score score2 = new Score(2L, user2, game1, 30.0);
+    Score score1 = new Score(1L, user1, game1, 10.0, null);
+    Score score2 = new Score(2L, user2, game1, 30.0, null);
 
     Long savedId1 = scoreRepository.saveScore(score1).get().getId();
     scoreRepository.saveScore(score2);
 
+    assertFalse(scoreRepository.findAllScores().isEmpty());
     assertEquals(score1.getScorePoints(),
         scoreRepository.findScoreById(savedId1).get().getScorePoints());
   }
@@ -140,9 +138,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0);
-    Score score2 = new Score(2L, user2, game1, 30.0);
-    Score score3 = new Score(3L, user3, game1, 10.0);
+    Score score1 = new Score(1L, user1, game1, 10.0, null);
+    Score score2 = new Score(2L, user2, game1, 30.0, null);
+    Score score3 = new Score(3L, user3, game1, 10.0, null);
 
     scoreRepository.saveScore(score1);
     scoreRepository.saveScore(score2);
@@ -150,9 +148,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Long savedGameId1 = game1.getId();
 
-    assertEquals(3, scoreRepository.filterScores(null,null,null,null,true).size());
-    assertFalse(scoreRepository.findTopScoreByGame(savedGameId1, 2,true).isEmpty());
-    assertEquals(2, scoreRepository.findTopScoreByGame(savedGameId1, 2,true).size());
+    assertEquals(3, scoreRepository.findAllScores().size());
+    assertFalse(scoreRepository.findTopScoreByGame(savedGameId1, 2).isEmpty());
+    assertEquals(2, scoreRepository.findTopScoreByGame(savedGameId1, 2).size());
   }
 
   @Test
@@ -163,9 +161,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0);
-    Score score2 = new Score(2L, user2, game1, 30.0);
-    Score score3 = new Score(3L, user3, game1, 10.0);
+    Score score1 = new Score(1L, user1, game1, 10.0, null);
+    Score score2 = new Score(2L, user2, game1, 30.0, null);
+    Score score3 = new Score(3L, user3, game1, 10.0, null);
 
     Long savedId1 = scoreRepository.saveScore(score1).get().getId();
     Long savedId2 = scoreRepository.saveScore(score2).get().getId();

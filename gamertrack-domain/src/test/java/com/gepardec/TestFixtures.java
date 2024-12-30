@@ -41,7 +41,7 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      users.add(new User(null, "FirstName" + i, "LastName" + 1, false));
+      users.add(new User(null, "FirstName" + i, "LastName" + 1, false,null));
 
     }
 
@@ -52,13 +52,13 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true));
+      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true,null));
     }
     return users;
   }
 
   public static User user(Long id) {
-    User user = new User(id, "User", "Testfixture", false);
+    User user = new User(id, "User", "Testfixture", false,null);
     return user;
   }
 
@@ -81,7 +81,7 @@ public class TestFixtures {
   }
 
   public static Score score(Long scoreId, Long userId, Long gameId) {
-    Score score = new Score(scoreId, user(userId), game(gameId), 10L);
+    Score score = new Score(scoreId, user(userId), game(gameId), 10L, null);
     return score;
   }
 
