@@ -32,7 +32,7 @@ public class ScoreMapperTest {
     Score score = TestFixtures.score(1L, 3L, 4L);
 
     UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, tokenService.generateToken());
-    GameEntity gameEntity = new GameEntity(4L, "4Gewinnt", "Nicht Schummeln");
+    GameEntity gameEntity = new GameEntity(4L,tokenService.generateToken(), "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(
         userEntity);
@@ -53,7 +53,7 @@ public class ScoreMapperTest {
     existingScore.setId(1L);
 
     UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, tokenService.generateToken());
-    GameEntity gameEntity = new GameEntity(4L, "4Gewinnt", "Nicht Schummeln");
+    GameEntity gameEntity = new GameEntity(4L, tokenService.generateToken(), "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(
         userEntity);
