@@ -107,8 +107,11 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     scoreRepository.saveScore(score2);
     scoreRepository.saveScore(score3);
 
-    assertFalse(scoreRepository.findAllScores().isEmpty());
-    assertEquals(3, scoreRepository.findAllScores().size());
+    List<Score> result = scoreRepository
+            .filterScores(null,null,null,null,true);
+
+    assertFalse(result.isEmpty());
+    assertEquals(3, result.size());
 
   }
 
@@ -125,7 +128,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Long savedId1 = scoreRepository.saveScore(score1).get().getId();
     scoreRepository.saveScore(score2);
 
-    assertFalse(scoreRepository.findAllScores().isEmpty());
     assertEquals(score1.getScorePoints(),
         scoreRepository.findScoreById(savedId1).get().getScorePoints());
   }
@@ -148,9 +150,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Long savedGameId1 = game1.getId();
 
-    assertEquals(3, scoreRepository.findAllScores().size());
-    assertFalse(scoreRepository.findTopScoreByGame(savedGameId1, 2).isEmpty());
-    assertEquals(2, scoreRepository.findTopScoreByGame(savedGameId1, 2).size());
+    assertEquals(3, scoreRepository.filterScores(null,null,null,null,true).size());
+    assertFalse(scoreRepository.findTopScoreByGame(savedGameId1, 2,true).isEmpty());
+    assertEquals(2, scoreRepository.findTopScoreByGame(savedGameId1, 2,true).size());
   }
 
   @Test
