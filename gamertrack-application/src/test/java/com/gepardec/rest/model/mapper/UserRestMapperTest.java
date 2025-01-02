@@ -1,5 +1,7 @@
 package com.gepardec.rest.model.mapper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.gepardec.RestTestFixtures;
 import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateUserCommand;
@@ -8,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class UserRestMapperTest {
