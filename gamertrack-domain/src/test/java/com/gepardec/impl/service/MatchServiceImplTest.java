@@ -7,12 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Match;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,8 @@ class MatchServiceImplTest {
   UserRepository userRepository;
   @Mock
   GameRepository gameRepository;
+  @Mock
+  TokenService tokenService;
 
   @InjectMocks
   MatchServiceImpl matchService;
@@ -42,9 +46,11 @@ class MatchServiceImplTest {
   void ensureSavingValidMatchReturnsOptionalMatch() {
     Match match = match();
 
+    when(tokenService.generateToken()).thenReturn(match.getToken());
+
     when(matchRepository.saveMatch(any())).thenReturn(
         Optional.of(match()));
-    when(gameRepository.existsByGameId(anyLong())).thenReturn(true);
+    when(gameRepository.existsByGameToken(anyString())).thenReturn(true);
     when(userRepository.existsByUserId(anyList())).thenReturn(true);
 
     assertEquals(matchService.saveMatch(match).get().getId(),
@@ -99,16 +105,16 @@ class MatchServiceImplTest {
 
     when(matchRepository.findMatchById(any())).thenReturn(Optional.of(match));
 
-    assertEquals(match, matchService.findMatchById(match.getId()).get());
+    assertEquals(match, matchService.findMatchByToken(match.getToken()));
   }
 
   @Test
-  void ensureFindMatchByIdReturnsOptionalEmptyForNonExistingMatch() {
+  void ensureFindMatchByTokenReturnsOptionalEmptyForNonExistingMatch() {
     Match match = match();
 
     when(matchRepository.findMatchById(any())).thenReturn(Optional.empty());
 
-    assertEquals(Optional.empty(), matchService.findMatchById(match.getId()));
+    assertEquals(Optional.empty(), matchService.findMatchByToken(match.getToken()));
   }
 
   @Test
@@ -140,7 +146,7 @@ class MatchServiceImplTest {
     //When
 
     when(matchRepository.updateMatch(any())).thenReturn(Optional.of(matchNew));
-    when(gameRepository.existsByGameId(anyLong())).thenReturn(true);
+    when(gameRepository.existsByGameToken(anyString())).thenReturn(true);
     when(userRepository.existsByUserId(anyList())).thenReturn(true);
     when(matchRepository.existsMatchById(anyLong())).thenReturn(true);
 

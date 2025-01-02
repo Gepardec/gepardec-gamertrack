@@ -1,7 +1,6 @@
 package com.gepardec.core.repository;
 
 import com.gepardec.model.Match;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +23,8 @@ public interface MatchRepository {
   Boolean existsMatchById(Long matchId);
 
   List<Match> findMatchesByUserIdAndGameId(Long userId, Long gameId);
+
+  Optional<Match> findMatchByToken(String token);
 
 
 }

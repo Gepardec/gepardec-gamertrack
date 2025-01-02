@@ -1,7 +1,6 @@
 package com.gepardec.core.services;
 
 import com.gepardec.model.Match;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +10,7 @@ public interface MatchService {
 
   List<Match> findAllMatches();
 
-  Optional<Match> findMatchById(Long id);
+  Optional<Match> findMatchByToken(String token);
 
   Optional<Match> deleteMatch(Long matchId);
 

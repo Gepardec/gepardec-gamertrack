@@ -1,6 +1,11 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.TestFixtures;
+import static com.gepardec.TestFixtures.game;
+import static com.gepardec.TestFixtures.games;
+import static com.gepardec.TestFixtures.match;
+import static com.gepardec.TestFixtures.user;
+import static com.gepardec.TestFixtures.users;
+
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
 import com.gepardec.adapter.output.persistence.entity.UserEntity;
@@ -11,15 +16,14 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
+import java.util.List;
+import java.util.Optional;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(ArquillianExtension.class)
 public class MatchRepositoryTest extends GamertrackDbIT {
@@ -41,9 +45,11 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureSaveAndReadMatchWorks() {
-    Optional<Game> savedGame = gameRepository.saveGame(TestFixtures.game(null));
-    Optional<User> savedUser = userRepository.saveUser(TestFixtures.user(null));
-    Match match = new Match(null, savedGame.get(), List.of(savedUser.get()));
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser = userRepository.saveUser(users(1).getFirst());
+    Match match = match();
+    match.setGame(savedGame.get());
+    match.setUsers(List.of(savedUser.get()));
 
     var savedAndReadMatch = matchRepository.saveMatch(match);
 
@@ -55,24 +61,23 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureSavingMatchWithInvalidReferencesFails() {
-    Match match = new Match(null, TestFixtures.game(2L), List.of(TestFixtures.user(2L)));
+    Match match = match(null, game(2L), List.of(user(2L)));
 
-    Assertions.assertThrows(EntityNotFoundException.class,
+    Assertions.assertThrows(PersistenceException.class,
         () -> matchRepository.saveMatch(match));
   }
 
   @Test
   public void ensureFindAllMatchesReturnsForExistingMatchesAllMatches() {
-    Optional<Game> savedGame1 = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<Game> savedGame2 = gameRepository.saveGame(new Game(null, "TestName2", "No"));
+    Optional<Game> savedGame1 = gameRepository.saveGame(game(null));
+    Optional<Game> savedGame2 = gameRepository.saveGame(games(1).getFirst());
 
-    Optional<User> savedUser1 = userRepository.saveUser(
-        new User(null, "Tesname", "LastName", false,null));
-    Optional<User> savedUser2 = userRepository.saveUser(
-        new User(null, "Tesname", "No", false,null));
+    List<User> users = users(2);
+    Optional<User> savedUser1 = userRepository.saveUser(users.getFirst());
+    Optional<User> savedUser2 = userRepository.saveUser(users.getLast());
 
-    Match match1 = new Match(null, savedGame1.get(), List.of(savedUser1.get()));
-    Match match2 = new Match(null, savedGame2.get(), List.of(savedUser2.get()));
+    Match match1 = match(null, savedGame1.get(), List.of(savedUser1.get()));
+    Match match2 = match(null, savedGame2.get(), List.of(savedUser2.get()));
 
     Optional<Match> savedMatch1 = matchRepository.saveMatch(match1);
     Optional<Match> savedMatch2 = matchRepository.saveMatch(match2);
@@ -91,10 +96,9 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureFindMatchByIdForExistingMatchReturnsMatch() {
-    Optional<Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<User> savedUser = userRepository.saveUser(
-        new User(null, "Tesname", "LastName", false,null));
-    Match match = new Match(null, savedGame.get(), List.of(savedUser.get()));
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser = userRepository.saveUser(user(null));
+    Match match = match(null, savedGame.get(), List.of(savedUser.get()));
     Optional<Match> savedMatch1 = matchRepository.saveMatch(match);
 
     var foundMatch = matchRepository.findMatchById(savedMatch1.get().getId());
@@ -112,10 +116,9 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureDeleteMatchByIdForExistingMatchWorks() {
-    Optional<Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<User> savedUser = userRepository.saveUser(
-        new User(null, "Tesname", "LastName", false,null));
-    Match match = new Match(null, savedGame.get(), List.of(savedUser.get()));
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser = userRepository.saveUser(user(null));
+    Match match = match(null, savedGame.get(), List.of(savedUser.get()));
 
     Optional<Match> savedMatch = matchRepository.saveMatch(match);
 
@@ -126,17 +129,15 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureUpdateMatchForExistingMatchReturnsUpdatedMatch() {
-    Optional<Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<User> savedUser = userRepository.saveUser(
-        new User(null, "Tesname", "LastName", false,null));
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser = userRepository.saveUser(user(null));
 
-    Optional<User> anotherSavedUser = userRepository.saveUser(
-        new User(null, "Tesname1", "LastName", false,null));
+    Optional<User> anotherSavedUser = userRepository.saveUser(users(1).getFirst());
 
     Optional<Match> oldSavedMatch = matchRepository.saveMatch(
-        new Match(null, savedGame.get(), List.of(savedUser.get())));
+        match(null, savedGame.get(), List.of(savedUser.get())));
     Optional<Match> newUpdatedMatch = matchRepository.updateMatch(
-        new Match(oldSavedMatch.get().getId(), savedGame.get(),
+        match(oldSavedMatch.get().getId(), savedGame.get(),
             List.of(savedUser.get(), anotherSavedUser.get())));
 
     Assertions.assertNotEquals(oldSavedMatch.get().getUsers().size(),
@@ -146,12 +147,11 @@ public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Test
   public void ensureUpdateMatchForNonExistingMatchThrowsIllegalArgumentException() {
-    Optional<Game> savedGame = gameRepository.saveGame(new Game(null, "TestName", "No"));
-    Optional<User> savedUser = userRepository.saveUser(
-        new User(null, "Tesname", "LastName", false,null));
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser = userRepository.saveUser(user(null));
 
     Assertions.assertTrue(matchRepository.updateMatch(
-        new Match(10000L, savedGame.get(), List.of(savedUser.get()))).isEmpty());
+        match(10000L, savedGame.get(), List.of(savedUser.get()))).isEmpty());
     Assertions.assertFalse(matchRepository.existsMatchById(10000L));
 
   }

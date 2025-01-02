@@ -30,7 +30,7 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
     em.persist(gameEntity);
     em.flush();
     GameEntity foundGameEntity = em.find(GameEntity.class, gameEntity.getId());
-    return Optional.of(gameMapper.gameEntityToGameModel(foundGameEntity));
+    return Optional.ofNullable(gameMapper.gameEntityToGameModel(foundGameEntity));
   }
 
   @Override

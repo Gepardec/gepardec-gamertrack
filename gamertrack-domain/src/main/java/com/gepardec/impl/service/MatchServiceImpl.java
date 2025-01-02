@@ -4,6 +4,7 @@ import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.MatchService;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
@@ -29,6 +30,9 @@ public class MatchServiceImpl implements MatchService {
 
   @Inject
   private GameRepository gameRepository;
+
+  @Inject
+  private TokenService tokenService;
 
 
   @Override
@@ -56,7 +60,8 @@ public class MatchServiceImpl implements MatchService {
 
     if (!match.getUsers().isEmpty()
         && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
-        && gameRepository.existsByGameId(match.getGame().getId())) {
+        && gameRepository.existsByGameToken(match.getGame().getToken())) {
+      match.setToken(tokenService.generateToken());
       return matchRepository.saveMatch(match);
     }
 
@@ -71,8 +76,8 @@ public class MatchServiceImpl implements MatchService {
   }
 
   @Override
-  public Optional<Match> findMatchById(Long id) {
-    return matchRepository.findMatchById(id);
+  public Optional<Match> findMatchByToken(String token) {
+    return matchRepository.findMatchByToken(token);
   }
 
   @Override
@@ -101,10 +106,11 @@ public class MatchServiceImpl implements MatchService {
         && match.getGame().getId() != null
         && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
         && matchRepository.existsMatchById(match.getGame().getId())
-        && gameRepository.existsByGameId(match.getGame().getId())) {
+        && gameRepository.existsByGameToken(match.getGame().getToken())) {
       logger.info(
           "Saving updated match with ID: %s having the following attributes: \n %s %s".formatted(
-              match.getId(), match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
+              match.getId(), match.getGame().getId(),
+              match.getUsers().stream().map(User::getId).toList()));
 
       return matchRepository.updateMatch(match);
     }

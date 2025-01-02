@@ -44,15 +44,14 @@ public class MatchResourceImpl implements MatchResource {
             .map(MatchRestDto::new)
             .toList())
         .build();
-
   }
 
 
   @Override
-  public Response getMatchById(Long id) {
-    logger.info("Getting match with ID: %s".formatted(id));
+  public Response getMatchByToken(String token) {
+    logger.info("Getting match with ID: %s".formatted(token));
 
-    return matchService.findMatchById(id)
+    return matchService.findMatchByToken(token)
         .map(MatchRestDto::new)
         .map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
@@ -68,13 +67,13 @@ public class MatchResourceImpl implements MatchResource {
   }
 
   @Override
-  public Response updateMatch(Long id, UpdateMatchCommand matchCommand) {
-    logger.info("Updating match with ID: %s".formatted(id));
+  public Response updateMatch(String token, UpdateMatchCommand matchCommand) {
+    logger.info("Updating match with ID: %s".formatted(token));
     if (matchCommand == null) {
       return Response.status(Status.BAD_REQUEST).build();
     }
 
-    return matchService.updateMatch(restMapper.updateMatchCommandtoMatch(id, matchCommand))
+    return matchService.updateMatch(restMapper.updateMatchCommandtoMatch(null, token, matchCommand))
         .map(MatchRestDto::new)
         .map(Response::ok)
         .orElseGet(() -> Response.status(Status.BAD_REQUEST)).build();

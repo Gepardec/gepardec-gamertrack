@@ -29,7 +29,8 @@ public class MatchMapper {
   }
 
   public Match matchEntityToMatchModel(MatchEntity matchEntity) {
-    return new Match(matchEntity.getId(), gameMapper.gameEntityToGameModel(matchEntity.getGame()),
+    return new Match(matchEntity.getId(), matchEntity.getToken(),
+        gameMapper.gameEntityToGameModel(matchEntity.getGame()),
         matchEntity.getUsers().stream().map(userMapper::userEntityToUserModel).toList());
   }
 

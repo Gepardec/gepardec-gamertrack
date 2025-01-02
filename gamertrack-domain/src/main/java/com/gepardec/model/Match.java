@@ -1,12 +1,11 @@
 package com.gepardec.model;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class Match {
 
   private Long id;
+  private String token;
   @NotNull(message = "Game must not be null")
   private Game game;
   @NotEmpty(message = "User List must not be null or Empty")
@@ -15,8 +14,9 @@ public class Match {
   public Match() {
   }
 
-  public Match(Long id, Game game, List<User> users) {
+  public Match(Long id, String token, Game game, List<User> users) {
     this.id = id;
+    this.token = token;
     this.game = game;
     this.users = users;
   }
@@ -43,5 +43,23 @@ public class Match {
 
   public void setUsers(List<User> users) {
     this.users = users;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  @Override
+  public String toString() {
+    return "Match{" +
+        "id=" + id +
+        ", key='" + token + '\'' +
+        ", game=" + game +
+        ", users=" + users +
+        '}';
   }
 }

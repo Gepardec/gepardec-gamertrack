@@ -12,12 +12,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.transaction.UserTransaction;
+import java.util.Arrays;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-
-import java.util.Arrays;
 
 public class GamertrackDbIT {
 
@@ -31,8 +30,8 @@ public class GamertrackDbIT {
     utx.begin();
     em.joinTransaction();
     Arrays.stream(tClasses)
-            .map(this::composeDeleteQuery)
-            .forEach(Query::executeUpdate);
+        .map(this::composeDeleteQuery)
+        .forEach(Query::executeUpdate);
     utx.commit();
   }
 
@@ -43,18 +42,17 @@ public class GamertrackDbIT {
   @Deployment
   public static Archive<?> createDeployment() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
-            .addClasses(EntityManager.class)
-            .addPackage(TokenServiceImpl.class.getPackage())
-            .addPackage(TokenService.class.getPackage())
-            .addPackage(ScoreEntity.class.getPackage())
-            .addPackage(ScoreRepository.class.getPackage())
-            .addPackage(ScoreRepositoryImpl.class.getPackage())
-            .addPackage(Score.class.getPackage())
-            .addPackage(MatchMapper.class.getPackage())
-            .addPackage(TestFixtures.class.getPackage())
-            .addAsManifestResource("beans.xml")
-            .addAsManifestResource("persistence.xml");
+        .addClasses(EntityManager.class)
+        .addPackage(ScoreEntity.class.getPackage())
+        .addPackage(ScoreRepository.class.getPackage())
+        .addPackage(ScoreRepositoryImpl.class.getPackage())
+        .addPackage(Score.class.getPackage())
+        .addPackage(MatchMapper.class.getPackage())
+        .addPackage(TestFixtures.class.getPackage())
+        .addClass(TokenService.class)
+        .addClass(TokenServiceImpl.class)
+        .addAsManifestResource("beans.xml")
+        .addAsManifestResource("persistence.xml");
   }
 
 }
-

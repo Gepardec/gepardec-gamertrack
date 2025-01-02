@@ -1,6 +1,7 @@
 package com.gepardec.adapter.output.persistence.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
@@ -14,6 +15,9 @@ import java.util.List;
 @Entity
 @Table(name = "matches")
 public class MatchEntity extends AbstractEntity {
+
+  @Column(unique = true)
+  private String token;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "fk_game_match", foreignKey = @ForeignKey(name = "fk_game_match"))
@@ -49,4 +53,24 @@ public class MatchEntity extends AbstractEntity {
   public void setUsers(List<UserEntity> users) {
     this.users = users;
   }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+
+  @Override
+  public String toString() {
+    return "MatchEntity{" +
+        "key='" + token + '\'' +
+        ", game=" + game +
+        ", users=" + users +
+        '}';
+  }
+
+
 }
