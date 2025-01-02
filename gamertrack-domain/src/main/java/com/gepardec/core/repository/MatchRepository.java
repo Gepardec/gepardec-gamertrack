@@ -26,7 +26,5 @@ public interface MatchRepository {
 
   Optional<Match> findMatchByToken(String token);
 
-  Optional<Match> findMatchByToken(String token);
-
 
 }
