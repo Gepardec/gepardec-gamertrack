@@ -9,11 +9,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class GameRestMapper {
 
 
-  public Game updateGameCommandtoGame(Long id, UpdateGameCommand updateGameCommand) {
-    return new Game(id, updateGameCommand.name(), updateGameCommand.rules());
+  public Game updateGameCommandtoGame(String token, UpdateGameCommand updateGameCommand) {
+    return new Game(null, token, updateGameCommand.name(), updateGameCommand.rules());
   }
 
   public Game createGameCommandtoGame(CreateGameCommand createGameCommand) {
-    return new Game(null, createGameCommand.name(), createGameCommand.rules());
+    return new Game(null, null, createGameCommand.name(), createGameCommand.rules());
   }
 }

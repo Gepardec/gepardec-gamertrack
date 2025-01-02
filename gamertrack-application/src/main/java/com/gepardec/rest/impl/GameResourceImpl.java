@@ -1,7 +1,6 @@
 package com.gepardec.rest.impl;
 
 import com.gepardec.core.services.GameService;
-import com.gepardec.model.Game;
 import com.gepardec.rest.api.GameResource;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
@@ -11,7 +10,6 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.Optional;
 
 @RequestScoped
 public class GameResourceImpl implements GameResource {
@@ -30,9 +28,9 @@ public class GameResourceImpl implements GameResource {
   }
 
   @Override
-  public Response getGame(Long id) {
+  public Response getGame(String token) {
     //Return 200 ok with found game or not found if it does not exist
-    return gameService.findGameById(id)
+    return gameService.findGameByToken(token)
         .map(GameRestDto::new).map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND))
         .build();
@@ -49,11 +47,10 @@ public class GameResourceImpl implements GameResource {
   }
 
   @Override
-  public Response updateGame(Long id, UpdateGameCommand gameCmd) {
-    Optional<Game> gameOld = gameService.findGameById(id);
+  public Response updateGame(String token, UpdateGameCommand gameCmd) {
 
     //Returns updated 200OK with updated Entity if it exists or if it does not exist the same object provided on request
-    return gameService.updateGame(restMapper.updateGameCommandtoGame(id, gameCmd))
+    return gameService.updateGame(restMapper.updateGameCommandtoGame(token, gameCmd))
         .map(GameRestDto::new)
         .map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND).entity(gameCmd))
@@ -61,8 +58,8 @@ public class GameResourceImpl implements GameResource {
   }
 
   @Override
-  public Response deleteGame(Long id) {
-    return gameService.deleteGame(id).map(GameRestDto::new).map(Response::ok)
+  public Response deleteGame(String token) {
+    return gameService.deleteGame(token).map(GameRestDto::new).map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 }

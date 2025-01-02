@@ -14,14 +14,15 @@ public class GameMapper {
 
   public GameEntity gameModelToGameEntity(Game game) {
     return game.getId() != null
-        ? new GameEntity(game.getId(), game.getName(), game.getRules())
-        : new GameEntity(null, game.getName(), game.getRules());
+        ? new GameEntity(game.getId(), game.getToken(), game.getName(), game.getRules())
+        : new GameEntity(null, game.getToken(), game.getName(), game.getRules());
   }
 
   public Game gameEntityToGameModel(GameEntity gameEntity) {
     return gameEntity.getId() != null
-        ? new Game(gameEntity.getId(), gameEntity.getName(), gameEntity.getRules())
-        : new Game(null, gameEntity.getName(), gameEntity.getRules());
+        ? new Game(gameEntity.getId(), gameEntity.getToken(), gameEntity.getName(),
+        gameEntity.getRules())
+        : new Game(null, gameEntity.getToken(), gameEntity.getName(), gameEntity.getRules());
   }
 
   public GameEntity gameModelToExitstingGameEntity(Game game, GameEntity gameEntity) {

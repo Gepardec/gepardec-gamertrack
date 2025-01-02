@@ -21,16 +21,16 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   private EntityManager em;
 
   @Inject
-  private GameMapper entityMapper;
+  private GameMapper gameMapper;
 
   @Override
   public Optional<Game> saveGame(Game game) {
-    GameEntity gameEntity = entityMapper.gameModelToGameEntity(game);
+    GameEntity gameEntity = this.gameMapper.gameModelToGameEntity(game);
 
     em.persist(gameEntity);
     em.flush();
     GameEntity foundGameEntity = em.find(GameEntity.class, gameEntity.getId());
-    return Optional.ofNullable(entityMapper.gameEntityToGameModel(foundGameEntity));
+    return Optional.ofNullable(this.gameMapper.gameEntityToGameModel(foundGameEntity));
   }
 
   @Override
@@ -43,19 +43,20 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
     GameEntity gameEntityOld = em.find(GameEntity.class, game.getId());
 
     return gameEntityOld != null
-        ? Optional.of(entityMapper.gameEntityToGameModel(
-        em.merge(entityMapper.gameModelToExitstingGameEntity(game, gameEntityOld))))
+        ? Optional.of(this.gameMapper.gameEntityToGameModel(
+        em.merge(this.gameMapper.gameModelToExitstingGameEntity(game, gameEntityOld))))
         : Optional.empty();
   }
 
   @Override
-  public Optional<Game> findGameById(long id) {
+  public Optional<Game> findGameByToken(String token) {
+    var found = em.createQuery(
+            "select g from GameEntity g where g.token = :token",
+            GameEntity.class)
+        .setParameter("token", token)
+        .getResultList().stream().findFirst();
 
-    GameEntity gameEntity = em.find(GameEntity.class, id);
-
-    return gameEntity != null
-        ? Optional.of(entityMapper.gameEntityToGameModel(gameEntity))
-        : Optional.empty();
+    return found.map(gameEntity -> gameMapper.gameEntityToGameModel(gameEntity));
   }
 
   @Override
@@ -63,7 +64,7 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
     return em.createQuery("select g from GameEntity g", GameEntity.class)
         .getResultList()
         .stream()
-        .map(entityMapper::gameEntityToGameModel)
+        .map(gameMapper::gameEntityToGameModel)
         .toList();
   }
 
@@ -77,7 +78,7 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   }
 
   @Override
-  public Boolean existsByGameId(Long gameId) {
-    return findGameById(gameId).isPresent();
+  public Boolean existsByGameToken(String gameToken) {
+    return findGameByToken(gameToken).isPresent();
   }
 }

@@ -39,7 +39,8 @@ public class GameMapperTest {
   void ensureGameModelToGameWithReferenceMappingWorksProvidingModelAndEntity() {
     Game game = TestFixtures.gameToGameDto(game());
 
-    GameEntity existingGameEntity = new GameEntity(1L, "4Gewinnt", "Nicht Schummeln");
+    GameEntity existingGameEntity = new GameEntity(game.getId(), game.getToken(), game.getName(),
+        game.getRules());
 
     GameEntity mappedGame = entityMapper.gameModelToExitstingGameEntity(game, existingGameEntity);
 

@@ -29,7 +29,7 @@ public class GameRestMapperTest {
 
   @Test
   void ensureUpdateGameCommandToGameCommandDtoWorks() {
-    Game mappedGame = gameRestMapper.updateGameCommandtoGame(RestTestFixtures.game().getId(),
+    Game mappedGame = gameRestMapper.updateGameCommandtoGame(RestTestFixtures.game().getToken(),
         RestTestFixtures.updateGameCommand());
 
     assertDoesNotThrow(() -> NullPointerException.class);

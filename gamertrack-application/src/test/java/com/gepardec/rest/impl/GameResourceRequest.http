@@ -7,7 +7,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Games",
+  "name": "Gamese",
   "rules": "Gamrules"
 }
 > {%
@@ -22,7 +22,7 @@ Content-Type: application/json
 %}
 
 ###
-GET http://localhost:8080/gepardec-gamertrack/api/v1/games/1
+GET http://localhost:8080/gepardec-gamertrack/api/v1/games/KdAML2npimzqsgHf
 Accept: application/json
 
 > {%
@@ -38,7 +38,7 @@ Accept: application/json
 
 ###
 
-DELETE http://localhost:8080/gepardec-gamertrack/api/v1/games/1
+DELETE http://localhost:8080/gepardec-gamertrack/api/v1/games/dvNgfgoQ2GbKhQ5X
 
 > {%
   client.test("Request executed successfully", function () {
@@ -73,7 +73,7 @@ Content-Type: application/json
 %}
 
 ###
-PUT http://localhost:8080/gepardec-gamertrack/api/v1/games/2
+PUT http://localhost:8080/gepardec-gamertrack/api/v1/games/KdAML2npimzqsgHf
 Content-Type: application/json
 Accept: application/json
 

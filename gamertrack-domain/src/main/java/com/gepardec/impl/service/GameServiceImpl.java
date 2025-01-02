@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.services.GameService;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Game;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
@@ -16,23 +17,26 @@ public class GameServiceImpl implements GameService, Serializable {
 
   @Inject
   private GameRepository gameRepository;
+  @Inject
+  TokenService tokenService;
 
   @Override
   public Optional<Game> saveGame(Game game) {
     if (gameRepository.gameExistsByGameName(game.getName())) {
       return Optional.empty();
     }
+    game.setToken(tokenService.generateToken());
     return gameRepository.saveGame(game);
   }
 
   @Override
-  public Optional<Game> deleteGame(Long gameId) {
-    Optional<Game> game = gameRepository.findGameById(gameId);
+  public Optional<Game> deleteGame(String token) {
+    Optional<Game> game = gameRepository.findGameByToken(token);
     if (game.isEmpty()) {
       return Optional.empty();
     }
 
-    gameRepository.deleteGame(gameId);
+    gameRepository.deleteGame(game.get().getId());
 
     return game;
   }
@@ -41,6 +45,8 @@ public class GameServiceImpl implements GameService, Serializable {
   public Optional<Game> updateGame(Game game) {
 
     if (game != null) {
+      Optional<Game> gameOld = findGameByToken(game.getToken());
+      game.setId(gameOld.get().getId());
       return gameRepository.updateGame(game);
     }
 
@@ -48,8 +54,8 @@ public class GameServiceImpl implements GameService, Serializable {
   }
 
   @Override
-  public Optional<Game> findGameById(long id) {
-    return gameRepository.findGameById(id);
+  public Optional<Game> findGameByToken(String token) {
+    return gameRepository.findGameByToken(token);
   }
 
   @Override
