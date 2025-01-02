@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.ScoreRepository;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
 import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -28,6 +29,9 @@ public class ScoreServiceImplTest {
 
     @InjectMocks
     ScoreServiceImpl scoreService;
+
+    @Mock
+    TokenService tokenService;
 
     @Test
     void ensureSaveAndReadScoreWorks() {

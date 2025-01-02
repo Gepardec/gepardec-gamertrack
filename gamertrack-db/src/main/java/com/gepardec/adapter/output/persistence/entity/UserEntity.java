@@ -34,11 +34,12 @@ public class UserEntity extends AbstractEntity{
         this.token = token;
     }
 
-    public UserEntity(long id, String firstname, String lastname, boolean deactivated) {
+    public UserEntity(long id, String firstname, String lastname, boolean deactivated, String token) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.deactivated = deactivated;
+        this.token = token;
     }
 
     public UserEntity() {}

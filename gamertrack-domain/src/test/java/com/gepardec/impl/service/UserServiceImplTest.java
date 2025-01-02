@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -29,6 +30,9 @@ public class UserServiceImplTest {
 
     @Mock
     ScoreServiceImpl scoreService;
+
+    @Mock
+    TokenService tokenService;
 
     @Test
     void ensureSaveAndReadGameWorksAndReturnsUser() {

@@ -4,6 +4,7 @@ import com.gepardec.TestFixtures;
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
 import com.gepardec.adapter.output.persistence.entity.UserEntity;
+import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Score;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,14 @@ public class ScoreMapperTest {
 
   @InjectMocks
   ScoreMapper scoreMapper = new ScoreMapper();
+  @InjectMocks
+  TokenServiceImpl tokenService;
 
   @Test
   public void ensureScoreModelToScoreEntityMappingWorks() {
     Score score = TestFixtures.score(1L, 3L, 4L);
 
-    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false);
+    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, tokenService.generateToken());
     GameEntity gameEntity = new GameEntity(4L, "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(
@@ -49,7 +52,7 @@ public class ScoreMapperTest {
     ScoreEntity existingScore = new ScoreEntity(null, null, 10L, null);
     existingScore.setId(1L);
 
-    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false);
+    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, tokenService.generateToken());
     GameEntity gameEntity = new GameEntity(4L, "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(

@@ -1,8 +1,8 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.repository.mapper.UserMapper;
 import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.User;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -37,7 +37,7 @@ public class UserRepositoryTest extends GamertrackDbIT {
   UserRepository userRepository;
 
   @Inject
-  UserMapper userMapper;
+  TokenService tokenService;
 
   @BeforeEach
   public void before() {
@@ -54,10 +54,10 @@ public class UserRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureUpdateUserWorks() {
-    User user = new User(1L, "OLD", "USER", false,null);
+    User user = new User(1L, "OLD", "USER", false,tokenService.generateToken());
     Long savedId = userRepository.saveUser(user).get().getId();
 
-    User updatedUser = new User(savedId, "NEW", "USER", false,null);
+    User updatedUser = new User(savedId, "NEW", "USER", false,tokenService.generateToken());
 
     userRepository.updateUser(updatedUser);
 
@@ -103,7 +103,7 @@ public class UserRepositoryTest extends GamertrackDbIT {
 
     User user1 = TestFixtures.user(1L);
     User user2 = TestFixtures.user(2L);
-    User user3 = new User(3L, "Test", "Arbeit", true,null);
+    User user3 = new User(3L, "Test", "Arbeit", true,tokenService.generateToken());
 
     userRepository.saveUser(user1);
     userRepository.saveUser(user2);
@@ -117,7 +117,7 @@ public class UserRepositoryTest extends GamertrackDbIT {
 
     User user1 = TestFixtures.user(1L);
     User user2 = TestFixtures.user(2L);
-    User user3 = new User(3L, "Test", "deleted", true,null);
+    User user3 = new User(3L, "Test", "deleted", true,tokenService.generateToken());
 
     userRepository.saveUser(user1);
     userRepository.saveUser(user2);

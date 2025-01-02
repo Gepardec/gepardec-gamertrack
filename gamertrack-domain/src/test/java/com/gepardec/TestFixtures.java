@@ -1,14 +1,18 @@
 package com.gepardec;
 
+import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class TestFixtures {
 
+  private static final TokenServiceImpl tokenService = new TokenServiceImpl();
 
   public static List<Game> games(int gameCount) {
     List<Game> games = new ArrayList<>();
@@ -41,7 +45,7 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      users.add(new User(null, "FirstName" + i, "LastName" + 1, false,null));
+      users.add(new User(null, "FirstName" + i, "LastName" + 1, false, tokenService.generateToken()));
 
     }
 
@@ -52,13 +56,13 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true,null));
+      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true,tokenService.generateToken()));
     }
     return users;
   }
 
   public static User user(Long id) {
-    User user = new User(id, "User", "Testfixture", false,null);
+    User user = new User(id, "User", "Testfixture", false,tokenService.generateToken());
     return user;
   }
 
@@ -81,7 +85,7 @@ public class TestFixtures {
   }
 
   public static Score score(Long scoreId, Long userId, Long gameId) {
-    Score score = new Score(scoreId, user(userId), game(gameId), 10L, null);
+    Score score = new Score(scoreId, user(userId), game(gameId), 10L, tokenService.generateToken());
     return score;
   }
 

@@ -8,6 +8,7 @@ import com.gepardec.adapter.output.persistence.repository.mapper.ScoreMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
@@ -41,6 +42,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
   UserRepository userRepository;
 
   @Inject
+  TokenService tokenService;
+
+  @Inject
   ScoreMapper scoreMapper;
 
   @Inject
@@ -64,7 +68,7 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
         0L,
         userRepository.saveUser(user).get(),
         gameRepository.saveGame(game).get(),
-        10, null);
+        10, tokenService.generateToken());
 
     Long savedId = scoreRepository.saveScore(score).get().getId();
     assertTrue(scoreRepository.findScoreById(savedId).isPresent());
@@ -77,11 +81,11 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     User user = userRepository.saveUser(TestFixtures.user(1L)).get();
     Game game = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score = new Score(null, user, game, 10.0, null);
+    Score score = new Score(null, user, game, 10.0, tokenService.generateToken());
 
     Long savedId = scoreRepository.saveScore(score).get().getId();
 
-    Score updatedScore = new Score(savedId, user, game, 20.0, null);
+    Score updatedScore = new Score(savedId, user, game, 20.0, tokenService.generateToken());
 
     scoreRepository.updateScore(updatedScore);
 
@@ -99,9 +103,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0, null);
-    Score score2 = new Score(2L, user2, game1, 30.0, null);
-    Score score3 = new Score(3L, user3, game1, 10.0, null);
+    Score score1 = new Score(1L, user1, game1, 10.0, tokenService.generateToken());
+    Score score2 = new Score(2L, user2, game1, 30.0, tokenService.generateToken());
+    Score score3 = new Score(3L, user3, game1, 10.0, tokenService.generateToken());
 
     scoreRepository.saveScore(score1);
     scoreRepository.saveScore(score2);
@@ -119,8 +123,8 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0, null);
-    Score score2 = new Score(2L, user2, game1, 30.0, null);
+    Score score1 = new Score(1L, user1, game1, 10.0, tokenService.generateToken());
+    Score score2 = new Score(2L, user2, game1, 30.0, tokenService.generateToken());
 
     Long savedId1 = scoreRepository.saveScore(score1).get().getId();
     scoreRepository.saveScore(score2);
@@ -138,9 +142,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0, null);
-    Score score2 = new Score(2L, user2, game1, 30.0, null);
-    Score score3 = new Score(3L, user3, game1, 10.0, null);
+    Score score1 = new Score(1L, user1, game1, 10.0, tokenService.generateToken());
+    Score score2 = new Score(2L, user2, game1, 30.0, tokenService.generateToken());
+    Score score3 = new Score(3L, user3, game1, 10.0, tokenService.generateToken());
 
     scoreRepository.saveScore(score1);
     scoreRepository.saveScore(score2);
@@ -161,9 +165,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
 
-    Score score1 = new Score(1L, user1, game1, 10.0, null);
-    Score score2 = new Score(2L, user2, game1, 30.0, null);
-    Score score3 = new Score(3L, user3, game1, 10.0, null);
+    Score score1 = new Score(1L, user1, game1, 10.0, tokenService.generateToken());
+    Score score2 = new Score(2L, user2, game1, 30.0, tokenService.generateToken());
+    Score score3 = new Score(3L, user3, game1, 10.0, tokenService.generateToken());
 
     Long savedId1 = scoreRepository.saveScore(score1).get().getId();
     Long savedId2 = scoreRepository.saveScore(score2).get().getId();
