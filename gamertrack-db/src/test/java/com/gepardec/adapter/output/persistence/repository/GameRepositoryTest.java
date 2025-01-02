@@ -69,13 +69,10 @@ class GameRepositoryTest extends GamertrackDbIT {
     Game oldGame = game(null);
     var persistedOldGame = repository.saveGame(oldGame);
 
-    System.out.println(persistedOldGame);
     Game newGame = game(persistedOldGame.get().getId());
     newGame.setName("New Name");
 
-    System.out.println(newGame.getId());
     var persistedUpdatedGame = repository.updateGame(newGame);
-    System.out.println(persistedUpdatedGame.get());
     Assertions.assertTrue(persistedUpdatedGame.isPresent());
     Assertions.assertEquals(newGame.getName(), persistedUpdatedGame.get().getName());
     Assertions.assertEquals(newGame.getRules(), persistedUpdatedGame.get().getRules());

@@ -25,12 +25,12 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
 
   @Override
   public Optional<Game> saveGame(Game game) {
-    GameEntity gameEntity = this.gameMapper.gameModelToGameEntity(game);
+    GameEntity gameEntity = gameMapper.gameModelToGameEntity(game);
 
     em.persist(gameEntity);
     em.flush();
     GameEntity foundGameEntity = em.find(GameEntity.class, gameEntity.getId());
-    return Optional.ofNullable(this.gameMapper.gameEntityToGameModel(foundGameEntity));
+    return Optional.of(gameMapper.gameEntityToGameModel(foundGameEntity));
   }
 
   @Override

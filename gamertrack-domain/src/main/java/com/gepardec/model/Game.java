@@ -11,6 +11,7 @@ public class Game {
   }
 
   public Game(Long id, String token, String name, String rules) {
+    this.id = id;
     this.name = name;
     this.rules = rules;
     this.token = token;

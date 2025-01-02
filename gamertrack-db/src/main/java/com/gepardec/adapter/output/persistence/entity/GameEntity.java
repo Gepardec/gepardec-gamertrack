@@ -55,6 +55,7 @@ public class GameEntity extends AbstractEntity {
   @Override
   public String toString() {
     return "GameEntity{" +
+        "id=" + id + '\'' +
         "key='" + token + '\'' +
         ", name='" + name + '\'' +
         ", rules='" + rules + '\'' +
