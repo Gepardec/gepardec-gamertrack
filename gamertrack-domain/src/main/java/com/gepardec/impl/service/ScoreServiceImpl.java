@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional
 @Stateless
@@ -39,7 +38,7 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
 
     @Override
     public Optional<Score> updateScore(Score score) {
-        Optional<Score> entity = scoreRepository.findScoreById(score.getId());
+        Optional<Score> entity = scoreRepository.findScoreByToken(score.getToken());
         if(entity.isPresent()) {
 
             log.info("Score with the id {} is present", score.getId());
@@ -55,12 +54,12 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public Optional<Score> findScoreById(Long id) {
-        return scoreRepository.findScoreById(id);
+    public Optional<Score> findScoreByToken(String token) {
+        return scoreRepository.findScoreByToken(token);
     }
 
     @Override
-    public List<Score> filterScores(Double minPoints, Double maxPoints, Long userId, Long gameId, Boolean includeDeactivatedUsers) {
+    public List<Score> filterScores(Double minPoints, Double maxPoints, String userToken, String gameToken, Boolean includeDeactivatedUsers) {
 
         if(minPoints != null && maxPoints != null) {
             if (minPoints > maxPoints) {
@@ -71,24 +70,24 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
             }
         }
 
-       return scoreRepository.filterScores(minPoints, maxPoints, userId, gameId,includeDeactivatedUsers);
+       return scoreRepository.filterScores(minPoints, maxPoints, userToken, gameToken,includeDeactivatedUsers);
     }
 
 
 
     @Override
-    public List<Score> findScoresByUser(Long userId, Boolean includeDeactivatedUsers) {
-        return scoreRepository.filterScores(null,null,userId,null, includeDeactivatedUsers);
+    public List<Score> findScoresByUser(String userToken, Boolean includeDeactivatedUsers) {
+        return scoreRepository.filterScores(null,null,userToken,null, includeDeactivatedUsers);
     }
 
     @Override
-    public List<Score> findScoresByGame(Long gameId, Boolean includeDeactivatedUsers) {
-        return scoreRepository.filterScores(null,null,null,gameId, includeDeactivatedUsers);
+    public List<Score> findScoresByGame(String gameToken, Boolean includeDeactivatedUsers) {
+        return scoreRepository.filterScores(null,null,null,gameToken, includeDeactivatedUsers);
     }
 
     @Override
-    public List<Score> findTopScoresByGame(Long gameId, int top, Boolean includeDeactivatedUsers) {
-        return scoreRepository.findTopScoreByGame(gameId,top,includeDeactivatedUsers);
+    public List<Score> findTopScoresByGame(String gameToken, int top, Boolean includeDeactivatedUsers) {
+        return scoreRepository.findTopScoreByGame(gameToken,top,includeDeactivatedUsers);
     }
 
     @Override

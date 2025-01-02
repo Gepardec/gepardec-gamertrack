@@ -18,10 +18,10 @@ public class ScoreResourceImpl implements ScoreResource {
   private ScoreRestMapper mapper;
 
   @Override
-  public Response getScores(Double minPoints, Double maxPoints, Long userId, Long gameId,
+  public Response getScores(Double minPoints, Double maxPoints, String userToken, String gameToken,
       Boolean includeDeactivated) {
     return Response.ok(
-            scoreService.filterScores(minPoints, maxPoints, userId, gameId, includeDeactivated)
+            scoreService.filterScores(minPoints, maxPoints, userToken, gameToken, includeDeactivated)
                 .stream()
                 .map(ScoreRestDto::new)
                 .toList())
@@ -29,10 +29,9 @@ public class ScoreResourceImpl implements ScoreResource {
   }
 
   @Override
-  public Response getScoreById(Long id) {
-    return scoreService.findScoreById(id).map(ScoreRestDto::new).map(Response::ok)
+  public Response getScoreByToken(String token) {
+    return scoreService.findScoreById(token).map(ScoreRestDto::new).map(Response::ok)
         .orElseGet(() -> Response.status(Response.Status.NO_CONTENT)).build();
-
   }
 
   @Override
@@ -51,6 +50,5 @@ public class ScoreResourceImpl implements ScoreResource {
         .map(score1 -> Response.status(Response.Status.CREATED).entity(score1))
         .orElseGet(() -> Response.status(Response.Status.NOT_FOUND)).build();
   }
-
 
 }
