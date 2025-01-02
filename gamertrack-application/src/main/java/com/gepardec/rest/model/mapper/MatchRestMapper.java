@@ -7,12 +7,12 @@ import com.gepardec.rest.model.command.UpdateMatchCommand;
 public class MatchRestMapper {
 
   public Match updateMatchCommandtoMatch(Long id, String token,
-      UpdateMatchCommand gameOutcomeCommand) {
-    return new Match(id, token, gameOutcomeCommand.game(),
-        gameOutcomeCommand.users());
+      UpdateMatchCommand updateMatchCommand) {
+    return new Match(id, token, updateMatchCommand.game(),
+        updateMatchCommand.users());
   }
 
-  public Match createMatchCommandtoMatch(CreateMatchCommand createGameCommand) {
-    return new Match(null, null, createGameCommand.game(), createGameCommand.users());
+  public Match createMatchCommandtoMatch(CreateMatchCommand createMatchCommand) {
+    return new Match(null, null, createMatchCommand.game(), createMatchCommand.users());
   }
 }

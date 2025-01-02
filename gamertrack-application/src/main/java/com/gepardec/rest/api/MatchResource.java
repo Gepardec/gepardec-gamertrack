@@ -34,8 +34,8 @@ public interface MatchResource {
       @ApiResponse(responseCode = "200", description = "Ok")})
 
   @GET
-  Response getMatches(@QueryParam("gameId") Optional<Long> gameId,
-      @QueryParam("userId") Optional<Long> userId);
+  Response getMatches(@QueryParam("gameToken") Optional<String> gameToken,
+      @QueryParam("userToken") Optional<String> userToken);
 
 
   @Operation(summary = "Gets match by token", description = "Match must exist")

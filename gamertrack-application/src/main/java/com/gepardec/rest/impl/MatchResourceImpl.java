@@ -26,11 +26,11 @@ public class MatchResourceImpl implements MatchResource {
   private MatchRestMapper restMapper;
 
   @Override
-  public Response getMatches(Optional<Long> gameId, Optional<Long> userId) {
+  public Response getMatches(Optional<String> gameToken, Optional<String> userToken) {
 
-    if (gameId.isPresent() || userId.isPresent()) {
+    if (gameToken.isPresent() || userToken.isPresent()) {
       return Response.ok()
-          .entity(matchService.findMatchesByUserIdAndGameId(userId, gameId)
+          .entity(matchService.findMatchesByGameTokenAndUserToken(gameToken, userToken)
               .stream()
               .map(MatchRestDto::new)
               .toList())
@@ -67,13 +67,13 @@ public class MatchResourceImpl implements MatchResource {
   }
 
   @Override
-  public Response updateMatch(String token, UpdateMatchCommand matchCommand) {
+  public Response updateMatch(String token, UpdateMatchCommand matchCmd) {
     logger.info("Updating match with ID: %s".formatted(token));
-    if (matchCommand == null) {
+    if (matchCmd == null) {
       return Response.status(Status.BAD_REQUEST).build();
     }
 
-    return matchService.updateMatch(restMapper.updateMatchCommandtoMatch(null, token, matchCommand))
+    return matchService.updateMatch(restMapper.updateMatchCommandtoMatch(null, token, matchCmd))
         .map(MatchRestDto::new)
         .map(Response::ok)
         .orElseGet(() -> Response.status(Status.BAD_REQUEST)).build();

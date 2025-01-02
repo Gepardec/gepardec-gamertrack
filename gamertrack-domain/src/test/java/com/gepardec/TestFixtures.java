@@ -31,7 +31,7 @@ public class TestFixtures {
   }
 
   public static Match match() {
-    return match(1L, TestFixtures.game(), TestFixtures.users(10));
+    return match(1L, TestFixtures.game(), TestFixtures.usersWithId(10));
   }
 
 

@@ -36,19 +36,20 @@ public class MatchServiceImpl implements MatchService {
 
 
   @Override
-  public List<Match> findMatchesByUserIdAndGameId(Optional<Long> userId, Optional<Long> gameId) {
+  public List<Match> findMatchesByGameTokenAndUserToken(Optional<String> gameToken,
+      Optional<String> userToken) {
 
-    if (userId.isPresent() && gameId.isPresent()) {
-      logger.info("Finding matches by userId {} and gameId {}".formatted(userId, gameId));
-      return matchRepository.findMatchesByUserIdAndGameId(userId.get(), gameId.get());
+    if (userToken.isPresent() && gameToken.isPresent()) {
+      logger.info("Finding matches by userId {} and gameId {}".formatted(userToken, gameToken));
+      return matchRepository.findMatchesByGameTokenAndUserToken(userToken.get(), gameToken.get());
     }
 
-    return userId
-        .map(uid -> matchRepository.findMatchesByUserId(
-            uid))
-        .orElseGet(() -> gameId
-            .map(gid -> matchRepository.findMatchesByGameId(
-                gid))
+    return userToken
+        .map(ut -> matchRepository.findMatchesByUserToken(
+            ut))
+        .orElseGet(() -> gameToken
+            .map(gt -> matchRepository.findMatchesByGameToken(
+                gt))
             .orElse(Collections.emptyList()));
   }
 
@@ -119,19 +120,5 @@ public class MatchServiceImpl implements MatchService {
         "Saving updated match with ID: %s aborted due to provided ID not existing".formatted(
             match.getId()));
     return Optional.empty();
-  }
-
-  @Override
-  public List<Match> findMatchesByUserId(Long userId) {
-    logger.info(
-        "Getting all existing matches that reference user with UserID: %s".formatted(userId));
-    return matchRepository.findMatchesByUserId(userId);
-  }
-
-  @Override
-  public List<Match> findMatchesByGameId(Long gameId) {
-    logger.info(
-        "Getting all existing matches that reference game with GameID: %s".formatted(gameId));
-    return matchRepository.findMatchesByGameId(gameId);
   }
 }

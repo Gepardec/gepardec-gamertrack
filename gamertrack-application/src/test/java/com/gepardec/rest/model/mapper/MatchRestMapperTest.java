@@ -1,11 +1,13 @@
 package com.gepardec.rest.model.mapper;
 
+import static com.gepardec.RestTestFixtures.updateMatchCommand;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gepardec.RestTestFixtures;
+import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
 import org.junit.jupiter.api.Test;
@@ -18,10 +20,11 @@ public class MatchRestMapperTest {
 
   @InjectMocks
   private MatchRestMapper matchRestMapper;
+  private final TokenServiceImpl tokenService = new TokenServiceImpl();
 
 
   @Test
-  void ensureCreateMatchCmdToMatchDtoWorks() {
+  void ensureCreateMatchToMatchDtoWorks() {
     Match mappedMatch =
         matchRestMapper.createMatchCommandtoMatch(RestTestFixtures.createMatchCommand());
 
@@ -34,17 +37,17 @@ public class MatchRestMapperTest {
   }
 
   @Test
-  void ensureUpdateMatchCmdToMatchDtoWorks() {
+  void ensureUpdateMatchToMatchDtoWorks() {
     Match mappedMatch = matchRestMapper
-        .updateMatchCommandtoMatch(RestTestFixtures.updateMatchCommand().game().getId(),
-            RestTestFixtures.updateMatchCommand());
+        .updateMatchCommandtoMatch(updateMatchCommand().game().getId(),
+            tokenService.generateToken(), updateMatchCommand());
 
     assertDoesNotThrow(() -> NullPointerException.class);
     assertNotNull(mappedMatch);
     assertEquals(mappedMatch.getGame().getId(),
-        RestTestFixtures.updateMatchCommand().game().getId());
+        updateMatchCommand().game().getId());
     assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
         .containsAll(
-            RestTestFixtures.updateMatchCommand().users().stream().map(User::getId).toList()));
+            updateMatchCommand().users().stream().map(User::getId).toList()));
   }
 }

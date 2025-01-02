@@ -98,34 +98,34 @@ public class MatchRepositoryImpl implements MatchRepository {
   }
 
   @Override
-  public List<Match> findMatchesByUserId(Long userId) {
-    logger.info("Finding all matches by userId: %s".formatted(userId));
+  public List<Match> findMatchesByUserToken(String userToken) {
+    logger.info("Finding all matches by user token: %s".formatted(userToken));
     var query = em.createQuery(
-        "select go from MatchEntity go inner join go.users u where u.id = :userId ",
+        "select m from MatchEntity m inner join m.users u where u.token = :userToken ",
         MatchEntity.class);
 
-    query.setParameter("userId", userId);
+    query.setParameter("userToken", userToken);
     return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
   }
 
   @Override
-  public List<Match> findMatchesByGameId(Long gameId) {
-    logger.info("Finding all games outcomes by gameId: %s".formatted(gameId));
-    var query = em.createQuery("select go from MatchEntity go where go.game.id = :gameId ",
+  public List<Match> findMatchesByGameToken(String gameToken) {
+    logger.info("Finding all games outcomes by game token: %s".formatted(gameToken));
+    var query = em.createQuery("select m from MatchEntity m where m.game.token = :gameToken ",
         MatchEntity.class);
 
-    query.setParameter("gameId", gameId);
+    query.setParameter("gameToken", gameToken);
     return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
   }
 
   @Override
-  public List<Match> findMatchesByUserIdAndGameId(Long userId, Long gameId) {
-    logger.info("Finding matches by UserId: {} and GameId: {}".formatted(userId, gameId));
+  public List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken) {
+    logger.info("Finding matches by UserId: {} and GameId: {}".formatted(gameToken, userToken));
     var query = em.createQuery(
-        "select m from MatchEntity m inner join m.users u where (:userId is NULL OR u.id = :userId) and (:gameId is NULL OR m.game.id = :gameId)",
+        "select m from MatchEntity m inner join m.users u where (:userToken is NULL OR u.token = :userToken) and (:gameToken is NULL OR m.game.token = :gameToken)",
         MatchEntity.class);
-    query.setParameter("userId", userId);
-    query.setParameter("gameId", gameId);
+    query.setParameter("userToken", userToken);
+    query.setParameter("gameToken", gameToken);
     return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
   }
 

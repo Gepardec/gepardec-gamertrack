@@ -1,11 +1,10 @@
 package com.gepardec.adapter.output.persistence.repository.mapper;
 
 import static com.gepardec.TestFixtures.game;
-import static com.gepardec.TestFixtures.usersWithId;
+import static com.gepardec.TestFixtures.match;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
@@ -24,25 +23,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class MatchMapperTest {
 
   @Mock
-  private EntityManager entityManager;
+  EntityManager entityManager;
 
   @Mock
-  private UserMapper userMapper;
-  @Mock
-  private GameMapper gameMapper;
+  GameMapper gameMapper = new GameMapper();
 
   @InjectMocks
-  private MatchMapper matchMapper;
+  MatchMapper matchMapper = new MatchMapper();
 
 
   @Test
   void ensureMatchModelToMatchWithReferenceEntityMappingWorks() {
-    Match match = new Match(1L, game(1L), usersWithId(3));
+    Match match = match();
 
-    when(gameMapper.gameModelToGameEntity(any())).thenReturn(
-        new GameEntity(match.getGame().getId(), match.getGame().getName(),
+    when(gameMapper.gameModelToGameEntity(match.getGame())).thenReturn(
+        new GameEntity(match.getGame().getId(), game().getToken(), match.getGame().getName(),
             match.getGame().getRules()));
-
     MatchEntity mappedMatch = matchMapper.matchModelToMatchEntity(match);
 
     assertDoesNotThrow(() -> NullPointerException.class);
@@ -54,10 +50,10 @@ public class MatchMapperTest {
 
   @Test
   void ensureMatchModelToMatchWithReferenceEntityMappingWorksProvidingModelAndEntity() {
-    Match match = new Match(1L, game(30L), usersWithId(3));
+    Match match = match();
 
     when(gameMapper.gameModelToGameEntity(match.getGame())).thenReturn(
-        new GameEntity(match.getGame().getId(), match.getGame().getName(),
+        new GameEntity(match.getGame().getId(), game().getToken(), match.getGame().getName(),
             match.getGame().getRules()));
 
     MatchEntity matchEntity = matchMapper.matchModelToMatchEntity(match);
@@ -80,3 +76,10 @@ public class MatchMapperTest {
 
 
 }
+
+
+
+
+
+
+

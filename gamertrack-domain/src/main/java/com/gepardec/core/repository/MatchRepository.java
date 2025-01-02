@@ -16,13 +16,13 @@ public interface MatchRepository {
 
   Optional<Match> updateMatch(Match match);
 
-  List<Match> findMatchesByUserId(Long userId);
+  List<Match> findMatchesByUserToken(String userId);
 
-  List<Match> findMatchesByGameId(Long gameId);
+  List<Match> findMatchesByGameToken(String gameId);
 
   Boolean existsMatchById(Long matchId);
 
-  List<Match> findMatchesByUserIdAndGameId(Long userId, Long gameId);
+  List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken);
 
   Optional<Match> findMatchByToken(String token);
 
