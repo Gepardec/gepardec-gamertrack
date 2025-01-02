@@ -5,15 +5,14 @@ import com.gepardec.rest.api.MatchResource;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.UpdateMatchCommand;
 import com.gepardec.rest.model.dto.MatchRestDto;
-import com.gepardec.rest.model.mapper.RestMapper;
+import com.gepardec.rest.model.mapper.MatchRestMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 @RequestScoped
 public class MatchResourceImpl implements MatchResource {
@@ -24,7 +23,7 @@ public class MatchResourceImpl implements MatchResource {
   private MatchService matchService;
 
   @Inject
-  private RestMapper restMapper;
+  private MatchRestMapper restMapper;
 
   @Override
   public Response getMatches(Optional<Long> gameId, Optional<Long> userId) {

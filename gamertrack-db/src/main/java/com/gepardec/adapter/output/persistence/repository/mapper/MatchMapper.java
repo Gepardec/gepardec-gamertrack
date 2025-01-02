@@ -8,7 +8,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +19,8 @@ public class MatchMapper {
   private EntityManager entityManager;
   @Inject
   private UserMapper userMapper;
+  @Inject
+  private MatchMapper matchMapper;
   @Inject
   private GameMapper gameMapper;
 

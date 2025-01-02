@@ -1,7 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
-import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.MatchMapper;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.model.Match;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,7 +23,7 @@ public class MatchRepositoryImpl implements MatchRepository {
   private EntityManager em;
 
   @Inject
-  EntityMapper entityMapper;
+  MatchMapper entityMapper;
 
   @Override
   public Optional<Match> saveMatch(Match match) {

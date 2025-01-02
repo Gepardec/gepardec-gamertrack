@@ -6,7 +6,7 @@ import com.gepardec.rest.api.GameResource;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
-import com.gepardec.rest.model.mapper.RestMapper;
+import com.gepardec.rest.model.mapper.GameRestMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -20,7 +20,7 @@ public class GameResourceImpl implements GameResource {
   private GameService gameService;
 
   @Inject
-  private RestMapper restMapper;
+  private GameRestMapper restMapper;
 
   @Override
   public Response getGames() {

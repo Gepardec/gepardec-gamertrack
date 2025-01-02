@@ -1,7 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
-import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.GameMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,7 +21,7 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   private EntityManager em;
 
   @Inject
-  private EntityMapper entityMapper;
+  private GameMapper entityMapper;
 
   @Override
   public Optional<Game> saveGame(Game game) {

@@ -1,5 +1,9 @@
 package com.gepardec.adapter.output.persistence.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gepardec.TestFixtures;
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
@@ -16,15 +20,12 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.UserTransaction;
+import java.util.List;
+import java.util.Optional;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(ArquillianExtension.class)
 public class ScoreRepositoryTest extends GamertrackDbIT {
@@ -111,8 +112,11 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     scoreRepository.saveScore(score2);
     scoreRepository.saveScore(score3);
 
-    assertFalse(scoreRepository.findAllScores().isEmpty());
-    assertEquals(3, scoreRepository.findAllScores().size());
+    List<Score> result = scoreRepository
+        .filterScores(null, null, null, null, true);
+
+    assertFalse(result.isEmpty());
+    assertEquals(3, result.size());
 
   }
 
@@ -129,7 +133,6 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Long savedId1 = scoreRepository.saveScore(score1).get().getId();
     scoreRepository.saveScore(score2);
 
-    assertFalse(scoreRepository.findAllScores().isEmpty());
     assertEquals(score1.getScorePoints(),
         scoreRepository.findScoreById(savedId1).get().getScorePoints());
   }
@@ -152,9 +155,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
     Long savedGameId1 = game1.getId();
 
-    assertEquals(3, scoreRepository.findAllScores().size());
-    assertFalse(scoreRepository.findTopScoreByGame(savedGameId1, 2).isEmpty());
-    assertEquals(2, scoreRepository.findTopScoreByGame(savedGameId1, 2).size());
+    assertEquals(3, scoreRepository.filterScores(null, null, null, null, true).size());
+    assertFalse(scoreRepository.findTopScoreByGame(savedGameId1, 2, true).isEmpty());
+    assertEquals(2, scoreRepository.findTopScoreByGame(savedGameId1, 2, true).size());
   }
 
   @Test
