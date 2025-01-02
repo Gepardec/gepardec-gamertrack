@@ -5,20 +5,19 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class TestFixtures {
 
-  private static final TokenServiceImpl tokenService = new TokenServiceImpl();
+  private static TokenServiceImpl tokenService = new TokenServiceImpl();
+
 
   public static List<Game> games(int gameCount) {
     List<Game> games = new ArrayList<>();
 
     for (int i = 0; i < gameCount; i++) {
-      games.add(new Game(null, "TestGameTitle" + i, "TestGameRules" + i));
+      games.add(new Game(null, null, "TestGameTitle" + i, "TestGameRules" + i));
     }
     return games;
   }
@@ -28,7 +27,7 @@ public class TestFixtures {
   }
 
   public static Game game(Long id) {
-    return new Game(id, "Game Fixture", "Game Fixture Rules");
+    return new Game(id, tokenService.generateToken(), "Game Fixture", "Game Fixture Rules");
   }
 
   public static Match match() {
@@ -37,15 +36,15 @@ public class TestFixtures {
 
 
   public static Match match(Long id, Game game, List<User> users) {
-    Match match = new Match(id, game, users.stream().toList());
-    return match;
+    return new Match(id, tokenService.generateToken(), game, users.stream().toList());
   }
 
   public static List<User> users(int userCount) {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      users.add(new User(null, "FirstName" + i, "LastName" + 1, false, tokenService.generateToken()));
+      users.add(
+          new User(null, "FirstName" + i, "LastName" + 1, false, tokenService.generateToken()));
 
     }
 
@@ -56,13 +55,14 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true,tokenService.generateToken()));
+      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true,
+          tokenService.generateToken()));
     }
     return users;
   }
 
   public static User user(Long id) {
-    User user = new User(id, "User", "Testfixture", false,tokenService.generateToken());
+    User user = new User(id, "User", "Testfixture", false, tokenService.generateToken());
     return user;
   }
 
