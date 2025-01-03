@@ -27,46 +27,38 @@ public interface UserResource {
     @POST
     Response createUser(@Valid CreateUserCommand userCommand);
 
-    @Operation(summary = "Updated user by id", description = "Returns the updated user")
+    @Operation(summary = "Updated user by token", description = "Returns the updated user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
             @ApiResponse(responseCode = "404", description = "Not Found - The user was not found")
     })
-    @Path("{id}")
+    @Path("{token}")
     @PUT
-    public Response updateUser(@PathParam("id") Long id, @Valid UpdateUserCommand updateUserCommand);
+    public Response updateUser(@PathParam("token") String token, @Valid UpdateUserCommand updateUserCommand);
 
-    @Operation(summary = "Delete User by id", description = "Returns the deleted user")
+    @Operation(summary = "Delete User by token", description = "Returns the deleted user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
             @ApiResponse(responseCode = "404", description = "Not Found - The user was not found")
     })
-    @Path("{id}")
+    @Path("{token}")
     @DELETE
-    public Response deleteUser(@PathParam("id") Long id);
+    public Response deleteUser(@PathParam("token") String token);
 
     @Operation(summary = "Get all users", description = "Returns a list of users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
             @ApiResponse(responseCode = "204", description = "No Content - No users were found")
     })    @GET
-    public Response getUsers();
+    public Response getUsers(@QueryParam("includeDeactivated") Boolean includeDeactivated);
 
-    @Operation(summary = "Get all users including the deleted User", description = "Returns a list of users including deleted users")
+    @Operation(summary = "Get User by token", description = "Returns user by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
     })
-    @Path("/includeDeleted")
+    @Path("{token}")
     @GET
-    public Response getUsersIncludeDeleted();
-
-    @Operation(summary = "Get User by id", description = "Returns user by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-    })
-    @Path("{id}")
-    @GET
-    public Response getUser(@PathParam("id") Long id);
+    public Response getUser(@PathParam("token") String token);
 
 
 

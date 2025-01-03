@@ -160,28 +160,4 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     assertEquals(2, scoreRepository.findTopScoreByGame(savedToken, 2, true).size());
   }
 
-  @Test
-  void ensureFindTopScoresByUserWorks() {
-    User user1 = userRepository.saveUser(TestFixtures.user(1L)).get();
-    User user2 = userRepository.saveUser(TestFixtures.user(2L)).get();
-    User user3 = userRepository.saveUser(TestFixtures.user(3L)).get();
-
-    Long user1Id = user1.getId();
-    Long user2Id = user2.getId();
-    Long user3Id = user3.getId();
-
-    Game game1 = gameRepository.saveGame(TestFixtures.game(null)).get();
-
-    Score score1 = new Score(1L, user1, game1, 10.0, tokenService.generateToken());
-    Score score2 = new Score(2L, user2, game1, 30.0, tokenService.generateToken());
-    Score score3 = new Score(3L, user3, game1, 10.0, tokenService.generateToken());
-
-    Long savedId1 = scoreRepository.saveScore(score1).get().getId();
-    Long savedId2 = scoreRepository.saveScore(score2).get().getId();
-    Long savedId3 = scoreRepository.saveScore(score3).get().getId();
-
-    assertTrue(userRepository.existsByUserId(List.of(user1Id, user2Id, user3Id)));
-    assertFalse(userRepository.existsByUserId(List.of(1000L, 1001L)));
-
-  }
 }

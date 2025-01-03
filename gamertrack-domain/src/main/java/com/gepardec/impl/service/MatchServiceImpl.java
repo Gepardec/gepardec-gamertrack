@@ -10,11 +10,12 @@ import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless
 @Transactional
@@ -60,7 +61,7 @@ public class MatchServiceImpl implements MatchService {
             match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
 
     if (!match.getUsers().isEmpty()
-        && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
+        && userRepository.existsByUserToken(match.getUsers().stream().map(User::getToken).toList())
         && gameRepository.existsByGameToken(match.getGame().getToken())) {
       match.setToken(tokenService.generateToken());
       return matchRepository.saveMatch(match);
@@ -105,7 +106,7 @@ public class MatchServiceImpl implements MatchService {
 
     if (!match.getUsers().isEmpty()
         && match.getGame().getId() != null
-        && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
+        && userRepository.existsByUserToken(match.getUsers().stream().map(User::getToken).toList())
         && matchRepository.existsMatchById(match.getGame().getId())
         && gameRepository.existsByGameToken(match.getGame().getToken())) {
       logger.info(

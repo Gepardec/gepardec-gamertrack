@@ -12,8 +12,8 @@ public class UserRestMapper {
     return new User(null, createUserCommand.firstname(), createUserCommand.lastname(), false,null);
   }
 
-  public User updateUserCommandtoUser(Long id, UpdateUserCommand updateUserCommand) {
-    return new User(id, updateUserCommand.firstname(), updateUserCommand.lastname(),
-        updateUserCommand.deactivated(),null);
+  public User updateUserCommandtoUser(String token, UpdateUserCommand updateUserCommand) {
+    return new User(null, updateUserCommand.firstname(), updateUserCommand.lastname(),
+        updateUserCommand.deactivated(),token);
   }
 }

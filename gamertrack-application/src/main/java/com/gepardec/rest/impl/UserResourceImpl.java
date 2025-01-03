@@ -28,23 +28,23 @@ public class UserResourceImpl implements UserResource {
   }
 
   @Override
-  public Response updateUser(Long id, UpdateUserCommand updateUserCommand) {
-    return userService.updateUser(mapper.updateUserCommandtoUser(id, updateUserCommand))
+  public Response updateUser(String token, UpdateUserCommand updateUserCommand) {
+    return userService.updateUser(mapper.updateUserCommandtoUser(token, updateUserCommand))
         .map(UserRestDto::new).map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 
 
   @Override
-  public Response getUser(Long id) {
-    return userService.findUserById(id).map(UserRestDto::new).map(Response::ok)
+  public Response getUser(String token) {
+    return userService.findUserByToken(token).map(UserRestDto::new).map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 
 
   @Override
-  public Response getUsers() {
-    return Response.ok(userService.findAllUsers()
+  public Response getUsers(Boolean includeDeactivated) {
+    return Response.ok(userService.findAllUsers(includeDeactivated)
             .stream()
             .map(UserRestDto::new)
             .toList())
@@ -53,17 +53,8 @@ public class UserResourceImpl implements UserResource {
   }
 
   @Override
-  public Response getUsersIncludeDeleted() {
-    return Response.ok(userService.findAllUsersIncludeDeleted()
-            .stream()
-            .map(UserRestDto::new)
-            .toList())
-        .build();
-  }
-
-  @Override
-  public Response deleteUser(Long id) {
-    return userService.deleteUser(id).map(UserRestDto::new).map(Response::ok)
+  public Response deleteUser(String token) {
+    return userService.deleteUser(token).map(UserRestDto::new).map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();
   }
 
