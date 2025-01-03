@@ -36,7 +36,7 @@ class UserRestMapperTest {
 
     User mappedUser = userRestMapper.updateUserCommandtoUser("n30asij-sck2kcj3", updateUserCommand);
 
-    assertEquals(1L, mappedUser.getId());
+    assertEquals("n30asij-sck2kcj3", mappedUser.getToken());
     assertEquals(updateUserCommand.firstname(), mappedUser.getFirstname());
     assertEquals(updateUserCommand.lastname(), mappedUser.getLastname());
     assertEquals(updateUserCommand.deactivated(), mappedUser.isDeactivated());

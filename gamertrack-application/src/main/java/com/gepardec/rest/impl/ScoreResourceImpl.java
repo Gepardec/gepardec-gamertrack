@@ -30,7 +30,7 @@ public class ScoreResourceImpl implements ScoreResource {
 
   @Override
   public Response getScoreByToken(String token) {
-    return scoreService.findScoreById(token).map(ScoreRestDto::new).map(Response::ok)
+    return scoreService.findScoreByToken(token).map(ScoreRestDto::new).map(Response::ok)
         .orElseGet(() -> Response.status(Response.Status.NO_CONTENT)).build();
   }
 

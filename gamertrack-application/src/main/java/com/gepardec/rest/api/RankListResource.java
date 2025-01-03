@@ -16,7 +16,7 @@ import static com.gepardec.rest.api.RankListResource.BASE_RANKLIST_PATH;
 public interface RankListResource {
 
     public static final String BASE_RANKLIST_PATH = "ranklist";
-    public static final String ID_PATH = "{gameId}";
+    public static final String ID_PATH = "{gameToken}";
 
     @Operation(summary = "Get top scores by game (optional: TopCount)", description = "Returns a list of scores")
     @ApiResponses(value = {
@@ -25,6 +25,6 @@ public interface RankListResource {
     })
     @Path(ID_PATH)
     @GET
-    public Response getTopScoresBygame(@PathParam("gameId") Long gameId, @QueryParam("top") @DefaultValue("50") int top, @QueryParam("includeDeactivated") Boolean includeDeactivated);
+    public Response getTopScoresBygame(@PathParam("gameToken") String gameToken, @QueryParam("top") @DefaultValue("50") int top, @QueryParam("includeDeactivated") Boolean includeDeactivated);
 
 }
