@@ -42,7 +42,7 @@ public class MatchMapperTest {
     MatchEntity mappedMatch = matchMapper.matchModelToMatchEntity(match);
 
     assertDoesNotThrow(() -> NullPointerException.class);
-    //assertEquals(match.getId(), mappedMatch.getId());
+    assertEquals(match.getToken(), mappedMatch.getToken());
     assertEquals(match.getGame().getId(), mappedMatch.getGame().getId());
     assertTrue(match.getUsers().stream().map(User::getId).toList()
         .containsAll(mappedMatch.getUsers().stream().map(UserEntity::getId).toList()));
@@ -69,6 +69,7 @@ public class MatchMapperTest {
     MatchEntity mappedMatch = matchMapper.matchModelToMatchEntityWithReference(match, matchEntity);
 
     assertDoesNotThrow(() -> NullPointerException.class);
+    assertEquals(match.getToken(), mappedMatch.getToken());
     assertEquals(match.getId(), mappedMatch.getId());
     assertEquals(match.getGame().getId(), mappedMatch.getGame().getId());
     assertEquals(matchEntity.getUsers(), mappedMatch.getUsers());

@@ -65,11 +65,12 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   public Optional<Game> findGameByToken(String token) {
     logger.info("Finding game by token: %s".formatted(token));
 
-    var found = em.createQuery(
-            "select g from GameEntity g where g.token = :token",
-            GameEntity.class)
+    Optional<GameEntity> found = em
+        .createQuery("select g from GameEntity g where g.token = :token", GameEntity.class)
         .setParameter("token", token)
-        .getResultList().stream().findFirst();
+        .getResultList()
+        .stream()
+        .findFirst();
 
     logger.info("Found game: %s".formatted(found));
     return found.map(gameEntity -> gameMapper.gameEntityToGameModel(gameEntity));
@@ -78,7 +79,8 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   @Override
   public List<Game> findAllGames() {
     logger.info("Finding all games");
-    return em.createQuery("select g from GameEntity g", GameEntity.class)
+    return em
+        .createQuery("select g from GameEntity g", GameEntity.class)
         .getResultList()
         .stream()
         .map(gameMapper::gameEntityToGameModel)
@@ -87,8 +89,8 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
 
   @Override
   public Boolean gameExistsByGameName(String gameName) {
-    Query query = em.createQuery("select g from GameEntity g where g.name = :gameName",
-        GameEntity.class);
+    Query query = em
+        .createQuery("select g from GameEntity g where g.name = :gameName", GameEntity.class);
     query.setParameter("gameName", gameName);
 
     return !query.getResultList().isEmpty();

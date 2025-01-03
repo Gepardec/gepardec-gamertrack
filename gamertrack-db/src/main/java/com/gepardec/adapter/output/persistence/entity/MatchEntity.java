@@ -34,7 +34,9 @@ public class MatchEntity extends AbstractEntity {
 
   }
 
-  public MatchEntity(GameEntity game, List<UserEntity> users) {
+  public MatchEntity(Long id, String token, GameEntity game, List<UserEntity> users) {
+    this.id = id;
+    this.token = token;
     this.game = game;
     this.users = users;
   }

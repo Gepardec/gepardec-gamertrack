@@ -40,7 +40,8 @@ public class MatchMapper {
         new UserEntity(user.getId(), user.getFirstname(), user.getLastname(),
             user.isDeactivated(), user.getToken())));
 
-    return new MatchEntity(gameMapper.gameModelToGameEntity(match.getGame()), users);
+    return new MatchEntity(match.getId(), match.getToken(),
+        gameMapper.gameModelToGameEntity(match.getGame()), users);
   }
 
   public MatchEntity matchModelToMatchEntityWithReference(Match match, MatchEntity matchEntity) {
@@ -51,6 +52,7 @@ public class MatchMapper {
         match.getUsers().stream()
             .map(u -> entityManager.getReference(UserEntity.class, u.getId()))
             .collect(Collectors.toList()));
+    matchEntity.setToken(match.getToken());
     return matchEntity;
   }
 

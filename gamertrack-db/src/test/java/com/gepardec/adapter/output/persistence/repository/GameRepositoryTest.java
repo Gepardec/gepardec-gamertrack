@@ -71,9 +71,13 @@ class GameRepositoryTest extends GamertrackDbIT {
 
     Game newGame = game(persistedOldGame.get().getId());
     newGame.setName("New Name");
+    newGame.setToken(oldGame.getToken());
 
     var persistedUpdatedGame = repository.updateGame(newGame);
+
     Assertions.assertTrue(persistedUpdatedGame.isPresent());
+    Assertions.assertEquals(newGame.getToken(), persistedUpdatedGame.get().getToken());
+    Assertions.assertEquals(newGame.getId(), persistedUpdatedGame.get().getId());
     Assertions.assertEquals(newGame.getName(), persistedUpdatedGame.get().getName());
     Assertions.assertEquals(newGame.getRules(), persistedUpdatedGame.get().getRules());
   }
@@ -87,13 +91,14 @@ class GameRepositoryTest extends GamertrackDbIT {
   }
 
   @Test
-  void ensureFindGameByIdForExistingGameWorksReturnsGame() {
+  void ensureFindGameByTokenForExistingGameReturnsGame() {
     Game game = game(null);
     var persistedGame = repository.saveGame(game);
 
-    var foundGame = repository.findGameById(persistedGame.get().getId());
+    var foundGame = repository.findGameByToken(persistedGame.get().getToken());
 
     Assertions.assertTrue(foundGame.isPresent());
+    Assertions.assertEquals(game.getToken(), foundGame.get().getToken());
     Assertions.assertEquals(game.getName(), foundGame.get().getName());
     Assertions.assertEquals(game.getRules(), foundGame.get().getRules());
   }
@@ -118,11 +123,11 @@ class GameRepositoryTest extends GamertrackDbIT {
     Assertions.assertEquals(games.size(), foundGames.size());
     Assertions.assertTrue(foundGames
         .stream()
-        .map(Game::getName)
+        .map(Game::getToken)
         .toList()
         .containsAll(gameDtos
             .stream()
-            .map(Game::getName)
+            .map(Game::getToken)
             .toList()));
   }
 
@@ -163,7 +168,7 @@ class GameRepositoryTest extends GamertrackDbIT {
   }
 
   @Test
-  void ensureExistsByGameIdForNotExistingGameReturnsFalse() {
+  void ensureExistsByGameTokenForNotExistingGameReturnsFalse() {
     boolean existsByGameId = repository.existsByGameToken(game().getToken());
 
     Assertions.assertFalse(existsByGameId);

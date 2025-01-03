@@ -47,13 +47,14 @@ public class MatchRepositoryTest extends GamertrackDbIT {
   public void ensureSaveAndReadMatchWorks() {
     Optional<Game> savedGame = gameRepository.saveGame(game(null));
     Optional<User> savedUser = userRepository.saveUser(users(1).getFirst());
-    Match match = match();
+    Match match = match(null);
     match.setGame(savedGame.get());
     match.setUsers(List.of(savedUser.get()));
 
     var savedAndReadMatch = matchRepository.saveMatch(match);
 
     Assertions.assertTrue(savedAndReadMatch.isPresent());
+    Assertions.assertEquals(match.getToken(), savedAndReadMatch.get().getToken());
     Assertions.assertEquals(match.getGame().getName(), savedAndReadMatch.get().getGame().getName());
     Assertions.assertEquals(match.getUsers().getFirst().getFirstname(),
         savedAndReadMatch.get().getUsers().getFirst().getFirstname());

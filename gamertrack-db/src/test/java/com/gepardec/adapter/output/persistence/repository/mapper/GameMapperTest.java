@@ -31,6 +31,7 @@ public class GameMapperTest {
     GameEntity mappedGame = entityMapper.gameModelToGameEntity(game);
 
     assertDoesNotThrow(() -> NullPointerException.class);
+    assertEquals(game.getToken(), mappedGame.getToken());
     assertEquals(game.getName(), mappedGame.getName());
     assertEquals(game.getRules(), mappedGame.getRules());
   }
@@ -45,6 +46,7 @@ public class GameMapperTest {
     GameEntity mappedGame = entityMapper.gameModelToExitstingGameEntity(game, existingGameEntity);
 
     assertDoesNotThrow(() -> NullPointerException.class);
+    assertEquals(game.getToken(), mappedGame.getToken());
     assertEquals(game.getId(), mappedGame.getId());
     assertEquals(game.getName(), mappedGame.getName());
     assertEquals(game.getRules(), mappedGame.getRules());

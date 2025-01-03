@@ -70,16 +70,13 @@ public class MatchRepositoryImpl implements MatchRepository {
   @Override
 
   public void deleteMatch(Long matchId) {
-    logger.info("Looking up matches by id: %s in order to delete".formatted(matchId));
-    MatchEntity matchToDelete = em.find(MatchEntity.class, matchId);
+    Optional<MatchEntity> matchToDelete = Optional.ofNullable(em.find(MatchEntity.class, matchId));
 
-    if (matchToDelete == null) {
-      logger.info(
-          "Could not find match with ID %s".formatted(matchId));
-    }
+    matchToDelete.ifPresentOrElse(
+        mtd -> logger.info("Deleting match with id: %s".formatted(mtd.getId())),
+        () -> logger.info("Could not find match with ID %s".formatted(matchId)));
 
-    logger.info("Deleting match with id: %s".formatted(matchId));
-    em.remove(matchToDelete);
+    em.remove(matchToDelete.get());
   }
 
   @Override

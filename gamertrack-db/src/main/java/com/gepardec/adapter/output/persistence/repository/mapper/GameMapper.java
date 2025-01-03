@@ -28,6 +28,7 @@ public class GameMapper {
   public GameEntity gameModelToExitstingGameEntity(Game game, GameEntity gameEntity) {
     gameEntity.setRules(game.getRules());
     gameEntity.setName(game.getName());
+    gameEntity.setToken(game.getToken());
     return gameEntity;
   }
 
