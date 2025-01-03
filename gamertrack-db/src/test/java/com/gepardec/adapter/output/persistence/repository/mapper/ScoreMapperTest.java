@@ -31,8 +31,8 @@ public class ScoreMapperTest {
   public void ensureScoreModelToScoreEntityMappingWorks() {
     Score score = TestFixtures.score(1L, 3L, 4L);
 
-    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, tokenService.generateToken());
-    GameEntity gameEntity = new GameEntity(4L,tokenService.generateToken(), "4Gewinnt", "Nicht Schummeln");
+    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, score.getUser().getToken());
+    GameEntity gameEntity = new GameEntity(4L, score.getGame().getToken(), "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(
         userEntity);
@@ -41,8 +41,8 @@ public class ScoreMapperTest {
 
     ScoreEntity mappedScore = scoreMapper.scoreModeltoScoreEntity(score);
 
-    assertEquals(mappedScore.getUser().getId(), score.getUser().getId());
-    assertEquals(mappedScore.getGame().getId(), score.getGame().getId());
+    assertEquals(mappedScore.getUser().getToken(), score.getUser().getToken());
+    assertEquals(mappedScore.getGame().getToken(), score.getGame().getToken());
     assertEquals(mappedScore.getScorePoints(), score.getScorePoints());
   }
 
@@ -51,9 +51,10 @@ public class ScoreMapperTest {
     Score score = TestFixtures.score(1L, 3L, 4L);
     ScoreEntity existingScore = new ScoreEntity(null, null, 10L, null);
     existingScore.setId(1L);
+    existingScore.setToken(score.getToken());
 
-    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, tokenService.generateToken());
-    GameEntity gameEntity = new GameEntity(4L, tokenService.generateToken(), "4Gewinnt", "Nicht Schummeln");
+    UserEntity userEntity = new UserEntity(3, "firstname", "lastname", false, score.getUser().getToken());
+    GameEntity gameEntity = new GameEntity(4L, score.getGame().getToken(), "4Gewinnt", "Nicht Schummeln");
 
     when(entityManager.getReference(UserEntity.class, score.getUser().getId())).thenReturn(
         userEntity);
@@ -62,9 +63,9 @@ public class ScoreMapperTest {
 
     ScoreEntity mappedScore = scoreMapper.scoreModeltoExistingScoreEntity(score, existingScore);
 
-    assertEquals(score.getId(), mappedScore.getId());
-    assertEquals(score.getUser().getId(), mappedScore.getUser().getId());
-    assertEquals(score.getGame().getId(), mappedScore.getGame().getId());
+    assertEquals(score.getToken(), mappedScore.getToken());
+    assertEquals(score.getUser().getToken(), mappedScore.getUser().getToken());
+    assertEquals(score.getGame().getToken(), mappedScore.getGame().getToken());
     assertEquals(score.getScorePoints(), mappedScore.getScorePoints());
   }
 

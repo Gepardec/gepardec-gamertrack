@@ -121,7 +121,7 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
   }
 
   @Test
-  void ensureFindScoreByIdWorks() {
+  void ensureFindScoreByTokenWorks() {
     User user1 = userRepository.saveUser(TestFixtures.user(1L)).get();
     User user2 = userRepository.saveUser(TestFixtures.user(2L)).get();
 
@@ -130,11 +130,11 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Score score1 = new Score(1L, user1, game1, 10.0, tokenService.generateToken());
     Score score2 = new Score(2L, user2, game1, 30.0, tokenService.generateToken());
 
-    String savedToken = scoreRepository.saveScore(score1).get().getToken();
+    scoreRepository.saveScore(score1);
     scoreRepository.saveScore(score2);
 
     assertEquals(score1.getScorePoints(),
-        scoreRepository.findScoreByToken(savedToken).get().getScorePoints());
+        scoreRepository.findScoreByToken(score1.getToken()).get().getScorePoints());
   }
 
   @Test
@@ -153,11 +153,9 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     scoreRepository.saveScore(score2);
     scoreRepository.saveScore(score3);
 
-    String savedToken = game1.getToken();
-
     assertEquals(3, scoreRepository.filterScores(null, null, null, null, true).size());
-    assertFalse(scoreRepository.findTopScoreByGame(savedToken, 2, true).isEmpty());
-    assertEquals(2, scoreRepository.findTopScoreByGame(savedToken, 2, true).size());
+    assertFalse(scoreRepository.findTopScoreByGame(game1.getToken(), 2, true).isEmpty());
+    assertEquals(2, scoreRepository.findTopScoreByGame(game1.getToken(), 2, true).size());
   }
 
 }

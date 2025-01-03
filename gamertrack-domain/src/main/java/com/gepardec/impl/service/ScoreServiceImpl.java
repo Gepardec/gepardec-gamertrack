@@ -32,7 +32,7 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
             return scoreRepository.saveScore(score);
         }
 
-        log.error("Score with userId: {} and gameId: {} already exists!", score.getUser().getId(), score.getGame().getId());
+        log.error("Score with userToken: {} and gameToken: {} already exists!", score.getUser().getToken(), score.getGame().getToken());
         return Optional.empty();
     }
 
@@ -41,10 +41,10 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
         Optional<Score> entity = scoreRepository.findScoreByToken(score.getToken());
         if(entity.isPresent()) {
 
-            log.info("Score with the id {} is present", score.getId());
+            log.info("Score with the token {} is present", score.getToken());
             return scoreRepository.updateScore(score);
         }
-        log.error("Could not find score with id {}. Score was not updated", score.getId());
+        log.error("Could not find score with token {}. Score was not updated", score.getToken());
         return Optional.empty();
     }
 

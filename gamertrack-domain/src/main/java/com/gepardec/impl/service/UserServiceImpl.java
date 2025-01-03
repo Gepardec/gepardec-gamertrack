@@ -42,14 +42,14 @@ public class UserServiceImpl implements UserService, Serializable {
     public Optional<User> updateUser(User user) {
         Optional<User> entity = userRepository.findUserByToken(user.getToken());
         if(entity.isPresent()) {
-            log.info("updating: user with the id {} is present", user.getId());
+            log.info("updating: user with the token {} is present", user.getId());
             if(!entity.get().isDeactivated()) {
                 return userRepository.updateUser(user);
             }
-            log.error("User with id {}. is deactivated and was not updated", user.getId());
+            log.error("User with token {}. is deactivated and was not updated", user.getToken());
             return Optional.empty();
         }
-        log.error("Could not find user with id {}. user was not updated", user.getId());
+        log.error("Could not find user with token {}. user was not updated", user.getToken());
         return Optional.empty();
     }
 
@@ -58,24 +58,24 @@ public class UserServiceImpl implements UserService, Serializable {
         Optional<User> user = userRepository.findUserByToken(token);
 
             if(user.isPresent()){
-                log.info("deleting: user with the id {} is present", token);
+                log.info("deleting: user with the token {} is present", token);
                 List<Score> scoresByUser = scoreService.findScoresByUser(user.get().getToken(),true);
                 if(scoresByUser.isEmpty()){
-                    log.info("user with the id {} has no scores stored. deleting user", token);
+                    log.info("user with the token {} has no scores stored. deleting user", token);
 
-                    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", user.get().getId(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
+                    log.info("deleting: user WITH NO SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
                     userRepository.deleteUser(user.get());
                 }
                 else {
                     user.get().setDeactivated(true);
-                    log.info("deleting: user WITH SCORES with the id {} firstname {} lastname {} deactivated {} is present", user.get().getId(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
+                    log.info("deleting: user WITH SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
 
-                    log.info("user with the id {} has {} scores stored. user was deactivated", token, scoresByUser.size());
+                    log.info("user with the token {} has {} scores stored. user was deactivated", token, scoresByUser.size());
                     userRepository.updateUser(user.get());
                 }
                 return user;
             }
-        log.error("Could not find user with id {}. User was not deleted", token);
+        log.error("Could not find user with token {}. User was not deleted", token);
         return Optional.empty();
     }
 
@@ -84,11 +84,8 @@ public class UserServiceImpl implements UserService, Serializable {
         return userRepository.findAllUsers(includeDeactivated);
     }
 
-
     @Override
     public Optional<User> findUserByToken(String token) {
             return userRepository.findUserByToken(token);
     }
-
-
 }

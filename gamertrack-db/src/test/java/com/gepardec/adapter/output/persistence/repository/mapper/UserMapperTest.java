@@ -34,11 +34,12 @@ public class UserMapperTest {
   public void ensureUserModelToExistingUserEntityMappingWorks() {
     User user = user(1L);
 
-    UserEntity existingUser = new UserEntity(3, "firstname", "lastname", false,tokenService.generateToken());
+    UserEntity existingUser = new UserEntity(3, "firstname", "lastname", false,user.getToken());
 
     UserEntity mappedUser = userMapper.userModeltoExistingUserEntity(user, existingUser);
 
     assertEquals(existingUser.getId(), mappedUser.getId());
+    assertEquals(existingUser.getToken(), mappedUser.getToken());
     assertEquals(existingUser.getFirstname(), mappedUser.getFirstname());
     assertEquals(existingUser.getLastname(), mappedUser.getLastname());
     assertEquals(existingUser.isDeactivated(), mappedUser.isDeactivated());
