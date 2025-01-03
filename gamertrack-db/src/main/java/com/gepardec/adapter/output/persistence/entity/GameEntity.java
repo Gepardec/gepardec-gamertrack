@@ -2,11 +2,12 @@ package com.gepardec.adapter.output.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "games")
+@Table(name = "games", indexes = @Index(name = "ux_games_token", columnList = "token", unique = true))
 public class GameEntity extends AbstractEntity {
 
   @Column(name = "token", unique = true)

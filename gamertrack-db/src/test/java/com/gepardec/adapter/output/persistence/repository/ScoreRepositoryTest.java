@@ -1,5 +1,9 @@
 package com.gepardec.adapter.output.persistence.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.gepardec.TestFixtures;
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
@@ -16,15 +20,12 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.UserTransaction;
+import java.util.List;
+import java.util.Optional;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(ArquillianExtension.class)
 public class ScoreRepositoryTest extends GamertrackDbIT {
@@ -84,13 +85,12 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
     Score score = new Score(null, user, game, 10.0, tokenService.generateToken());
 
     Long savedId = scoreRepository.saveScore(score).get().getId();
-    String savedToken = scoreRepository.saveScore(score).get().getToken();
 
     Score updatedScore = new Score(savedId, user, game, 20.0, tokenService.generateToken());
 
     scoreRepository.updateScore(updatedScore);
 
-    Optional<Score> foundScore = scoreRepository.findScoreByToken(savedToken);
+    Optional<Score> foundScore = scoreRepository.findScoreByToken(score.getToken());
     assertTrue(foundScore.isPresent());
     assertEquals(foundScore.get().getScorePoints(), updatedScore.getScorePoints());
   }
