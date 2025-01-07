@@ -30,14 +30,16 @@ The following technologies are used by Gepardec-Gamertrack
 **Start wildfly**
 
 ```zsh
-  $WILDFLY_HOME/bin//wildfly-34.0.0.Final/bin/standalone.sh
+  $WILDFLY_HOME/bin/standalone.sh
 ```
 
 **Deploy application to wildfly**
 
 ```zsh
-  $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="deploy --force ./gamertrack-war/target/gamertrack-war-1.0-SNAPSHOT.war"
+  $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="deploy --force gamertrack-war/target/gepardec-gamertrack.war"
 ```
+
+Application is now available at http://127.0.0.1:8080/gepardec-gamertrack/api/v1/
 
 **Undeploy and stop wildfly**
 
