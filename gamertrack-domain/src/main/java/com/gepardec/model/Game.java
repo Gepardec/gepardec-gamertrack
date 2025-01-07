@@ -1,8 +1,11 @@
 package com.gepardec.model;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class Game {
 
   private Long id;
+  @NotBlank(message = "Game name must not be null or blank")
   private String name;
   private String rules;
 

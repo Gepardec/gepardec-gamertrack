@@ -1,10 +1,13 @@
 package com.gepardec.rest.model.dto;
 
 import com.gepardec.model.Match;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public record MatchRestDto(Long id, GameRestDto gameRestDto, List<UserRestDto> userRestDtos) {
+public record MatchRestDto(@NotBlank Long id, @NotNull GameRestDto gameRestDto,
+                           @NotNull List<UserRestDto> userRestDtos) {
 
   public MatchRestDto(Match match) {
     this(match.getId(),

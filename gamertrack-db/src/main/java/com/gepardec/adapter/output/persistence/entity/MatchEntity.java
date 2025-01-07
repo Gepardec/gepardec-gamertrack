@@ -15,14 +15,14 @@ import java.util.List;
 @Table(name = "matches")
 public class MatchEntity extends AbstractEntity {
 
-  @ManyToOne()
+  @ManyToOne(optional = false)
   @JoinColumn(name = "fk_game_match", foreignKey = @ForeignKey(name = "fk_game_match"))
   private GameEntity game;
 
   @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
   @JoinTable(name = "matches_users", joinColumns =
-  @JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")), inverseJoinColumns =
-  @JoinColumn(name = "fk_match", foreignKey = @ForeignKey(name = "fk_match")))
+  @JoinColumn(nullable = false, name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")), inverseJoinColumns =
+  @JoinColumn(nullable = false, name = "fk_match", foreignKey = @ForeignKey(name = "fk_match")))
   private List<UserEntity> users;
 
   public MatchEntity() {

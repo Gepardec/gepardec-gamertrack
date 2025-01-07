@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "games")
 public class GameEntity extends AbstractEntity {
 
-  @NotBlank
+  @NotBlank(message = "Game name should not be null or blank")
   private String name;
   private String rules;
 
