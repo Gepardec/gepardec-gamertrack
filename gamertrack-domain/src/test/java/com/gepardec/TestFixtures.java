@@ -27,22 +27,6 @@ public class TestFixtures {
     return new Game(id, "Game Fixture", "Game Fixture Rules");
   }
 
-  public static Game gameToGameDto(Game game) {
-    return new Game(game.getId(), game.getName(), game.getRules());
-  }
-
-  public static Match matchToMatchDto(Match match) {
-    return new Match(match.getId(), match.getGame(),
-        match.getUsers());
-  }
-
-  public static Game gameDtoToGame(Game gameDto) {
-    Game game = new Game(gameDto.getId(), gameDto.getName(), gameDto.getRules());
-
-    return game;
-  }
-
-
   public static Match match() {
     return match(1L, TestFixtures.game(), TestFixtures.users(10));
   }

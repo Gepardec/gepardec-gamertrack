@@ -1,5 +1,6 @@
 package com.gepardec.impl.service;
 
+import static com.gepardec.TestFixtures.match;
 import static com.gepardec.TestFixtures.matches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,27 +40,25 @@ class MatchServiceImplTest {
 
   @Test
   void ensureSavingValidMatchReturnsOptionalMatch() {
-    Match match = TestFixtures.matchToMatchDto(
-        TestFixtures.match());
+    Match match = match();
 
     when(matchRepository.saveMatch(any())).thenReturn(
-        Optional.of(TestFixtures.match()));
+        Optional.of(match()));
     when(gameRepository.existsByGameId(anyLong())).thenReturn(true);
     when(userRepository.existsByUserId(anyList())).thenReturn(true);
 
     assertEquals(matchService.saveMatch(match).get().getId(),
-        TestFixtures.match().getId());
+        match().getId());
   }
 
   @Test
   void ensureSavingInvalidMatchReferencingNotExistingGameReturnsEmptyOptional() {
     //Given
-    Match match = TestFixtures.match();
+    Match match = match();
     match.setUsers(TestFixtures.users(10));
 
     //When
-    var savedMatch = matchService.saveMatch(
-        TestFixtures.matchToMatchDto(match));
+    var savedMatch = matchService.saveMatch(match);
 
     //Then
     assertEquals(Optional.empty(), savedMatch);
@@ -68,11 +67,10 @@ class MatchServiceImplTest {
   @Test
   void ensureSavingInvalidMatchReferencingNoUsersReturnsEmptyOptional() {
     //Given
-    Match match = TestFixtures.match();
+    Match match = match();
 
     //When
-    var savedMatch = matchService.saveMatch(
-        TestFixtures.matchToMatchDto(match));
+    var savedMatch = matchService.saveMatch(match);
 
     //Then
     assertEquals(Optional.empty(), savedMatch);
@@ -97,7 +95,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByIdReturnsMatchForExistingMatch() {
-    Match match = TestFixtures.match();
+    Match match = match();
 
     when(matchRepository.findMatchById(any())).thenReturn(Optional.of(match));
 
@@ -106,7 +104,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByIdReturnsOptionalEmptyForNonExistingMatch() {
-    Match match = TestFixtures.match();
+    Match match = match();
 
     when(matchRepository.findMatchById(any())).thenReturn(Optional.empty());
 
@@ -115,7 +113,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureDeleteMatchReturnsDeletedMatchForExistingMatch() {
-    Match match = TestFixtures.match();
+    Match match = match();
 
     when(matchRepository.findMatchById(any())).thenReturn(Optional.of(match));
     var deletedMatch = matchService.deleteMatch(match.getId());
@@ -125,7 +123,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureDeleteMatchReturnsOptionalEmptyForNonExistingMatch() {
-    Match match = TestFixtures.match();
+    Match match = match();
 
     when(matchRepository.findMatchById(any())).thenReturn(Optional.empty());
 
@@ -137,8 +135,7 @@ class MatchServiceImplTest {
   @Test
   void ensureUpdateMatchReturnsUpdatedMatchForExistingMatch() {
     //Given
-    Match matchNew = TestFixtures.match(1L);
-    Match matchNewDto = TestFixtures.matchToMatchDto(matchNew);
+    Match matchNew = match(1L);
 
     //When
 
@@ -147,7 +144,7 @@ class MatchServiceImplTest {
     when(userRepository.existsByUserId(anyList())).thenReturn(true);
     when(matchRepository.existsMatchById(anyLong())).thenReturn(true);
 
-    var updatedMatch = matchService.updateMatch(matchNewDto);
+    var updatedMatch = matchService.updateMatch(matchNew);
 
     //Then
     assertEquals(matchNew.getId(), updatedMatch.get().getId());
@@ -155,7 +152,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByUserIdReturnsListOfMatchesForExistingMatchWithUserId() {
-    Match match = TestFixtures.match();
+    Match match = match();
     match.setUsers(TestFixtures.usersWithId(10));
 
     when(matchRepository.findMatchesByUserId(anyLong())).thenReturn(
@@ -169,7 +166,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByUserIdReturnsEmptyListForNonExistingMatch() {
-    Match match = TestFixtures.match();
+    Match match = match();
 
     var foundMatches = matchService.findMatchesByUserId(
         match.getUsers().getFirst().getId());
@@ -180,7 +177,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByGameIdReturnsListOfMatchesForExistingMatch() {
-    Match match = TestFixtures.match();
+    Match match = match();
 
     when(matchRepository.findMatchesByGameId(anyLong())).thenReturn(List.of(match));
 
@@ -191,7 +188,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByGameIdReturnsEmptyListForNonExistingMatch() {
-    Match match = TestFixtures.match();
+    Match match = match();
 
     when(matchRepository.findMatchesByGameId(anyLong())).thenReturn(List.of());
 
@@ -222,7 +219,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByUserIdAndGameIdReturnsExistingMatchForUserIdNotBeingSpecified() {
-    Match match = TestFixtures.match();
+    Match match = match();
     List<Match> matches = new ArrayList<>();
     matches.add(match);
     when(matchRepository.findMatchesByGameId(anyLong())).thenReturn(matches);
@@ -238,7 +235,7 @@ class MatchServiceImplTest {
 
   @Test
   void ensureFindMatchByUserIdAndGameIdReturnsExistingMatchForGameIdNotBeingSpecified() {
-    Match match = TestFixtures.match();
+    Match match = match();
     match.setUsers(TestFixtures.usersWithId(1));
     List<Match> matches = new ArrayList<>();
     matches.add(match);

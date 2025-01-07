@@ -29,10 +29,9 @@ public class RestMapper {
         updateUserCommand.deactivated());
   }
 
-
-  public Match updateMatchCommandtoMatch(Long id, UpdateMatchCommand gameOutcomeCommand) {
-    return new Match(id, gameOutcomeCommand.game(),
-        gameOutcomeCommand.users());
+  public Match updateMatchCommandtoMatch(Long id, UpdateMatchCommand updateMatchCommand) {
+    return new Match(id, updateMatchCommand.game(),
+        updateMatchCommand.users());
   }
 
   public Match createMatchCommandtoMatch(CreateMatchCommand createGameCommand) {

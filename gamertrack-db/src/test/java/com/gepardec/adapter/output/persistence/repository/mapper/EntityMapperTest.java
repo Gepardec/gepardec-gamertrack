@@ -137,7 +137,7 @@ public class EntityMapperTest {
 
   @Test
   void ensureGameModelToGameWithReferenceEntityMappingWorks() {
-    Game game = TestFixtures.gameToGameDto(game());
+    Game game = game();
 
     GameEntity mappedGame = entityMapper.gameModelToGameEntity(game);
 
@@ -148,7 +148,7 @@ public class EntityMapperTest {
 
   @Test
   void ensureGameModelToGameWithReferenceMappingWorksProvidingModelAndEntity() {
-    Game game = TestFixtures.gameToGameDto(game());
+    Game game = game();
 
     GameEntity existingGameEntity = new GameEntity(1L, "4Gewinnt", "Nicht Schummeln");
 

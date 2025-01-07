@@ -1,14 +1,21 @@
 package com.gepardec;
 
+import static com.gepardec.TestFixtures.user;
+
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
-import com.gepardec.rest.model.command.*;
+import com.gepardec.rest.model.command.CreateGameCommand;
+import com.gepardec.rest.model.command.CreateMatchCommand;
+import com.gepardec.rest.model.command.CreateScoreCommand;
+import com.gepardec.rest.model.command.CreateUserCommand;
+import com.gepardec.rest.model.command.UpdateGameCommand;
+import com.gepardec.rest.model.command.UpdateMatchCommand;
+import com.gepardec.rest.model.command.UpdateUserCommand;
+import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
-
+import com.gepardec.rest.model.dto.UserRestDto;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.gepardec.TestFixtures.user;
 
 public class RestTestFixtures {
 
@@ -40,8 +47,9 @@ public class RestTestFixtures {
   }
 
 
-  public static MatchRestDto matchRestDto(Long id, Game game, List<User> users) {
-    return new MatchRestDto(id, game, users);
+  public static MatchRestDto matchRestDto(Long id, GameRestDto gameRestDto,
+      List<UserRestDto> userRestDtos) {
+    return new MatchRestDto(id, gameRestDto, userRestDtos);
   }
 
   public static Game game() {
