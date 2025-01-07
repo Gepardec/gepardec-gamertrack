@@ -50,7 +50,7 @@ public interface UserResource {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
             @ApiResponse(responseCode = "204", description = "No Content - No users were found")
     })    @GET
-    public Response getUsers(@QueryParam("includeDeactivated") Boolean includeDeactivated);
+    public Response getUsers(@QueryParam("includeDeactivated") @DefaultValue(value = "true") Boolean includeDeactivated);
 
     @Operation(summary = "Get User by token", description = "Returns user by id")
     @ApiResponses(value = {
