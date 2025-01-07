@@ -1,16 +1,10 @@
 package com.gepardec.model;
 
-import jakarta.validation.constraints.NotNull;
-
 public class Score{
     private Long id;
     private User user;
     private Game game;
     private double scorePoints;
-
-    public Score(Long id) {
-        this.id = id;
-    }
 
     public Score(Long id, User user, Game game, double scorePoints) {
         this.id = id;

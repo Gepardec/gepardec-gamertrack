@@ -1,12 +1,9 @@
 package com.gepardec.rest.model.dto;
 
-import com.gepardec.model.Game;
 import com.gepardec.model.Score;
-import com.gepardec.model.User;
 
-public record ScoreRestDto(Long id, User user, Game game, double score) {
+public record ScoreRestDto(Long id, UserRestDto userRestDto, GameRestDto gameRestDto, double score) {
     public ScoreRestDto(Score score){
-        this(score.getId(), score.getUser(), score.getGame(), score.getScorePoints());
+        this(score.getId(), new UserRestDto(score.getUser()), new GameRestDto(score.getGame()), score.getScorePoints());
     }
-
 }

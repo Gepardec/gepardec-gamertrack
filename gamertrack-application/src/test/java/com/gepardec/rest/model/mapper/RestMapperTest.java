@@ -1,10 +1,5 @@
 package com.gepardec.rest.model.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.gepardec.RestTestFixtures;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
@@ -17,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class RestMapperTest {
@@ -75,7 +72,7 @@ class RestMapperTest {
 
   @Test
   public void ensureMapCreateScoreCommandToScoreDtoWorks() {
-    CreateScoreCommand scoreCommand = RestTestFixtures.createScoreCommand(1L);
+    CreateScoreCommand scoreCommand = RestTestFixtures.createScoreCommand();
 
     Score mappedScore = restMapper.createScoreCommandtoScore(scoreCommand);
 
@@ -87,7 +84,7 @@ class RestMapperTest {
 
   @Test
   public void ensureMapCreateUserCommandDtoToUserDtoWorks() {
-    CreateUserCommand userCommand = RestTestFixtures.createUserCommand(1L);
+    CreateUserCommand userCommand = RestTestFixtures.createUserCommand();
 
     User mappedUser = restMapper.createUserCommandtoUser(userCommand);
 
@@ -99,7 +96,7 @@ class RestMapperTest {
   @Test
   public void ensureMapUpdateUserCommandDtoToUserDtoWorks() {
 
-    UpdateUserCommand updateUserCommand = RestTestFixtures.updateUserCommand(1L);
+    UpdateUserCommand updateUserCommand = RestTestFixtures.updateUserCommand();
 
     User mappedUser = restMapper.updateUserCommandtoUser(1L, updateUserCommand);
 

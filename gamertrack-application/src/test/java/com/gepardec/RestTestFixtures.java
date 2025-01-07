@@ -1,33 +1,28 @@
 package com.gepardec;
 
-import static com.gepardec.TestFixtures.user;
-
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
-import com.gepardec.rest.model.command.CreateGameCommand;
-import com.gepardec.rest.model.command.CreateMatchCommand;
-import com.gepardec.rest.model.command.CreateScoreCommand;
-import com.gepardec.rest.model.command.CreateUserCommand;
-import com.gepardec.rest.model.command.UpdateGameCommand;
-import com.gepardec.rest.model.command.UpdateMatchCommand;
-import com.gepardec.rest.model.command.UpdateUserCommand;
+import com.gepardec.rest.model.command.*;
 import com.gepardec.rest.model.dto.MatchRestDto;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gepardec.TestFixtures.user;
+
 public class RestTestFixtures {
 
-  public static CreateScoreCommand createScoreCommand(Long id) {
+  public static CreateScoreCommand createScoreCommand() {
     CreateScoreCommand createScoreCommand = new CreateScoreCommand(user(1L), game(), 10);
     return createScoreCommand;
   }
 
-  public static CreateUserCommand createUserCommand(Long id) {
+  public static CreateUserCommand createUserCommand() {
     CreateUserCommand createUserCommand = new CreateUserCommand("Max", "Muster");
     return createUserCommand;
   }
 
-  public static UpdateUserCommand updateUserCommand(Long id) {
+  public static UpdateUserCommand updateUserCommand() {
     UpdateUserCommand updateUserCommand = new UpdateUserCommand("Max", "Muster", false);
     return updateUserCommand;
   }
