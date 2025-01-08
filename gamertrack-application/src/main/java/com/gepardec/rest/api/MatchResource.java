@@ -86,6 +86,6 @@ public interface MatchResource {
       @ApiResponse(responseCode = "404", description = "Match not found")})
 
   @DELETE
-  @Path("{id}")
-  Response deleteMatch(@PathParam("id") Long id);
+  @Path("{token}")
+  Response deleteMatch(@PathParam("token") String token);
 }

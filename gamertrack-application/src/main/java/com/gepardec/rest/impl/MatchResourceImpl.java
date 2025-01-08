@@ -80,9 +80,9 @@ public class MatchResourceImpl implements MatchResource {
   }
 
   @Override
-  public Response deleteMatch(Long id) {
-    logger.info("Deleting match with ID: %s".formatted(id));
-    return matchService.deleteMatch(id)
+  public Response deleteMatch(String token) {
+    logger.info("Deleting match with Token: %s".formatted(token));
+    return matchService.deleteMatch(token)
         .map(MatchRestDto::new)
         .map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND)).build();

@@ -2,6 +2,7 @@ package com.gepardec.rest.impl;
 
 import static io.restassured.RestAssured.basePath;
 import static io.restassured.RestAssured.delete;
+import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
 import static io.restassured.RestAssured.port;
 import static io.restassured.RestAssured.reset;
 import static io.restassured.RestAssured.when;
@@ -9,11 +10,13 @@ import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gepardec.RestTestFixtures;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
+import io.restassured.filter.log.LogDetail;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import org.junit.jupiter.api.AfterAll;
@@ -29,6 +32,7 @@ public class GameResourceImplTest {
   public static void setup() {
     port = 8080;
     basePath = "gepardec-gamertrack/api/v1/games";
+    enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
   }
 
   @AfterEach
@@ -93,15 +97,15 @@ public class GameResourceImplTest {
         .body()
         .as(GameRestDto.class);
 
-    when()
+    var foundGame = when()
         .get("/%s".formatted(gameRestDto.token()))
         .then()
         .statusCode(Status.OK.getStatusCode())
         .extract()
         .body()
-        .as(GameRestDto.class)
-        .equals(gameRestDto);
+        .as(GameRestDto.class);
 
+    assertEquals(foundGame, gameRestDto);
     usesTokens.add(gameRestDto.token());
   }
 

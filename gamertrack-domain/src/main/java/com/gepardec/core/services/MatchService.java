@@ -12,7 +12,7 @@ public interface MatchService {
 
   Optional<Match> findMatchByToken(String token);
 
-  Optional<Match> deleteMatch(Long matchId);
+  Optional<Match> deleteMatch(String matchToken);
 
   Optional<Match> updateMatch(Match matchDto);
 

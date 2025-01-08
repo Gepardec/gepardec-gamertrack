@@ -117,7 +117,8 @@ public class MatchRepositoryImpl implements MatchRepository {
 
   @Override
   public List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken) {
-    logger.info("Finding matches by UserId: {} and GameId: {}".formatted(gameToken, userToken));
+    logger.info(
+        "Finding matches by UserToken: %s and GameToken: %s".formatted(userToken, gameToken));
     var query = em.createQuery(
         "select m from MatchEntity m inner join m.users u where (:userToken is NULL OR u.token = :userToken) and (:gameToken is NULL OR m.game.token = :gameToken)",
         MatchEntity.class);

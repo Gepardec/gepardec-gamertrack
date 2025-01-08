@@ -5,17 +5,17 @@ import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.MatchService;
 import com.gepardec.core.services.TokenService;
+import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @Transactional
@@ -41,8 +41,9 @@ public class MatchServiceImpl implements MatchService {
       Optional<String> userToken) {
 
     if (userToken.isPresent() && gameToken.isPresent()) {
-      logger.info("Finding matches by userId {} and gameId {}".formatted(userToken, gameToken));
-      return matchRepository.findMatchesByGameTokenAndUserToken(userToken.get(), gameToken.get());
+      logger.info(
+          "Finding matches by userToken %s and gameToken %s".formatted(userToken, gameToken));
+      return matchRepository.findMatchesByGameTokenAndUserToken(gameToken.get(), userToken.get());
     }
 
     return userToken
@@ -56,14 +57,27 @@ public class MatchServiceImpl implements MatchService {
 
   @Override
   public Optional<Match> saveMatch(Match match) {
-    logger.info(
-        "Saving match containing GameID: %s and UserIDs: %s".formatted(
-            match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
 
-    if (!match.getUsers().isEmpty()
-        && userRepository.existsByUserToken(match.getUsers().stream().map(User::getToken).toList())
-        && gameRepository.existsByGameToken(match.getGame().getToken())) {
+    Optional<Game> foundGame = gameRepository.findGameByToken(match.getGame().getToken());
+    List<User> foundUsers = match.getUsers().stream()
+        .map(User::getToken)
+        .map(token -> userRepository.findUserByToken(token))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .toList();
+
+    if (!foundUsers.isEmpty()
+        && foundUsers.size() == match.getUsers().size()
+        && foundGame.isPresent()) {
+
       match.setToken(tokenService.generateToken());
+      match.setGame(foundGame.get());
+      match.setUsers(foundUsers);
+
+      logger.info(
+          "Saving match containing GameID: %s and UserIDs: %s".formatted(
+              match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
+
       return matchRepository.saveMatch(match);
     }
 
@@ -83,17 +97,17 @@ public class MatchServiceImpl implements MatchService {
   }
 
   @Override
-  public Optional<Match> deleteMatch(Long matchId) {
-    logger.info("Removing match with ID: %s".formatted(matchId));
-    Optional<Match> match = matchRepository.findMatchById(matchId);
+  public Optional<Match> deleteMatch(String matchToken) {
+    logger.info("Removing match with ID: %s".formatted(matchToken));
+    Optional<Match> match = matchRepository.findMatchByToken(matchToken);
 
     if (match.isEmpty()) {
       logger.error(
-          "Could not find match with ID: %s when delete attempted".formatted(matchId));
+          "Could not find match with Token: %s when delete attempted".formatted(matchToken));
       return Optional.empty();
     }
 
-    matchRepository.deleteMatch(matchId);
+    matchRepository.deleteMatch(match.get().getId());
 
     return match;
 
@@ -104,16 +118,28 @@ public class MatchServiceImpl implements MatchService {
 
     logger.info("Updating match with ID: %s");
 
-    if (!match.getUsers().isEmpty()
-        && match.getGame().getId() != null
-        && userRepository.existsByUserToken(match.getUsers().stream().map(User::getToken).toList())
-        && matchRepository.existsMatchById(match.getGame().getId())
-        && gameRepository.existsByGameToken(match.getGame().getToken())) {
+    Optional<Match> foundMatch = matchRepository.findMatchByToken(match.getToken());
+    Optional<Game> foundGame = gameRepository.findGameByToken(match.getGame().getToken());
+    List<User> foundUsers = match.getUsers().stream()
+        .map(User::getToken)
+        .map(token -> userRepository.findUserByToken(token))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .toList();
+
+    if (!foundUsers.isEmpty()
+        && foundUsers.size() == match.getUsers().size()
+        && foundGame.isPresent()
+        && foundMatch.isPresent()) {
+
+      match.setGame(foundGame.get());
+      match.setUsers(foundUsers);
+      match.setId(matchRepository.findMatchByToken(match.getToken()).get().getId());
+
       logger.info(
           "Saving updated match with ID: %s having the following attributes: \n %s %s".formatted(
               match.getId(), match.getGame().getId(),
               match.getUsers().stream().map(User::getId).toList()));
-
       return matchRepository.updateMatch(match);
     }
 
