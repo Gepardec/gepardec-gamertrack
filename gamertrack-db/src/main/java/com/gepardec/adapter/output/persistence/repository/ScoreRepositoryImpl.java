@@ -4,8 +4,12 @@ import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
 import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.ScoreMapper;
+import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.ScoreRepository;
+import com.gepardec.core.repository.UserRepository;
+import com.gepardec.model.Game;
 import com.gepardec.model.Score;
+import com.gepardec.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -28,12 +32,23 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
   protected EntityManager entityManager;
 
   @Inject
+  UserRepository userRepository;
+  @Inject
+  GameRepository gameRepository;
+
+  @Inject
   ScoreMapper entityMapper;
 
   @Override
   public Optional<Score> saveScore(Score score) {
-    if (entityManager.find(GameEntity.class, score.getGame().getId()) != null) {
-      if (entityManager.find(UserEntity.class, score.getUser().getId()) != null) {
+
+    Optional<Game> dbGame = gameRepository.findGameByToken(score.getGame().getToken());
+    Optional<User> dbUser = userRepository.findUserByToken(score.getUser().getToken());
+
+    if (dbGame.isPresent()) {
+      if (dbUser.isPresent()) {
+        score.setUser(dbUser.get());
+        score.setGame(dbGame.get());
         ScoreEntity scoreEntity = entityMapper.scoreModeltoScoreEntity(score);
         entityManager.persist(scoreEntity);
 

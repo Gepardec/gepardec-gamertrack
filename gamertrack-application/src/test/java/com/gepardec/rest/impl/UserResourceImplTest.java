@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.core.IsNot.not;
 
 public class UserResourceImplTest {
 
@@ -108,6 +110,7 @@ public class UserResourceImplTest {
                         .statusCode(404)
                         .log().body();
         }
+
         @Test
         public void ensureGetUserReturnsOk() {
                 with().when()
@@ -142,5 +145,61 @@ public class UserResourceImplTest {
                         .log().body();
         }
 
-}
+        @Test
+        public void ensureGetDeletedUserReturnsNotFound() {
+                String token = with()
+                        .when()
+                        .contentType("application/json")
+                        .body(new CreateUserCommand("Max", "Muster"))
+                        .request("POST", "/users")
+                        .then()
+                        .statusCode(201)
+                        .extract()
+                        .path("token");
 
+                with()
+                        .when()
+                        .contentType("application/json")
+                        .body(new UpdateUserCommand("Max", "Muster", true))
+                        .pathParam("token", token)
+                        .request("PUT", "/users/{token}")
+                        .then()
+                        .statusCode(200)
+                        .log().body();
+
+                with().when()
+                        .request("GET", "/users?includeDeactivated=false")
+                        .then()
+                        .body("token", not(hasItem(token)))
+                        .statusCode(200);
+        }
+
+        @Test
+        public void ensureGetDeletedUserIncludesDeletedReturnsOk() {
+                String token = with()
+                        .when()
+                        .contentType("application/json")
+                        .body(new CreateUserCommand("Max", "Muster"))
+                        .request("POST", "/users")
+                        .then()
+                        .statusCode(201)
+                        .extract()
+                        .path("token");
+
+                with()
+                        .when()
+                        .contentType("application/json")
+                        .body(new UpdateUserCommand("Max", "Muster", true))
+                        .pathParam("token", token)
+                        .request("PUT", "/users/{token}")
+                        .then()
+                        .statusCode(200)
+                        .log().body();
+
+                with().when()
+                        .request("GET", "/users?includeDeactivated=true")
+                        .then()
+                        .body("token", hasItem(token))
+                        .statusCode(200);
+        }
+}
