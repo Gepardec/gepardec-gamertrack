@@ -1,5 +1,7 @@
 package com.gepardec.model;
 
+import java.util.Objects;
+
 public class Game {
 
   private Long id;
@@ -47,6 +49,21 @@ public class Game {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Game game = (Game) o;
+    return Objects.equals(id, game.id) && Objects.equals(token, game.token)
+        && Objects.equals(name, game.name) && Objects.equals(rules, game.rules);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, token, name, rules);
   }
 
   @Override

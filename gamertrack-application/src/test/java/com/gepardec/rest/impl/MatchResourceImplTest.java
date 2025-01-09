@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gepardec.RestTestFixtures;
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
@@ -49,6 +48,7 @@ public class MatchResourceImplTest {
 
   @BeforeAll
   public static void setup() {
+    reset();
     port = 8080;
     basePath = "gepardec-gamertrack/api/v1";
     enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
@@ -74,7 +74,8 @@ public class MatchResourceImplTest {
 
   @Test
   void ensureGetMatchesReturnsForNoMatches200OkWithEmptyList() {
-    when().get(MATCH_PATH)
+    when()
+        .get(MATCH_PATH)
         .then()
         .statusCode(Status.OK.getStatusCode())
         .body("", hasSize(0));
@@ -84,21 +85,22 @@ public class MatchResourceImplTest {
   void ensureGetMatchesReturnsForExistingMatches200OkWithMatchesList() {
     MatchRestDto createdMatch = createMatch();
 
-    var foundMatches = when().get(MATCH_PATH)
-        .then()
-        .statusCode(Status.OK.getStatusCode())
-        .body("", hasSize(1))
-        .extract()
-        .jsonPath()
-        .getList(".", MatchRestDto.class);
+    var foundMatches =
+        when()
+            .get(MATCH_PATH)
+            .then()
+            .statusCode(Status.OK.getStatusCode())
+            .body("", hasSize(1))
+            .extract()
+            .jsonPath()
+            .getList(".", MatchRestDto.class);
 
     foundMatches.getFirst().equals(createdMatch);
     usesMatchTokens.add(createdMatch.token());
   }
 
   @Test
-  void ensureGetMatchesWithGameTokenAndWithoutUserTokenReturnsMatchReferencingTheSameGame()
-      throws JsonProcessingException {
+  void ensureGetMatchesWithGameTokenAndWithoutUserTokenReturnsMatchReferencingTheSameGame() {
     GameRestDto createdGame = createGame();
     MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(), createGame("someName"));
     MatchRestDto matchToBeFound1 = createMatch(createUser(), createdGame);
@@ -116,10 +118,8 @@ public class MatchResourceImplTest {
             .jsonPath()
             .getList("", MatchRestDto.class);
 
-    assertTrue(
-        foundMatches.stream().map(MatchRestDto::token)
-            .toList()
-            .containsAll(List.of(matchToBeFound1.token(), matchToBeFound2.token())));
+    assertTrue(foundMatches.stream().map(MatchRestDto::token).toList()
+        .containsAll(List.of(matchToBeFound1.token(), matchToBeFound2.token())));
     assertFalse(foundMatches.stream()
         .anyMatch(match -> match.token().equals(matchThatShouldNotBeFound.token())));
   }
@@ -144,8 +144,7 @@ public class MatchResourceImplTest {
             .getList("", MatchRestDto.class);
 
     assertTrue(
-        foundMatches.stream().map(MatchRestDto::token)
-            .toList()
+        foundMatches.stream().map(MatchRestDto::token).toList()
             .containsAll(
                 List.of(matchThatShouldBeFound1.token(), matchThatShouldBeFound2.token())));
     assertFalse(foundMatches.stream()
@@ -157,7 +156,7 @@ public class MatchResourceImplTest {
     UserRestDto createdUser = createUser();
     GameRestDto createdGame = createGame();
     MatchRestDto matchThatShouldNotBeFound = createMatch(createdUser, createGame("someName"));
-    MatchRestDto matchThatNotBeFound2 = createMatch(createUser(), createdGame);
+    MatchRestDto matchThatShouldNotBeFound2 = createMatch(createUser(), createdGame);
     MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser, createdGame);
     MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser, createdGame);
 
@@ -172,16 +171,20 @@ public class MatchResourceImplTest {
         .jsonPath()
         .getList("", MatchRestDto.class);
 
-    assertEquals(2, foundMatches.stream().filter(
-        match -> match.users().getFirst().getToken().equals(createdUser.token()) && match.game()
-            .getToken().equals(createdGame.token())).count());
+    assertTrue(foundMatches.stream()
+        .allMatch(match -> match.game().getToken().equals(createdGame.token())
+            && match.users().stream().map(User::getToken).toList().contains(createdUser.token())));
+    assertFalse(
+        foundMatches.containsAll(List.of(matchThatShouldNotBeFound2, matchThatShouldNotBeFound)));
+    assertTrue(foundMatches.containsAll(List.of(matchThatShouldBeFound1, matchThatShouldBeFound2)));
   }
 
   @Test
   void ensureGetMatchByTokenForExistingMatchReturnsMatch() {
     MatchRestDto existingMatch = createMatch();
 
-    given().pathParam("token", existingMatch.token())
+    given()
+        .pathParam("token", existingMatch.token())
         .when()
         .get("%s/{token}".formatted(MATCH_PATH))
         .then()
@@ -206,25 +209,23 @@ public class MatchResourceImplTest {
 
     CreateMatchCommand createMatchCommand = new CreateMatchCommand(
         new Game(null, gameRestDto.token(), gameRestDto.name(), gameRestDto.rules()),
-        List.of(new User(null, userRestDto.firstname(), userRestDto.lastname(),
+        List.of(new User(userRestDto.id(), userRestDto.firstname(), userRestDto.lastname(),
             userRestDto.deactivated(), userRestDto.token())));
 
-    MatchRestDto createdMatch = with()
-        .body(createMatchCommand)
-        .contentType("application/json")
-        .post(MATCH_PATH)
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .body("token", notNullValue())
-        .extract()
-        .body()
-        .as(MatchRestDto.class);
+    MatchRestDto createdMatch =
+        with()
+            .body(createMatchCommand)
+            .contentType("application/json")
+            .post(MATCH_PATH)
+            .then()
+            .statusCode(Status.CREATED.getStatusCode())
+            .body("token", notNullValue())
+            .extract()
+            .body()
+            .as(MatchRestDto.class);
 
     assertEquals(createdMatch.game().getToken(), createMatchCommand.game().getToken());
-    assertTrue(
-        createdMatch.users().stream().map(User::getToken).toList()
-            .containsAll(createMatchCommand.users().stream().map(User::getToken).toList()));
-
+    assertTrue(createdMatch.users().containsAll(createMatchCommand.users()));
     usesMatchTokens.add(createdMatch.token());
   }
 
@@ -246,7 +247,7 @@ public class MatchResourceImplTest {
   }
 
   @Test
-  void ensureUpdateMatchForExistingMatchReturns200OkWithNewMatch() {
+  void ensureUpdateMatchForExistingMatchReturns200OkWithUpdatedMatch() {
     MatchRestDto existingMatch = createMatch();
     UserRestDto userRestDto = createUser();
     UpdateMatchCommand matchToUpdate = new UpdateMatchCommand(
@@ -258,16 +259,18 @@ public class MatchResourceImplTest {
             new User(null, userRestDto.firstname(), userRestDto.lastname(),
                 userRestDto.deactivated(), userRestDto.token())));
 
-    var updatedMatch = given().pathParam("token", existingMatch.token())
-        .contentType("application/json")
-        .body(matchToUpdate)
-        .put("%s/{token}".formatted(MATCH_PATH))
-        .then()
-        .statusCode(Status.OK.getStatusCode())
-        .body("token", equalTo(existingMatch.token()))
-        .body("users", hasSize(matchToUpdate.users().size()))
-        .extract()
-        .as(MatchRestDto.class);
+    var updatedMatch =
+        given()
+            .pathParam("token", existingMatch.token())
+            .contentType("application/json")
+            .body(matchToUpdate)
+            .put("%s/{token}".formatted(MATCH_PATH))
+            .then()
+            .statusCode(Status.OK.getStatusCode())
+            .body("token", equalTo(existingMatch.token()))
+            .body("users", hasSize(matchToUpdate.users().size()))
+            .extract()
+            .as(MatchRestDto.class);
 
     assertEquals(updatedMatch.token(), existingMatch.token());
     assertNotEquals(matchToUpdate.users().size(), existingMatch.users().size());
@@ -276,7 +279,9 @@ public class MatchResourceImplTest {
   @Test
   void ensureUpdateMatchForNonExistingMatchReturns400BadRequest() {
     UpdateGameCommand matchToUpdate = RestTestFixtures.updateGameCommand();
-    given().pathParam("token", "12k31k2j3ksadj")
+
+    given()
+        .pathParam("token", "12k31k2j3ksadj")
         .contentType("application/json")
         .body(matchToUpdate)
         .put("%s/{token}".formatted(MATCH_PATH))
@@ -288,19 +293,22 @@ public class MatchResourceImplTest {
   void ensureDeleteMatchForExistingMatchReturns200OkWithDeletedMatch() {
     MatchRestDto existingMatch = createMatch();
 
-    MatchRestDto deletedMatch = given().pathParam("token", existingMatch.token())
-        .delete("%s/{token}".formatted(MATCH_PATH))
-        .then()
-        .statusCode(Status.OK.getStatusCode())
-        .extract()
-        .as(MatchRestDto.class);
+    MatchRestDto deletedMatch =
+        given()
+            .pathParam("token", existingMatch.token())
+            .delete("%s/{token}".formatted(MATCH_PATH))
+            .then()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(MatchRestDto.class);
 
     assertEquals(existingMatch.token(), deletedMatch.token());
   }
 
   @Test
   void ensureDeleteMatchForNonExistingMatchReturns404NotFound() {
-    given().pathParam("token", "12k31k2j3ksadj")
+    given()
+        .pathParam("token", "12k31k2j3ksadj")
         .delete("%s/{token}".formatted(MATCH_PATH))
         .then()
         .statusCode(Status.NOT_FOUND.getStatusCode());
@@ -313,7 +321,8 @@ public class MatchResourceImplTest {
         .body(new CreateGameCommand(name, "no rules"))
         .contentType("application/json")
         .accept("application/json")
-        .when().post(GAME_PATH)
+        .when()
+        .post(GAME_PATH)
         .then()
         .statusCode(Status.CREATED.getStatusCode())
         .extract()
@@ -329,15 +338,16 @@ public class MatchResourceImplTest {
   }
 
   public UserRestDto createUser() {
-    UserRestDto userRestDto = with()
-        .contentType("application/json")
-        .body(new CreateUserCommand("max", "Muster"))
-        .post(USER_PATH)
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .extract()
-        .body()
-        .as(UserRestDto.class);
+    UserRestDto userRestDto =
+        with()
+            .contentType("application/json")
+            .body(new CreateUserCommand("max", "Muster"))
+            .post(USER_PATH)
+            .then()
+            .statusCode(Status.CREATED.getStatusCode())
+            .extract()
+            .body()
+            .as(UserRestDto.class);
 
     usesUserTokens.add(userRestDto.token());
     return userRestDto;
@@ -353,15 +363,16 @@ public class MatchResourceImplTest {
         List.of(new User(null, userRestDto.firstname(), userRestDto.lastname(),
             userRestDto.deactivated(), userRestDto.token())));
 
-    MatchRestDto createdMatch = with()
-        .body(createMatchCommand)
-        .contentType("application/json")
-        .post(MATCH_PATH)
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .extract()
-        .body()
-        .as(MatchRestDto.class);
+    MatchRestDto createdMatch =
+        with()
+            .body(createMatchCommand)
+            .contentType("application/json")
+            .post(MATCH_PATH)
+            .then()
+            .statusCode(Status.CREATED.getStatusCode())
+            .extract()
+            .body()
+            .as(MatchRestDto.class);
 
     usesMatchTokens.add(createdMatch.token());
 

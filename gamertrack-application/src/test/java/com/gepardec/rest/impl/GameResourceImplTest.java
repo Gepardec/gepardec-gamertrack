@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gepardec.RestTestFixtures;
 import com.gepardec.rest.model.command.CreateGameCommand;
@@ -30,6 +31,7 @@ public class GameResourceImplTest {
 
   @BeforeAll
   public static void setup() {
+    reset();
     port = 8080;
     basePath = "gepardec-gamertrack/api/v1/games";
     enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
@@ -50,7 +52,8 @@ public class GameResourceImplTest {
 
   @Test
   void ensureGetGamesWithNoExistingGamesReturns200OkWithEmptyList() {
-    when().get()
+    when()
+        .get()
         .then()
         .statusCode(200)
         .body("", hasSize(0));
@@ -59,54 +62,37 @@ public class GameResourceImplTest {
   @Test
   void ensureGetGamesWithExistingGameReturns200OkWithListContainingGame() {
     //GIVEN
-    GameRestDto gameRestDto = with()
-        .body(new CreateGameCommand("news game", "no rules"))
-        .contentType("application/json")
-        .accept("application/json")
-        .when().post()
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .extract()
-        .body()
-        .as(GameRestDto.class);
-
+    GameRestDto existingGame = createGame();
     //WHEN THEN
-    when()
-        .get()
-        .then()
-        .statusCode(200)
-        .extract()
-        .body()
-        .jsonPath()
-        .getList("", GameRestDto.class)
-        .equals(gameRestDto);
+    var foundGames =
+        when()
+            .get()
+            .then()
+            .statusCode(200)
+            .body("", hasSize(1))
+            .extract()
+            .body()
+            .jsonPath()
+            .getList("", GameRestDto.class);
 
-    usesTokens.add(gameRestDto.token());
+    assertTrue(foundGames.contains(existingGame));
   }
 
   @Test
   void ensureGetGameWithExistingGameReturnsGame() {
-    GameRestDto gameRestDto = with()
-        .body(new CreateGameCommand("TestGetGame", "no rules"))
-        .contentType("application/json")
-        .accept("application/json")
-        .when().post()
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .extract()
-        .body()
-        .as(GameRestDto.class);
+    GameRestDto existingGame = createGame();
 
-    var foundGame = when()
-        .get("/%s".formatted(gameRestDto.token()))
-        .then()
-        .statusCode(Status.OK.getStatusCode())
-        .extract()
-        .body()
-        .as(GameRestDto.class);
+    var foundGame =
+        when()
+            .get("/%s".formatted(existingGame.token()))
+            .then()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .body()
+            .as(GameRestDto.class);
 
-    assertEquals(foundGame, gameRestDto);
-    usesTokens.add(gameRestDto.token());
+    assertEquals(foundGame, existingGame);
+    usesTokens.add(existingGame.token());
   }
 
   @Test
@@ -121,16 +107,17 @@ public class GameResourceImplTest {
   void ensureCreateGameReturnsCreatedGameForValidGame() {
     CreateGameCommand gameToBeCreated = RestTestFixtures.createGameCommand();
 
-    var responeObjectFromRequest = with()
-        .body(gameToBeCreated)
-        .contentType("application/json")
-        .when()
-        .post()
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .body("token", notNullValue())
-        .body("name", samePropertyValuesAs(gameToBeCreated.name()))
-        .body("rules", samePropertyValuesAs(gameToBeCreated.rules()));
+    var responeObjectFromRequest =
+        with()
+            .body(gameToBeCreated)
+            .contentType("application/json")
+            .when()
+            .post()
+            .then()
+            .statusCode(Status.CREATED.getStatusCode())
+            .body("token", notNullValue())
+            .body("name", samePropertyValuesAs(gameToBeCreated.name()))
+            .body("rules", samePropertyValuesAs(gameToBeCreated.rules()));
 
     usesTokens.add(responeObjectFromRequest.extract().jsonPath().get("token"));
   }
@@ -148,30 +135,21 @@ public class GameResourceImplTest {
 
   @Test
   void ensureUpdateGameReturnsForValidGameUpdatedGame() {
-    GameRestDto gameRestDto = with()
-        .body(new CreateGameCommand("TestGetGame", "no rules"))
-        .contentType("application/json")
-        .accept("application/json")
-        .when().post()
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .extract()
-        .body()
-        .as(GameRestDto.class);
+    GameRestDto existingGame = createGame();
 
     UpdateGameCommand gameToBeUpdated = new UpdateGameCommand("UpatedTestGame", "still no rules");
 
     with()
         .body(gameToBeUpdated)
         .contentType("application/json")
-        .put("/%s".formatted(gameRestDto.token()))
+        .put("/%s".formatted(existingGame.token()))
         .then()
         .statusCode(Status.OK.getStatusCode())
-        .body("token", samePropertyValuesAs(gameRestDto.token()))
+        .body("token", samePropertyValuesAs(existingGame.token()))
         .body("name", samePropertyValuesAs(gameToBeUpdated.name()))
         .body("rules", samePropertyValuesAs(gameToBeUpdated.rules()));
 
-    usesTokens.add(gameRestDto.token());
+    usesTokens.add(existingGame.token());
   }
 
   @Test
@@ -189,24 +167,35 @@ public class GameResourceImplTest {
 
   @Test
   void ensureDeleteExistingGameReturns200OkWithDeletedGame() {
-    GameRestDto gameRestDto = with()
-        .body(new CreateGameCommand("TestGetGame", "no rules"))
-        .contentType("application/json")
-        .accept("application/json")
-        .when().post()
-        .then()
-        .statusCode(Status.CREATED.getStatusCode())
-        .extract()
-        .body()
-        .as(GameRestDto.class);
+    GameRestDto existingGame = createGame();
 
     with()
-        .delete("/%s".formatted(gameRestDto.token()))
+        .delete("/%s".formatted(existingGame.token()))
         .then()
         .statusCode(Status.OK.getStatusCode())
-        .body("token", samePropertyValuesAs(gameRestDto.token()))
-        .body("name", samePropertyValuesAs(gameRestDto.name()))
-        .body("rules", samePropertyValuesAs(gameRestDto.rules()));
+        .body("token", samePropertyValuesAs(existingGame.token()))
+        .body("name", samePropertyValuesAs(existingGame.name()))
+        .body("rules", samePropertyValuesAs(existingGame.rules()));
+  }
+
+  //--------------Helper Methods------------------------
+
+  public GameRestDto createGame() {
+    GameRestDto gameRestDto =
+        with()
+            .body(new CreateGameCommand("news game", "no rules"))
+            .contentType("application/json")
+            .accept("application/json")
+            .when()
+            .post()
+            .then()
+            .statusCode(Status.CREATED.getStatusCode())
+            .extract()
+            .body()
+            .as(GameRestDto.class);
+
+    usesTokens.add(gameRestDto.token());
+    return gameRestDto;
   }
 
 }
