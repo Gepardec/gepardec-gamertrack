@@ -1,13 +1,10 @@
 package com.gepardec.adapter.output.persistence.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 
 @Entity()
 @Table(name = "users", indexes = @Index(name = "ux_users_token", columnList = "token", unique = true))
@@ -17,9 +14,6 @@ public class UserEntity extends AbstractEntity {
   private String firstname;
   @NotEmpty(message = "Lastname must be set")
   private String lastname;
-
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<ScoreEntity> scores;
 
   @NotNull(message = "Deactivated must be set")
   private boolean deactivated;
