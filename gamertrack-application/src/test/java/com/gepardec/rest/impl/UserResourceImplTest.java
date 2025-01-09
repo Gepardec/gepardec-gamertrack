@@ -3,8 +3,12 @@ package com.gepardec.rest.impl;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
@@ -13,14 +17,27 @@ import static org.hamcrest.core.IsNot.not;
 
 public class UserResourceImplTest {
 
+        static List<String> usedUserTokens = new ArrayList<>();
+
         @BeforeAll
         public static void setup() {
                 RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
         }
 
+        @AfterEach
+        public void after() {
+                for (String token : usedUserTokens) {
+                        with()
+                                .when()
+                                .contentType("application/json")
+                                .pathParam("token", token)
+                                .request("DELETE", "/users/{token}");
+                }
+        }
+
         @Test
         public void ensureCreateUserWorks() {
-                with().when()
+                String token = with().when()
                         .contentType("application/json")
                         .body(new CreateUserCommand("max","Muster"))
                         .request("POST", "/users")
@@ -28,7 +45,10 @@ public class UserResourceImplTest {
                         .statusCode(201)
                         .assertThat()
                         .body("firstname", equalTo("max"))
-                        .log().body();
+                        .log().body()
+                        .extract()
+                        .path("token");
+                usedUserTokens.add(token);
         }
 
         @Test
@@ -42,6 +62,7 @@ public class UserResourceImplTest {
                         .statusCode(201)
                         .extract()
                         .path("token");
+                usedUserTokens.add(token);
 
                 with()
                         .when()
@@ -101,6 +122,8 @@ public class UserResourceImplTest {
                         .statusCode(201)
                         .extract()
                         .path("token");
+                usedUserTokens.add(token);
+
 
                 with()
                         .when()
@@ -130,6 +153,8 @@ public class UserResourceImplTest {
                         .statusCode(201)
                         .extract()
                         .path("token");
+                usedUserTokens.add(token);
+
 
                 with()
                         .when()
@@ -156,6 +181,8 @@ public class UserResourceImplTest {
                         .statusCode(201)
                         .extract()
                         .path("token");
+                usedUserTokens.add(token);
+
 
                 with()
                         .when()
@@ -185,6 +212,8 @@ public class UserResourceImplTest {
                         .statusCode(201)
                         .extract()
                         .path("token");
+                usedUserTokens.add(token);
+
 
                 with()
                         .when()
