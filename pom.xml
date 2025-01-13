@@ -161,7 +161,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.3.0</version>
-
         <configuration>
           <argLine>-Djboss.home=${jboss.home}</argLine>
           <excludedGroups>gamertrack-db</excludedGroups>
@@ -170,9 +169,6 @@
           <execution>
             <id>setArquillianEnvironmentVar</id>
             <phase>test-compile</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
             <configuration>
               <skip>false</skip>
               <systemPropertyVariables>
