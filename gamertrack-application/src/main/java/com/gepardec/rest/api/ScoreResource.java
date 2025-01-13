@@ -1,6 +1,5 @@
 package com.gepardec.rest.api;
 
-import com.gepardec.model.Score;
 import com.gepardec.rest.model.command.CreateScoreCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,10 +9,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.Optional;
 
 import static com.gepardec.rest.api.ScoreResource.BASE_SCORE_PATH;
-
 
 @Path(BASE_SCORE_PATH)
 @Consumes(MediaType.APPLICATION_JSON)

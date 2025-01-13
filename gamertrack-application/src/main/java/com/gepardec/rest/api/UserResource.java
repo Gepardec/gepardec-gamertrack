@@ -1,6 +1,5 @@
 package com.gepardec.rest.api;
 
-import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
 import io.swagger.v3.oas.annotations.Operation;
