@@ -1,31 +1,22 @@
 package com.gepardec.rest.impl;
 
-import static io.restassured.RestAssured.basePath;
-import static io.restassured.RestAssured.delete;
-import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
-import static io.restassured.RestAssured.port;
-import static io.restassured.RestAssured.reset;
-import static io.restassured.RestAssured.when;
-import static io.restassured.RestAssured.with;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.gepardec.RestTestFixtures;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
 import io.restassured.filter.log.LogDetail;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.ArrayList;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
 
-public class GameResourceImplTest {
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class GameResourceImplIT {
 
   ArrayList<String> usesTokens = new ArrayList<>();
 

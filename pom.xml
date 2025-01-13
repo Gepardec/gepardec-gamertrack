@@ -9,12 +9,40 @@
   <version>1.0-SNAPSHOT</version>
   <name>gepardec-gamertrack</name>
   <packaging>pom</packaging>
-  <modules>
-    <module>gamertrack-domain</module>
-    <module>gamertrack-application</module>
-    <module>gamertrack-db</module>
-    <module>gamertrack-war</module>
-  </modules>
+
+  <profiles>
+    <profile>
+      <id>default-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>gamertrack-domain</module>
+        <module>gamertrack-application</module>
+        <module>gamertrack-db</module>
+        <module>gamertrack-war</module>
+        <module>gamertrack-IntegrationTest</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>run-integrationtests</id>
+      <modules>
+        <module>gamertrack-IntegrationTest</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <skipTests>false</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 
   <properties>
@@ -136,6 +164,7 @@
 
         <configuration>
           <argLine>-Djboss.home=${jboss.home}</argLine>
+          <excludedGroups>gamertrack-db</excludedGroups>
         </configuration>
         <executions>
           <execution>
@@ -162,6 +191,30 @@
         <version>3.4.0</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version> 3.5.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+            <skipTests>true</skipTests>
+          <runOrder>alphabetical</runOrder>
+          <systemPropertyVariables>
+            <property>
+              <runOrder>alphabetical</runOrder>
+              <name>failsafe.cleanup</name>
+              <value>true</value>
+            </property>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>

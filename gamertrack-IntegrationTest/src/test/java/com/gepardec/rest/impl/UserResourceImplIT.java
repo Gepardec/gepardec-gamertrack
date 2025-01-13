@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.IsNot.not;
 
-public class UserResourceImplTest {
+public class UserResourceImplIT {
 
         static List<String> usedUserTokens = new ArrayList<>();
 

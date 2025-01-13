@@ -1,42 +1,26 @@
 package com.gepardec.rest.impl;
 
-import static io.restassured.RestAssured.basePath;
-import static io.restassured.RestAssured.delete;
-import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
-import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.port;
-import static io.restassured.RestAssured.reset;
-import static io.restassured.RestAssured.when;
-import static io.restassured.RestAssured.with;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.gepardec.RestTestFixtures;
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
-import com.gepardec.rest.model.command.CreateGameCommand;
-import com.gepardec.rest.model.command.CreateMatchCommand;
-import com.gepardec.rest.model.command.CreateUserCommand;
-import com.gepardec.rest.model.command.UpdateGameCommand;
-import com.gepardec.rest.model.command.UpdateMatchCommand;
+import com.gepardec.rest.model.command.*;
 import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.dto.UserRestDto;
 import io.restassured.filter.log.LogDetail;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class MatchResourceImplTest {
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class MatchResourceImplIT {
 
   ArrayList<String> usesMatchTokens = new ArrayList<>();
   ArrayList<String> usesUserTokens = new ArrayList<>();

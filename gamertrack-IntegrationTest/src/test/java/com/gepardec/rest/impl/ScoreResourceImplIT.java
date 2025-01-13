@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ScoreResourceImplTest {
+public class ScoreResourceImplIT {
 
     private static String gameToken;
 

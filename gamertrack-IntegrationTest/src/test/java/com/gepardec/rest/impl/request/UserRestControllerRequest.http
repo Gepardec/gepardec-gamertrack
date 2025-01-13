@@ -1,0 +1,31 @@
+GET http://localhost:8080/gepardec-gamertrack/api/v1/users/
+###
+
+###
+PUT http://localhost:8080/gepardec-gamertrack/api/v1/users/2
+Content-Type:application/json
+
+{
+  "firstname": "NEUER NAME",
+  "lastname": "Hallo"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+
+###
+DELETE http://localhost:8080/gepardec-gamertrack/api/v1/users/5
+Content-Type:application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
