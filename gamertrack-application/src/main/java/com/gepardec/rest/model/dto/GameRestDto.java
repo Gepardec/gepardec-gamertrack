@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record GameRestDto(@NotNull Long id, @NotBlank String name, String rules) {
 
-  public GameRestDto(Game Game) {
-    this(Game.getId(), Game.getName(), Game.getRules());
+  public GameRestDto(Game game) {
+    this(game.getId(), game.getName(), game.getRules());
   }
 }
