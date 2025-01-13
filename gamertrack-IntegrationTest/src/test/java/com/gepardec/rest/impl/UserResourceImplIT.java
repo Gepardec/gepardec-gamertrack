@@ -3,6 +3,7 @@ package com.gepardec.rest.impl;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
 import io.restassured.RestAssured;
+import io.restassured.filter.log.LogDetail;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
 import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -22,6 +24,8 @@ public class UserResourceImplIT {
         @BeforeAll
         public static void setup() {
                 RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
+                enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
+
         }
 
         @AfterEach
@@ -45,7 +49,6 @@ public class UserResourceImplIT {
                         .statusCode(201)
                         .assertThat()
                         .body("firstname", equalTo("max"))
-                        .log().body()
                         .extract()
                         .path("token");
                 usedUserTokens.add(token);
@@ -71,8 +74,7 @@ public class UserResourceImplIT {
                         .pathParam("token", token)
                         .request("PUT", "/users/{token}")
                         .then()
-                        .statusCode(200)
-                        .log().body();
+                        .statusCode(200);
 
                 with()
                         .when()
@@ -85,8 +87,7 @@ public class UserResourceImplIT {
                         .body(
                                 "firstname", equalTo("Paul"),
                                 "lastname", equalTo("Mustermann")
-                        )
-                        .log().body();
+                        );
         }
 
         @Test
@@ -107,8 +108,7 @@ public class UserResourceImplIT {
                         .pathParam("token", token)
                         .request("DELETE", "/users/{token}")
                         .then()
-                        .statusCode(200)
-                        .log().body();
+                        .statusCode(200);
         }
 
         @Test
@@ -130,8 +130,7 @@ public class UserResourceImplIT {
                         .contentType("application/json")
                         .request("DELETE", "/users/sdfk23s3df36sa")
                         .then()
-                        .statusCode(404)
-                        .log().body();
+                        .statusCode(404);
         }
 
         @Test
@@ -166,8 +165,7 @@ public class UserResourceImplIT {
                         .body(
                                 "firstname", equalTo("Max"),
                                 "lastname", equalTo("Muster")
-                        )
-                        .log().body();
+                        );
         }
 
         @Test
@@ -191,8 +189,7 @@ public class UserResourceImplIT {
                         .pathParam("token", token)
                         .request("PUT", "/users/{token}")
                         .then()
-                        .statusCode(200)
-                        .log().body();
+                        .statusCode(200);
 
                 with().when()
                         .request("GET", "/users?includeDeactivated=false")
@@ -222,8 +219,7 @@ public class UserResourceImplIT {
                         .pathParam("token", token)
                         .request("PUT", "/users/{token}")
                         .then()
-                        .statusCode(200)
-                        .log().body();
+                        .statusCode(200);
 
                 with().when()
                         .request("GET", "/users?includeDeactivated=true")

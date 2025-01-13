@@ -7,9 +7,11 @@ import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
 import io.restassured.RestAssured;
+import io.restassured.filter.log.LogDetail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
 import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -20,15 +22,16 @@ public class ScoreResourceImplIT {
     @BeforeAll
     public static void setup() {
         RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
+        enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
 
-         gameToken = with()
+
+        gameToken = with()
                 .when()
                 .contentType("application/json")
                 .body(new CreateGameCommand("Vier Gewinnt", "Nicht Schummeln"))
                 .request("POST", "/games")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
     }
@@ -42,7 +45,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -54,8 +56,7 @@ public class ScoreResourceImplIT {
                 .pathParam("token", gameToken)
                 .request("GET", "/games/{token}")
                 .then()
-                .statusCode(200)
-                .log().body();
+                .statusCode(200);
 
 
         with().when()
@@ -77,8 +78,7 @@ public class ScoreResourceImplIT {
                         "game.name", equalTo("Vier Gewinnt"),
                         "game.rules", equalTo("Nicht Schummeln"),
                         "score", equalTo(10.0f)
-                )
-                .log().body();
+                );
     }
 
     @Test
@@ -90,7 +90,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -105,7 +104,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/scores")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -126,8 +124,7 @@ public class ScoreResourceImplIT {
                         "game.name", equalTo("Vier Gewinnt"),
                         "game.rules", equalTo("Nicht Schummeln"),
                         "score", equalTo(10.0f)
-                )
-                .log().body();
+                );
     }
 
     @Test
@@ -139,7 +136,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -150,8 +146,7 @@ public class ScoreResourceImplIT {
                 .pathParam("userToken", userToken)
                 .request("PUT", "/users/{userToken}")
                 .then()
-                .statusCode(200)
-                .log().body();
+                .statusCode(200);
 
         String scoreToken = with().when()
                 .contentType("application/json")
@@ -162,7 +157,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/scores")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -173,8 +167,7 @@ public class ScoreResourceImplIT {
                 .then()
                 .statusCode(200)
                 .assertThat()
-                .body("size()", equalTo(0))
-                .log().body();
+                .body("size()", equalTo(0));
     }
 
     @Test
@@ -186,7 +179,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -199,7 +191,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/scores")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -220,8 +211,7 @@ public class ScoreResourceImplIT {
                         "[0].game.rules", equalTo("Nicht Schummeln"),
                         "[0].score", equalTo(10000.0f),
                         "size()", equalTo(1)
-                )
-                .log().body();
+                );
     }
 
     @Test
@@ -233,7 +223,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -246,7 +235,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/scores")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -267,8 +255,7 @@ public class ScoreResourceImplIT {
                         "[0].game.rules", equalTo("Nicht Schummeln"),
                         "[0].score", equalTo(800.0f),
                         "size()", equalTo(1)
-                )
-                .log().body();
+                );
     }
 
     @Test
@@ -280,7 +267,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -293,7 +279,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/scores")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -314,8 +299,7 @@ public class ScoreResourceImplIT {
                         "[0].game.rules", equalTo("Nicht Schummeln"),
                         "[0].score", equalTo(800.0f),
                         "size()", equalTo(1)
-                )
-                .log().body();
+                );
     }
 
     @Test
@@ -327,7 +311,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -338,8 +321,7 @@ public class ScoreResourceImplIT {
                 .pathParam("userToken", userToken)
                 .request("PUT", "/users/{userToken}")
                 .then()
-                .statusCode(200)
-                .log().body();
+                .statusCode(200);
 
         String scoreToken = with().when()
                 .contentType("application/json")
@@ -350,7 +332,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/scores")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -371,8 +352,7 @@ public class ScoreResourceImplIT {
                         "[0].game.rules", equalTo("Nicht Schummeln"),
                         "[0].score", equalTo(10200.0f),
                         "size()", equalTo(1)
-                )
-                .log().body();
+                );
     }
 
     @Test
@@ -384,7 +364,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -395,8 +374,7 @@ public class ScoreResourceImplIT {
                 .pathParam("userToken", userToken)
                 .request("PUT", "/users/{userToken}")
                 .then()
-                .statusCode(200)
-                .log().body();
+                .statusCode(200);
 
         String scoreToken = with().when()
                 .contentType("application/json")
@@ -407,7 +385,6 @@ public class ScoreResourceImplIT {
                 .request("POST", "/scores")
                 .then()
                 .statusCode(201)
-                .log().body()
                 .extract()
                 .path("token");
 
@@ -420,7 +397,6 @@ public class ScoreResourceImplIT {
                 .assertThat()
                 .body(
                         "size()", equalTo(0)
-                )
-                .log().body();
+                );
     }
 }
