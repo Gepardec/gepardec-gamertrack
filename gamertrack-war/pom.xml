@@ -37,7 +37,7 @@
             <layer>jaxrs-server</layer>
             <layer>ejb</layer>
             <layer>bean-validation</layer>
-            <layer>postgresql-driver</layer>
+            <layer>postgresql-default-datasource</layer>
           </layers>
         </configuration>
         <executions>
@@ -45,32 +45,6 @@
             <goals>
               <goal>image</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>read-project-properties</goal>
-              <!-- <goal>set-system-properties</goal>-->
-            </goals>
-            <!--<configuration>
-                         <files>
-                           <file>${project.parent.basedir}${file.separator}application.properties</file>
-                       </files>
-                         <properties>
-                           <property>
-                             <dbUser>dbUser</dbUser>
-                             <dbPassword>dbPassword</dbPassword>
-                             <dbUrl>dbUrl</dbUrl>
-                             <dbName>dbName</dbName>
-                           </property>
-                         </properties>-->
           </execution>
         </executions>
       </plugin>

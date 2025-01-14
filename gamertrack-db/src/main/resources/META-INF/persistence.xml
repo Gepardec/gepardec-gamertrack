@@ -8,21 +8,6 @@
     <properties>
       <property name="jakarta.persistence.schema-generation.database.action"
         value="drop-and-create"/>
-
-      <!-- <property name="jakarta.persistence.jdbc.password" value="${db.password}"/>
-       <property name="jakarta.persistence.jdbc.user" value="${db.user}"/>
-       <property name="jakarta.persistence.jdbc.url" value="${db.url}"/>
-     -->
-
-      <property name="jakarta.persistence.jdbc.url"
-        value="jdbc:postgresql://10.254.100.58:5432/gamertrack"/>
-      <property name="jakarta.persistence.jdbc.user" value="gamertrack"/>
-      <property name="jakarta.persistence.jdbc.password" value="gepardec"/>
     </properties>
   </persistence-unit>
-
-  <!--    <persistence-unit name="payroll" transaction-type="JTA">
-          <jta-data-source>java:app/Payroll/MyDS</jta-data-source>
-
-      </persistence-unit>-->
 </persistence>
