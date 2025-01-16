@@ -1,0 +1,655 @@
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Max",
+  "lastname": "Mustermann"
+}
+
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Laura",
+  "lastname": "Musterfrau"
+}
+
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "John",
+  "lastname": "McTron"
+}
+
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Gill",
+  "lastname": "Hill"
+}
+
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Jill",
+  "lastname": "Bill"
+}
+
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users/
+Content-Type:application/json
+
+{
+  "firstname": "Conner",
+  "lastname": "Dohnner"
+}
+
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+###
+###
+###  GAMES
+###
+###
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/games
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Mensch Ärgere dich nicht",
+  "rules": "Nicht Schummeln"
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/games
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Vier gewinnt",
+  "rules": "Diesmal wirklich nicht Schummeln"
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/games
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Skip Bo ",
+  "rules": "Keine Karten verstecken"
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+###
+###
+###  matches
+###
+###
+###
+
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
+Content-Type: application/json
+Accept: application/json
+
+{
+  "game": {
+    "id": 1,
+    "name": "Mensch Ärgere dich nicht",
+    "rules": "Nicht Schummeln"
+  },
+  "users": [
+    {
+      "id": 1,
+      "firstname": "Max",
+      "lastname": "Mustermann"
+    },
+    {
+      "id": 2,
+      "firstname": "Laura",
+      "lastname": "Musterfrau"
+    }
+  ]
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
+Content-Type: application/json
+Accept: application/json
+
+{
+  "game": {
+    "id": 1,
+    "name": "Mensch Ärgere dich nicht",
+    "rules": "Nicht Schummeln"
+  },
+  "users": [
+    {
+      "id": 1,
+      "firstname": "Max",
+      "lastname": "Mustermann"
+    },
+    {
+      "id": 2,
+      "firstname": "Laura",
+      "lastname": "Musterfrau"
+    },
+    {
+      "id": 3,
+      "firstname": "John",
+      "lastname": "McTron"
+    }
+  ]
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
+Content-Type: application/json
+Accept: application/json
+
+{
+  "game": {
+    "id": 1,
+    "name": "Mensch Ärgere dich nicht",
+    "rules": "Nicht Schummeln"
+  },
+  "users": [
+    {
+      "id": 1,
+      "firstname": "Max",
+      "lastname": "Mustermann"
+    },
+    {
+      "id": 3,
+      "firstname": "John",
+      "lastname": "McTron"
+    },
+    {
+      "id": 2,
+      "firstname": "Laura",
+      "lastname": "Musterfrau"
+    }
+  ]
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
+Content-Type: application/json
+Accept: application/json
+
+{
+  "game": {
+    "id": 3,
+    "name": "Skip Bo ",
+    "rules": "Keine Karten verstecken"
+  },
+  "users": [
+    {
+      "id": 3,
+      "firstname": "John",
+      "lastname": "McTron"
+    },
+    {
+      "id": 1,
+      "firstname": "Max",
+      "lastname": "Mustermann"
+    },
+    {
+      "id": 2,
+      "firstname": "Laura",
+      "lastname": "Musterfrau"
+    }
+  ]
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
+Content-Type: application/json
+Accept: application/json
+
+{
+  "game": {
+    "id": 3,
+    "name": "Skip Bo ",
+    "rules": "Keine Karten verstecken"
+  },
+  "users": [
+    {
+      "id": 3,
+      "firstname": "John",
+      "lastname": "McTron"
+    },
+    {
+      "id": 1,
+      "firstname": "Max",
+      "lastname": "Mustermann"
+    },
+    {
+      "id": 2,
+      "firstname": "Laura",
+      "lastname": "Musterfrau"
+    },
+    {
+      "id": 4,
+      "firstname": "Gill",
+      "lastname": "Hill"
+    },
+    {
+      "id": 5,
+      "firstname": "Jill",
+      "lastname": "Bill"
+    }
+  ]
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 201");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+###
+###
+###  SCORES
+###
+###
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user": {
+    "id": 1,
+    "firstname": "Max",
+    "lastname": "Mustermann"
+  },
+  "game": {
+    "id": 1,
+    "name": "Mensch Ärgere dich nicht",
+    "rules": "Nicht Schummeln"
+  },
+  "scorePoints": 40
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 1,
+    "firstname": "Max",
+    "lastname": "Mustermann"
+  },
+  "game":{
+    "id": 2,
+    "name": "Vier gewinnt",
+    "rules": "Diesmal wirklich nicht Schummeln"
+  },
+  "scorePoints": 80
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 1,
+    "firstname": "Max",
+    "lastname": "Mustermann"
+  },
+  "game":{
+    "id": 3,
+    "name": "Vier gewinnt",
+    "rules": "Diesmal wirklich nicht Schummeln"
+  },
+  "scorePoints": 70
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 2,
+    "firstname": "Laura",
+    "lastname": "Musterfrau"
+  },
+  "game":{
+    "id": 1,
+    "name": "Mensch Ärgere dich nicht",
+    "rules": "Nicht Schummeln"
+  },
+  "scorePoints": 20
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 2,
+    "firstname": "Laura",
+    "lastname": "Musterfrau"
+  },
+  "game":{
+    "id": 2,
+    "name": "Vier gewinnt",
+    "rules": "Diesmal wirklich nicht Schummeln"
+  },
+  "scorePoints": 100
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 2,
+    "firstname": "Laura",
+    "lastname": "Musterfrau"
+  },
+  "game":{
+    "id": 3,
+    "name": "Skip Bo",
+    "rules": "Keine Karten verstecken"
+  },
+  "scorePoints": 15
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 3,
+    "firstname": "John",
+    "lastname": "McTron"
+  },
+  "game":{
+    "id": 1,
+    "name": "Mensch Ärgere dich nicht",
+    "rules": "Nicht Schummeln"
+  },
+  "scorePoints": 150
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 3,
+    "firstname": "John",
+    "lastname": "McTron"
+  },
+  "game":{
+    "id": 2,
+    "name": "Vier gewinnt",
+    "rules": "Diesmal wirklich nicht Schummeln"
+  },
+  "scorePoints": 75
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 3,
+    "firstname": "John",
+    "lastname": "McTron"
+  },
+  "game":{
+    "id": 3,
+    "name": "Skip Bo",
+    "rules": "Keine Karten verstecken"
+  },
+  "scorePoints": 60
+}
+> {%
+  client.test("Request executed successfully", function () {
+    client.assert(response.status === 201, "Response status is not 200");
+  });
+  client.test("Response content-type is json", function () {
+    var type = response.contentType.mimeType;
+    client.assert(type === "application/json",
+        "Expected 'application/json' but received '" + type + "'");
+  });
+%}
+

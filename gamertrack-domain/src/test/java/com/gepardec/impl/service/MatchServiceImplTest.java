@@ -1,27 +1,27 @@
 package com.gepardec.impl.service;
 
+import static com.gepardec.TestFixtures.match;
+import static com.gepardec.TestFixtures.matches;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Match;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.gepardec.TestFixtures.match;
-import static com.gepardec.TestFixtures.matches;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MatchServiceImplTest {
@@ -48,8 +48,12 @@ class MatchServiceImplTest {
 
     when(matchRepository.saveMatch(any())).thenReturn(
         Optional.of(match()));
-    when(gameRepository.existsByGameToken(anyString())).thenReturn(true);
-    when(userRepository.existsByUserToken(anyList())).thenReturn(true);
+    when(gameRepository.findGameByToken(anyString())).thenReturn(
+        Optional.of(match.getGame()));
+    when(userRepository.findUserByToken(anyString())).thenAnswer(
+        invocation -> match.getUsers().stream()
+            .filter(user -> user.getToken().equals(invocation.getArgument(0)))
+            .findFirst());
 
     assertEquals(matchService.saveMatch(match).get().getId(),
         match().getId());
@@ -119,8 +123,8 @@ class MatchServiceImplTest {
   void ensureDeleteMatchReturnsDeletedMatchForExistingMatch() {
     Match match = match();
 
-    when(matchRepository.findMatchById(any())).thenReturn(Optional.of(match));
-    var deletedMatch = matchService.deleteMatch(match.getId());
+    when(matchRepository.findMatchByToken(any())).thenReturn(Optional.of(match));
+    var deletedMatch = matchService.deleteMatch(match.getToken());
 
     assertEquals(match, deletedMatch.get());
   }
@@ -129,9 +133,9 @@ class MatchServiceImplTest {
   void ensureDeleteMatchReturnsOptionalEmptyForNonExistingMatch() {
     Match match = match();
 
-    when(matchRepository.findMatchById(any())).thenReturn(Optional.empty());
+    when(matchRepository.findMatchByToken(any())).thenReturn(Optional.empty());
 
-    var deletedMatch = matchService.deleteMatch(match.getId());
+    var deletedMatch = matchService.deleteMatch(match.getToken());
 
     assertEquals(Optional.empty(), deletedMatch);
   }
@@ -142,11 +146,12 @@ class MatchServiceImplTest {
     Match matchNew = match(1L);
 
     //When
-
+    when(gameRepository.findGameByToken(anyString())).thenReturn(Optional.of(matchNew.getGame()));
+    when(userRepository.findUserByToken(anyString())).thenAnswer(
+        invocation -> matchNew.getUsers().stream()
+            .filter(user -> user.getToken().equals(invocation.getArgument(0))).findFirst());
     when(matchRepository.updateMatch(any())).thenReturn(Optional.of(matchNew));
-    when(gameRepository.existsByGameToken(anyString())).thenReturn(true);
-    when(userRepository.existsByUserToken(anyList())).thenReturn(true);
-    when(matchRepository.existsMatchById(anyLong())).thenReturn(true);
+    when(matchRepository.findMatchByToken(anyString())).thenReturn(Optional.of(matchNew));
 
     var updatedMatch = matchService.updateMatch(matchNew);
 

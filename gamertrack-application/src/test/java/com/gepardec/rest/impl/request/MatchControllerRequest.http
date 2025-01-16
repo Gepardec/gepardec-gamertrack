@@ -1,0 +1,91 @@
+GET http://localhost:8080/gepardec-gamertrack/api/v1/matches
+
+### (1) CREATE MATCH - Create game first
+### (1) CREATE USER AND GAME BEFORE BECAUSE OF RELATIONSHIPS
+
+POST http://localhost:8080/gepardec-gamertrack/api/v1/games
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Gams4",
+  "rules": "Gamrules"
+}
+
+
+###
+GET http://localhost:8080/gepardec-gamertrack/api/v1/games
+
+
+### (2) Create users
+
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users
+Content-Type:application/json
+
+{
+  "firstname": "User1",
+  "lastname": "User1"
+}
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/users
+Content-Type:application/json
+
+{
+  "firstname": "User1",
+  "lastname": "User1"
+}
+
+####
+GET http://localhost:8080/gepardec-gamertrack/api/v1/users
+
+
+
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/matches
+Content-Type: application/json
+Accept: application/json
+
+{
+  "gameId": 2,
+  "userIds": [
+    1,
+    2
+  ]
+}
+
+
+###
+GET http://localhost:8080/gepardec-gamertrack/api/v1/matches
+
+####
+
+GET http://localhost:8080/gepardec-gamertrack/api/v1/matches?userId=1
+
+
+
+###
+
+PUT http://localhost:8080/gepardec-gamertrack/api/v1/matches/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "gameId": 1,
+  "userIds": [
+    1
+  ]
+}
+
+####
+
+##DELETE http://localhost:8080/gepardec-gamertrack/api/v1/matches/1
+
+
+#### QUERIES
+
+
+### FIND MATCHES BY USER_ID AND GAME_ID
+
+GET http://localhost:8080/gepardec-gamertrack/api/v1/matches?userId=2&gameId=2
+
