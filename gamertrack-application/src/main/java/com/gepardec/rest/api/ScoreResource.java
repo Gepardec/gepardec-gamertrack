@@ -9,8 +9,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-
 import static com.gepardec.rest.api.ScoreResource.BASE_SCORE_PATH;
+
 
 @Path(BASE_SCORE_PATH)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -39,8 +39,8 @@ public interface ScoreResource {
     @GET()
     public Response getScores(@QueryParam("min") Double minScore,
                               @QueryParam("max") Double maxScore,
-                              @QueryParam("user") Long userId,
-                              @QueryParam("game") Long gameId,
+                              @QueryParam("user") String userToken,
+                              @QueryParam("game") String gameToken,
                               @QueryParam("includeDeactivated") Boolean includeDeactivated);
 
     @Operation(summary = "Get Scores by id", description = "Returns list of scores")
@@ -49,7 +49,7 @@ public interface ScoreResource {
     })
     @Path(ID_PATH)
     @GET
-    public Response getScoreById(@PathParam("id") Long id);
+    public Response getScoreByToken(@PathParam("id") String token);
 
     @Operation(summary = "Get Scores by userId", description = "Returns list of scores")
     @ApiResponses(value = {

@@ -4,16 +4,18 @@ import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.MatchService;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless
 @Transactional
@@ -30,21 +32,25 @@ public class MatchServiceImpl implements MatchService {
   @Inject
   private GameRepository gameRepository;
 
+  @Inject
+  private TokenService tokenService;
+
 
   @Override
-  public List<Match> findMatchesByUserIdAndGameId(Optional<Long> userId, Optional<Long> gameId) {
+  public List<Match> findMatchesByGameTokenAndUserToken(Optional<String> gameToken,
+      Optional<String> userToken) {
 
-    if (userId.isPresent() && gameId.isPresent()) {
-      logger.info("Finding matches by userId {} and gameId {}".formatted(userId, gameId));
-      return matchRepository.findMatchesByUserIdAndGameId(userId.get(), gameId.get());
+    if (userToken.isPresent() && gameToken.isPresent()) {
+      logger.info("Finding matches by userId {} and gameId {}".formatted(userToken, gameToken));
+      return matchRepository.findMatchesByGameTokenAndUserToken(userToken.get(), gameToken.get());
     }
 
-    return userId
-        .map(uid -> matchRepository.findMatchesByUserId(
-            uid))
-        .orElseGet(() -> gameId
-            .map(gid -> matchRepository.findMatchesByGameId(
-                gid))
+    return userToken
+        .map(ut -> matchRepository.findMatchesByUserToken(
+            ut))
+        .orElseGet(() -> gameToken
+            .map(gt -> matchRepository.findMatchesByGameToken(
+                gt))
             .orElse(Collections.emptyList()));
   }
 
@@ -55,8 +61,9 @@ public class MatchServiceImpl implements MatchService {
             match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
 
     if (!match.getUsers().isEmpty()
-        && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
-        && gameRepository.existsByGameId(match.getGame().getId())) {
+        && userRepository.existsByUserToken(match.getUsers().stream().map(User::getToken).toList())
+        && gameRepository.existsByGameToken(match.getGame().getToken())) {
+      match.setToken(tokenService.generateToken());
       return matchRepository.saveMatch(match);
     }
 
@@ -71,8 +78,8 @@ public class MatchServiceImpl implements MatchService {
   }
 
   @Override
-  public Optional<Match> findMatchById(Long id) {
-    return matchRepository.findMatchById(id);
+  public Optional<Match> findMatchByToken(String token) {
+    return matchRepository.findMatchByToken(token);
   }
 
   @Override
@@ -99,12 +106,13 @@ public class MatchServiceImpl implements MatchService {
 
     if (!match.getUsers().isEmpty()
         && match.getGame().getId() != null
-        && userRepository.existsByUserId(match.getUsers().stream().map(User::getId).toList())
+        && userRepository.existsByUserToken(match.getUsers().stream().map(User::getToken).toList())
         && matchRepository.existsMatchById(match.getGame().getId())
-        && gameRepository.existsByGameId(match.getGame().getId())) {
+        && gameRepository.existsByGameToken(match.getGame().getToken())) {
       logger.info(
           "Saving updated match with ID: %s having the following attributes: \n %s %s".formatted(
-              match.getId(), match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
+              match.getId(), match.getGame().getId(),
+              match.getUsers().stream().map(User::getId).toList()));
 
       return matchRepository.updateMatch(match);
     }
@@ -113,19 +121,5 @@ public class MatchServiceImpl implements MatchService {
         "Saving updated match with ID: %s aborted due to provided ID not existing".formatted(
             match.getId()));
     return Optional.empty();
-  }
-
-  @Override
-  public List<Match> findMatchesByUserId(Long userId) {
-    logger.info(
-        "Getting all existing matches that reference user with UserID: %s".formatted(userId));
-    return matchRepository.findMatchesByUserId(userId);
-  }
-
-  @Override
-  public List<Match> findMatchesByGameId(Long gameId) {
-    logger.info(
-        "Getting all existing matches that reference game with GameID: %s".formatted(gameId));
-    return matchRepository.findMatchesByGameId(gameId);
   }
 }

@@ -2,8 +2,10 @@ package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
 import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
-import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.MatchMapper;
 import com.gepardec.core.repository.ScoreRepository;
+import com.gepardec.core.services.TokenService;
+import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Score;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -45,8 +47,10 @@ public class GamertrackDbIT {
         .addPackage(ScoreRepository.class.getPackage())
         .addPackage(ScoreRepositoryImpl.class.getPackage())
         .addPackage(Score.class.getPackage())
-        .addPackage(EntityMapper.class.getPackage())
+        .addPackage(MatchMapper.class.getPackage())
         .addPackage(TestFixtures.class.getPackage())
+        .addClass(TokenService.class)
+        .addClass(TokenServiceImpl.class)
         .addAsManifestResource("beans.xml")
         .addAsManifestResource("persistence.xml");
   }

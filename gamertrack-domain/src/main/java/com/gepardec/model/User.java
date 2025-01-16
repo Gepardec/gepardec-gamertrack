@@ -5,15 +5,18 @@ public class User{
     private  String firstname;
     private  String lastname;
     private boolean deactivated;
+    private String token;
+
 
     public User() {
     }
 
-    public User(Long id, String firstname, String lastname, boolean deactivated) {
+    public User(Long id, String firstname, String lastname, boolean deactivated, String token) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.deactivated = deactivated;
+        this.token = token;
     }
 
     public Long getId() {
@@ -46,6 +49,12 @@ public class User{
 
     public void setDeactivated(boolean deactivated) {
         this.deactivated = deactivated;
+    }
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
     }
 }
 

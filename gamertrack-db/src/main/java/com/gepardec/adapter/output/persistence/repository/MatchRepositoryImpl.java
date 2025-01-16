@@ -1,7 +1,7 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
-import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
+import com.gepardec.adapter.output.persistence.repository.mapper.MatchMapper;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.model.Match;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,12 +23,12 @@ public class MatchRepositoryImpl implements MatchRepository {
   private EntityManager em;
 
   @Inject
-  EntityMapper entityMapper;
+  MatchMapper matchMapper;
 
   @Override
   public Optional<Match> saveMatch(Match match) {
-    MatchEntity matchToSave = entityMapper.matchModelToMatchEntityWithReference(match);
-    logger.info("Saving  match {}", matchToSave);
+    MatchEntity matchToSave = matchMapper.matchModelToMatchEntityWithReference(match);
+    logger.info("Saving  match {}", match);
 
     em.persist(matchToSave);
     em.flush();
@@ -42,7 +42,7 @@ public class MatchRepositoryImpl implements MatchRepository {
     return em.createQuery("select go from MatchEntity go", MatchEntity.class)
         .getResultList()
         .stream()
-        .map(entityMapper::matchEntityToMatchModel)
+        .map(matchMapper::matchEntityToMatchModel)
         .toList();
   }
 
@@ -51,21 +51,32 @@ public class MatchRepositoryImpl implements MatchRepository {
     logger.info("Finding match by id: %s".formatted(id));
 
     return Optional.ofNullable(em.find(MatchEntity.class, id))
-        .map(entityMapper::matchEntityToMatchModel);
+        .map(matchMapper::matchEntityToMatchModel);
   }
 
   @Override
+  public Optional<Match> findMatchByToken(String token) {
+    logger.info("Finding match by token: %s".formatted(token));
+
+    var found = em.createQuery(
+            "select m from MatchEntity m where m.token = :token",
+            MatchEntity.class)
+        .setParameter("token", token)
+        .getResultList().stream().findFirst();
+
+    return found.map(matchEntity -> matchMapper.matchEntityToMatchModel(matchEntity));
+  }
+
+  @Override
+
   public void deleteMatch(Long matchId) {
-    logger.info("Looking up matches by id: %s in order to delete".formatted(matchId));
-    MatchEntity matchToDelete = em.find(MatchEntity.class, matchId);
+    Optional<MatchEntity> matchToDelete = Optional.ofNullable(em.find(MatchEntity.class, matchId));
 
-    if (matchToDelete == null) {
-      logger.info(
-          "Could not find match with ID %s".formatted(matchId));
-    }
+    matchToDelete.ifPresentOrElse(
+        mtd -> logger.info("Deleting match with id: %s".formatted(mtd.getId())),
+        () -> logger.info("Could not find match with ID %s".formatted(matchId)));
 
-    logger.info("Deleting match with id: %s".formatted(matchId));
-    em.remove(matchToDelete);
+    em.remove(matchToDelete.get());
   }
 
   @Override
@@ -78,41 +89,41 @@ public class MatchRepositoryImpl implements MatchRepository {
     }
 
     MatchEntity updatedMatch = em.merge(
-        entityMapper.matchModelToMatchEntityWithReference(matchNew, match));
+        matchMapper.matchModelToMatchEntityWithReference(matchNew, match));
 
-    return Optional.of(entityMapper.matchEntityToMatchModel(updatedMatch));
+    return Optional.of(matchMapper.matchEntityToMatchModel(updatedMatch));
   }
 
   @Override
-  public List<Match> findMatchesByUserId(Long userId) {
-    logger.info("Finding all matches by userId: %s".formatted(userId));
+  public List<Match> findMatchesByUserToken(String userToken) {
+    logger.info("Finding all matches by user token: %s".formatted(userToken));
     var query = em.createQuery(
-        "select go from MatchEntity go inner join go.users u where u.id = :userId ",
+        "select m from MatchEntity m inner join m.users u where u.token = :userToken ",
         MatchEntity.class);
 
-    query.setParameter("userId", userId);
-    return query.getResultList().stream().map(entityMapper::matchEntityToMatchModel).toList();
+    query.setParameter("userToken", userToken);
+    return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
   }
 
   @Override
-  public List<Match> findMatchesByGameId(Long gameId) {
-    logger.info("Finding all games outcomes by gameId: %s".formatted(gameId));
-    var query = em.createQuery("select go from MatchEntity go where go.game.id = :gameId ",
+  public List<Match> findMatchesByGameToken(String gameToken) {
+    logger.info("Finding all games outcomes by game token: %s".formatted(gameToken));
+    var query = em.createQuery("select m from MatchEntity m where m.game.token = :gameToken ",
         MatchEntity.class);
 
-    query.setParameter("gameId", gameId);
-    return query.getResultList().stream().map(entityMapper::matchEntityToMatchModel).toList();
+    query.setParameter("gameToken", gameToken);
+    return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
   }
 
   @Override
-  public List<Match> findMatchesByUserIdAndGameId(Long userId, Long gameId) {
-    logger.info("Finding matches by UserId: {} and GameId: {}".formatted(userId, gameId));
+  public List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken) {
+    logger.info("Finding matches by UserId: {} and GameId: {}".formatted(gameToken, userToken));
     var query = em.createQuery(
-        "select m from MatchEntity m inner join m.users u where (:userId is NULL OR u.id = :userId) and (:gameId is NULL OR m.game.id = :gameId)",
+        "select m from MatchEntity m inner join m.users u where (:userToken is NULL OR u.token = :userToken) and (:gameToken is NULL OR m.game.token = :gameToken)",
         MatchEntity.class);
-    query.setParameter("userId", userId);
-    query.setParameter("gameId", gameId);
-    return query.getResultList().stream().map(entityMapper::matchEntityToMatchModel).toList();
+    query.setParameter("userToken", userToken);
+    query.setParameter("gameToken", gameToken);
+    return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
   }
 
   @Override

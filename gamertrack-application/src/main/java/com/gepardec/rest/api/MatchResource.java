@@ -34,11 +34,11 @@ public interface MatchResource {
       @ApiResponse(responseCode = "200", description = "Ok")})
 
   @GET
-  Response getMatches(@QueryParam("gameId") Optional<Long> gameId,
-      @QueryParam("userId") Optional<Long> userId);
+  Response getMatches(@QueryParam("gameToken") Optional<String> gameToken,
+      @QueryParam("userToken") Optional<String> userToken);
 
 
-  @Operation(summary = "Gets match by ID", description = "Match must exist")
+  @Operation(summary = "Gets match by token", description = "Match must exist")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Ok", content = {
           @Content(mediaType = MediaType.APPLICATION_JSON, schema =
@@ -46,8 +46,8 @@ public interface MatchResource {
       @ApiResponse(responseCode = "204", description = "Match not found")})
 
   @GET
-  @Path("{id}")
-  Response getMatchById(@PathParam("id") Long id);
+  @Path("{token}")
+  Response getMatchByToken(@PathParam("token") String token);
 
 
   @Operation(summary = "Creates a match", description = "Match must be valid")
@@ -63,7 +63,7 @@ public interface MatchResource {
   Response createMatch(CreateMatchCommand matchCmd);
 
 
-  @Operation(summary = "Updates a matche", description = "Match must be valid and exist, specified user and game ids that make up the match have to exist")
+  @Operation(summary = "Updates a match", description = "Match must be valid and exist, specified user and game ids that make up the match have to exist")
   @RequestBody(content = @Content(schema = @Schema(implementation = UpdateMatchCommand.class)))
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Match has been updated", content = {
@@ -73,8 +73,8 @@ public interface MatchResource {
   })
 
   @PUT
-  @Path("{id}")
-  Response updateMatch(@PathParam("id") Long id,
+  @Path("{token}")
+  Response updateMatch(@PathParam("token") String token,
       @Valid UpdateMatchCommand matchCommand);
 
 

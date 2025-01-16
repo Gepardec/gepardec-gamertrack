@@ -39,7 +39,7 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureSavingInvalidGameThrowsConstrainViolationException() {
-    Game invalidGame = new Game(null, "", "TestGame");
+    Game invalidGame = new Game(null, null, "", "TestGame");
 
     Assertions.assertThrows(ConstraintViolationException.class,
         () -> repository.saveGame(invalidGame));
@@ -52,7 +52,8 @@ class GameRepositoryTest extends GamertrackDbIT {
 
     repository.deleteGame(alreadyExistingGame.get().getId());
 
-    Assertions.assertTrue(repository.findGameById(alreadyExistingGame.get().getId()).isEmpty());
+    Assertions.assertTrue(
+        repository.findGameByToken(alreadyExistingGame.get().getToken()).isEmpty());
   }
 
   @Test
@@ -68,43 +69,45 @@ class GameRepositoryTest extends GamertrackDbIT {
     Game oldGame = game(null);
     var persistedOldGame = repository.saveGame(oldGame);
 
-    System.out.println(persistedOldGame.get().getId());
+    Game newGame = game(persistedOldGame.get().getId());
+    newGame.setName("New Name");
+    newGame.setToken(oldGame.getToken());
 
-    Game newGame = new Game(persistedOldGame.get().getId(), "NewTitleTest", "NewRules");
-
-    System.out.println(newGame.getId());
     var persistedUpdatedGame = repository.updateGame(newGame);
-    System.out.println(persistedUpdatedGame.get());
+
     Assertions.assertTrue(persistedUpdatedGame.isPresent());
+    Assertions.assertEquals(newGame.getToken(), persistedUpdatedGame.get().getToken());
+    Assertions.assertEquals(newGame.getId(), persistedUpdatedGame.get().getId());
     Assertions.assertEquals(newGame.getName(), persistedUpdatedGame.get().getName());
     Assertions.assertEquals(newGame.getRules(), persistedUpdatedGame.get().getRules());
   }
 
   @Test
   void ensureUpdateNotExistingGameReturnsOptionalEmpty() {
-    Game newGame = new Game(100000L, "NewTitle", "NewRules");
+    Game newGame = game(10000L);
     var persistedUpdatedGame = repository.updateGame(newGame);
 
     Assertions.assertTrue(persistedUpdatedGame.isEmpty());
   }
 
   @Test
-  void ensureFindGameByIdForExistingGameWorksReturnsGame() {
+  void ensureFindGameByTokenForExistingGameReturnsGame() {
     Game game = game(null);
     var persistedGame = repository.saveGame(game);
 
-    var foundGame = repository.findGameById(persistedGame.get().getId());
+    var foundGame = repository.findGameByToken(persistedGame.get().getToken());
 
     Assertions.assertTrue(foundGame.isPresent());
+    Assertions.assertEquals(game.getToken(), foundGame.get().getToken());
     Assertions.assertEquals(game.getName(), foundGame.get().getName());
     Assertions.assertEquals(game.getRules(), foundGame.get().getRules());
   }
 
   @Test
-  void ensureFindGameByIdForNotExistingGameReturnsOptionalEmpty() {
+  void ensureFindGameByTokenForNotExistingGameReturnsOptionalEmpty() {
     Game notExistingGame = game();
 
-    var foundGame = repository.findGameById(notExistingGame.getId());
+    var foundGame = repository.findGameByToken(notExistingGame.getToken());
     Assertions.assertTrue(foundGame.isEmpty());
   }
 
@@ -120,11 +123,11 @@ class GameRepositoryTest extends GamertrackDbIT {
     Assertions.assertEquals(games.size(), foundGames.size());
     Assertions.assertTrue(foundGames
         .stream()
-        .map(Game::getName)
+        .map(Game::getToken)
         .toList()
         .containsAll(gameDtos
             .stream()
-            .map(Game::getName)
+            .map(Game::getToken)
             .toList()));
   }
 
@@ -159,14 +162,14 @@ class GameRepositoryTest extends GamertrackDbIT {
     Game game = game(null);
     var savedGame = repository.saveGame(game);
 
-    boolean existsByGameId = repository.existsByGameId(savedGame.get().getId());
+    boolean existsByGameId = repository.existsByGameToken(savedGame.get().getToken());
 
     Assertions.assertTrue(existsByGameId);
   }
 
   @Test
-  void ensureExistsByGameIdForNotExistingGameReturnsFalse() {
-    boolean existsByGameId = repository.existsByGameId(200000L);
+  void ensureExistsByGameTokenForNotExistingGameReturnsFalse() {
+    boolean existsByGameId = repository.existsByGameToken(game().getToken());
 
     Assertions.assertFalse(existsByGameId);
   }

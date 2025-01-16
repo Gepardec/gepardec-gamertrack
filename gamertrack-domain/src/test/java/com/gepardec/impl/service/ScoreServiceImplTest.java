@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.ScoreRepository;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
 import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -29,6 +30,9 @@ public class ScoreServiceImplTest {
     @InjectMocks
     ScoreServiceImpl scoreService;
 
+    @Mock
+    TokenService tokenService;
+
     @Test
     void ensureSaveAndReadScoreWorks() {
         Score score = TestFixtures.score(1L,1L,1L);
@@ -53,15 +57,15 @@ public class ScoreServiceImplTest {
         Score scoreEdit = TestFixtures.score(1L,1L,1L);
 
         //Score was found
-        when(scoreRepository.findScoreById(scoreEdit.getId())).thenReturn(Optional.of(scoreEdit));
+        when(scoreRepository.findScoreByToken(scoreEdit.getToken())).thenReturn(Optional.of(scoreEdit));
 
         when(scoreRepository.updateScore(scoreEdit)).thenReturn(Optional.of(scoreEdit));
 
         Optional<Score> updatedScore = scoreService.updateScore(scoreEdit);
 
         assertTrue(updatedScore.isPresent());
-        assertEquals(scoreEdit.getUser().getId(), updatedScore.get().getUser().getId());
-        assertEquals(scoreEdit.getGame().getId(), updatedScore.get().getGame().getId());
+        assertEquals(scoreEdit.getUser().getToken(), updatedScore.get().getUser().getToken());
+        assertEquals(scoreEdit.getGame().getToken(), updatedScore.get().getGame().getToken());
         assertEquals(scoreEdit.getScorePoints(), updatedScore.get().getScorePoints());
     }
 
@@ -70,7 +74,7 @@ public class ScoreServiceImplTest {
         Score scoreEdit = TestFixtures.score(1L,1L,1L);
 
         //Score was found
-        when(scoreRepository.findScoreById(scoreEdit.getId())).thenReturn(Optional.empty());
+        when(scoreRepository.findScoreByToken(scoreEdit.getToken())).thenReturn(Optional.empty());
 
         Optional<Score> updatedScore = scoreService.updateScore(scoreEdit);
 
@@ -92,11 +96,11 @@ public class ScoreServiceImplTest {
     void ensureFindScoresFilterWorksAndReturnsFilteredByUserScores() {
         List<Score> scores = TestFixtures.scores(5);
 
-        when(scoreRepository.filterScores(10.0d,100.0d,1L,1L,true)).thenReturn(List.of(scores.get(0)));
+        when(scoreRepository.filterScores(10.0d,100.0d,scores.get(0).getUser().getToken(),scores.get(0).getGame().getToken(),true)).thenReturn(List.of(scores.get(0)));
 
         List<Score> foundScore = scoreService
                 .filterScores(10D,100D,
-                        1L,1L,true);
+                        scores.get(0).getUser().getToken(),scores.get(0).getGame().getToken(),true);
 
         assertFalse(foundScore.isEmpty());
         assertEquals(1, foundScore.size());
@@ -107,29 +111,28 @@ public class ScoreServiceImplTest {
     void ensureFindScoresFilterWorksAndReturnsFilteredByGameScores() {
         List<Score> scores = TestFixtures.scores(5);
 
-        when(scoreRepository.filterScores(10.0d,100.0d,null,1L,true)).thenReturn(scores);
+        when(scoreRepository.filterScores(10.0d,100.0d,null,scores.get(0).getGame().getToken(),true)).thenReturn(scores);
 
         List<Score> foundScore = scoreService
-                .filterScores(10D,100D,null,1L,true);
+                .filterScores(10D,100D,null,scores.get(0).getGame().getToken(),true);
 
         assertFalse(foundScore.isEmpty());
         assertEquals(5, scoreService
-                .filterScores(10D,100D, null,1L,true).size());
-
+                .filterScores(10D,100D, null,scores.get(0).getGame().getToken(),true).size());
 
     }
 
     @Test
-    void ensureFindScoreByIdWorksAndReturnsScore() {
+    void ensureFindScoreByTokenWorksAndReturnsScore() {
         List<Score> scores = TestFixtures.scores(3);
 
-        when(scoreRepository.findScoreById(2L)).thenReturn(Optional.of(scores.get(1)));
+        when(scoreRepository.findScoreByToken(scores.get(1).getToken())).thenReturn(Optional.of(scores.get(1)));
 
-        Optional<Score> foundScore = scoreService.findScoreById(2L);
+        Optional<Score> foundScore = scoreService.findScoreByToken(scores.get(1).getToken());
 
         assertTrue(foundScore.isPresent());
-        assertEquals(scores.get(1).getUser().getId(), foundScore.get().getUser().getId());
-        assertEquals(scores.get(1).getGame().getId(), foundScore.get().getGame().getId());
+        assertEquals(scores.get(1).getUser().getToken(), foundScore.get().getUser().getToken());
+        assertEquals(scores.get(1).getGame().getToken(), foundScore.get().getGame().getToken());
         assertEquals(scores.get(1).getScorePoints(), foundScore.get().getScorePoints());
     }
 
@@ -137,13 +140,13 @@ public class ScoreServiceImplTest {
     void ensureFindScoresByUserWorksAndReturnsScores() {
         List<Score> scores = TestFixtures.scores(3);
 
-        when(scoreRepository.filterScores(null,null,2L,null,true)).thenReturn(List.of(scores.get(1)));
+        when(scoreRepository.filterScores(null,null,scores.get(1).getUser().getToken(),null,true)).thenReturn(List.of(scores.get(1)));
 
-        List<Score> foundScore = scoreService.findScoresByUser(2L,true);
+        List<Score> foundScore = scoreService.findScoresByUser(scores.get(1).getUser().getToken(),true);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(scores.get(1).getUser().getId(), foundScore.getFirst().getUser().getId());
-        assertEquals(scores.get(1).getGame().getId(), foundScore.getFirst().getGame().getId());
+        assertEquals(scores.get(1).getUser().getToken(), foundScore.getFirst().getUser().getToken());
+        assertEquals(scores.get(1).getGame().getToken(), foundScore.getFirst().getGame().getToken());
         assertEquals(scores.get(1).getScorePoints(), foundScore.getFirst().getScorePoints());
     }
 
@@ -151,13 +154,13 @@ public class ScoreServiceImplTest {
     void ensureFindScoresByGameWorksAndReturnsScores() {
         List<Score> scores = TestFixtures.scores(3);
 
-        when(scoreRepository.filterScores(null,null,null,1L,true)).thenReturn(List.of(scores.getFirst()));
+        when(scoreRepository.filterScores(null,null,null,scores.getFirst().getGame().getToken(),true)).thenReturn(List.of(scores.getFirst()));
 
-        List<Score> foundScore = scoreService.findScoresByGame(1L,true);
+        List<Score> foundScore = scoreService.findScoresByGame(scores.getFirst().getGame().getToken(),true);
 
         assertFalse(foundScore.isEmpty());
-        assertEquals(scores.getFirst().getUser().getId(), foundScore.getFirst().getUser().getId());
-        assertEquals(scores.getFirst().getGame().getId(), foundScore.getFirst().getGame().getId());
+        assertEquals(scores.getFirst().getUser().getToken(), foundScore.getFirst().getUser().getToken());
+        assertEquals(scores.getFirst().getGame().getToken(), foundScore.getFirst().getGame().getToken());
         assertEquals(scores.getFirst().getScorePoints(), foundScore.getFirst().getScorePoints());
     }
 

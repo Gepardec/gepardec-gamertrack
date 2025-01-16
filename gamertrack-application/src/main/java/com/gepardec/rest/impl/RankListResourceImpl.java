@@ -14,9 +14,9 @@ public class RankListResourceImpl implements RankListResource {
 
 
     @Override
-    public Response getTopScoresBygame(Long gameId, int top, Boolean includeDeactivated) {
-        return scoreService.findTopScoresByGame(gameId,top, includeDeactivated).stream().map(ScoreRestDto::new).toList().isEmpty()
+    public Response getTopScoresBygame(String gameToken, int top, Boolean includeDeactivated) {
+        return scoreService.findTopScoresByGame(gameToken,top, includeDeactivated).stream().map(ScoreRestDto::new).toList().isEmpty()
                 ? Response.status(Response.Status.NO_CONTENT).build()
-                : Response.ok().entity(scoreService.findTopScoresByGame(gameId,top, includeDeactivated).stream().map(ScoreRestDto::new).toList()).build();
+                : Response.ok().entity(scoreService.findTopScoresByGame(gameToken,top, includeDeactivated).stream().map(ScoreRestDto::new).toList()).build();
     }
 }

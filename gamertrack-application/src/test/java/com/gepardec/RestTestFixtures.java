@@ -2,6 +2,7 @@ package com.gepardec;
 
 import static com.gepardec.TestFixtures.user;
 
+import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateGameCommand;
@@ -14,22 +15,26 @@ import com.gepardec.rest.model.command.UpdateUserCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.dto.UserRestDto;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class RestTestFixtures {
 
-  public static CreateScoreCommand createScoreCommand() {
+  private static final TokenServiceImpl tokenService = new TokenServiceImpl();
+
+
+  public static CreateScoreCommand createScoreCommand(Long id) {
     CreateScoreCommand createScoreCommand = new CreateScoreCommand(user(1L), game(), 10);
     return createScoreCommand;
   }
 
-  public static CreateUserCommand createUserCommand() {
+  public static CreateUserCommand createUserCommand(Long id) {
     CreateUserCommand createUserCommand = new CreateUserCommand("Max", "Muster");
     return createUserCommand;
   }
 
-  public static UpdateUserCommand updateUserCommand() {
+  public static UpdateUserCommand updateUserCommand(Long id) {
     UpdateUserCommand updateUserCommand = new UpdateUserCommand("Max", "Muster", false);
     return updateUserCommand;
   }
@@ -47,9 +52,8 @@ public class RestTestFixtures {
   }
 
 
-  public static MatchRestDto matchRestDto(Long id, GameRestDto gameRestDto,
-      List<UserRestDto> userRestDtos) {
-    return new MatchRestDto(id, gameRestDto, userRestDtos);
+  public static MatchRestDto matchRestDto(String token, GameRestDto gameRestDto, List<UserRestDto> userRestDtos) {
+      return new MatchRestDto(token, gameRestDto, userRestDtos);
   }
 
   public static Game game() {
@@ -57,7 +61,7 @@ public class RestTestFixtures {
   }
 
   public static Game game(Long id) {
-    Game game = new Game(null, "Game Fixture", "Game Fixture Rules");
+    Game game = new Game(null, tokenService.generateToken(), "Game Fixture", "Game Fixture Rules");
     game.setId(id);
     return game;
   }

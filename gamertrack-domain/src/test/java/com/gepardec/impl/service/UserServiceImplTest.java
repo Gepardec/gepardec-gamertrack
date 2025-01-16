@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -30,6 +31,9 @@ public class UserServiceImplTest {
     @Mock
     ScoreServiceImpl scoreService;
 
+    @Mock
+    TokenService tokenService;
+
     @Test
     void ensureSaveAndReadGameWorksAndReturnsUser() {
         User user = TestFixtures.user(1L);
@@ -43,7 +47,7 @@ public class UserServiceImplTest {
         User userEdit = TestFixtures.user(1L);
 
         //User was found
-        when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.of(userEdit));
+        when(userRepository.findUserByToken(userEdit.getToken())).thenReturn(Optional.of(userEdit));
 
         when(userRepository.updateUser(userEdit)).thenReturn(Optional.of(userEdit));
 
@@ -60,7 +64,7 @@ public class UserServiceImplTest {
         User userEdit = TestFixtures.user(1L);
 
         //User was not found
-        when(userRepository.findUserById(userEdit.getId())).thenReturn(Optional.empty());
+        when(userRepository.findUserByToken(userEdit.getToken())).thenReturn(Optional.empty());
 
         Optional<User> updatedUser = userService.updateUser(userEdit);
 
@@ -72,9 +76,9 @@ public class UserServiceImplTest {
         User user = TestFixtures.user(1L);
 
         //User was not found
-        when(userRepository.findUserById(user.getId())).thenReturn(Optional.empty());
+        when(userRepository.findUserByToken(user.getToken())).thenReturn(Optional.empty());
 
-        Optional<User> deletedUser = userService.deleteUser(user.getId());
+        Optional<User> deletedUser = userService.deleteUser(user.getToken());
 
         assertFalse(deletedUser.isPresent());
 
@@ -83,10 +87,10 @@ public class UserServiceImplTest {
     void ensureDeletingUserWithNoScoresWorksReturnsDeletedUser() {
         User user = TestFixtures.user(1L);
 
-        when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
-        when(scoreService.findScoresByUser(user.getId(),true)).thenReturn(List.of());
+        when(userRepository.findUserByToken(user.getToken())).thenReturn(Optional.of(user));
+        when(scoreService.findScoresByUser(user.getToken(),true)).thenReturn(List.of());
 
-        Optional<User> deletedUser = userService.deleteUser(user.getId());
+        Optional<User> deletedUser = userService.deleteUser(user.getToken());
         assertTrue(deletedUser.isPresent());
         assertEquals(user.getFirstname(), deletedUser.get().getFirstname());
 
@@ -96,10 +100,10 @@ public class UserServiceImplTest {
         User user = TestFixtures.user(1L);
         Score score = TestFixtures.score(1L,1L,1L);
 
-        when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
-        when(scoreService.findScoresByUser(user.getId(),true)).thenReturn(List.of(score));
+        when(userRepository.findUserByToken(user.getToken())).thenReturn(Optional.of(user));
+        when(scoreService.findScoresByUser(user.getToken(),true)).thenReturn(List.of(score));
 
-        Optional<User> deletedUser = userService.deleteUser(user.getId());
+        Optional<User> deletedUser = userService.deleteUser(user.getToken());
         assertTrue(deletedUser.isPresent());
 
     }
@@ -110,9 +114,9 @@ public class UserServiceImplTest {
         User user3 = TestFixtures.user(3L);
         user3.setDeactivated(true);
 
-        when(userRepository.findAllUsers()).thenReturn(List.of(user1,user2));
+        when(userRepository.findAllUsers(false)).thenReturn(List.of(user1,user2));
 
-        assertEquals(2, userService.findAllUsers().size());
+        assertEquals(2, userService.findAllUsers(false).size());
     }
     @Test
     void ensureFindAllUsersIncludeDeletedWorksAndReturnsAllUsersIncludingDeleted() {
@@ -121,27 +125,30 @@ public class UserServiceImplTest {
         User user3 = TestFixtures.user(3L);
         user3.setDeactivated(true);
 
-        when(userRepository.findAllUsersIncludeDeleted()).thenReturn(List.of(user1, user2, user3));
+        when(userRepository.findAllUsers(true)).thenReturn(List.of(user1, user2, user3));
 
-        assertEquals(3, userService.findAllUsersIncludeDeleted().size());
+        assertEquals(3, userService.findAllUsers(true).size());
     }
     @Test
-    void ensureFindUserByIdWorks() {
+    void ensureFindUserByTokenWorks() {
         List<User> users = TestFixtures.users(3);
-        when(userRepository.findUserById(2)).thenReturn(Optional.of(users.get(1)));
+        when(userRepository.findUserByToken(users.get(1).getToken())).thenReturn(Optional.of(users.get(1)));
 
-        User foundUser = userService.findUserById(2).get();
+        users.get(1).setDeactivated(true);
+
+        User foundUser = userService.findUserByToken(users.get(1).getToken()).get();
 
         assertEquals(foundUser.getFirstname(), users.get(1).getFirstname());
         assertEquals(foundUser.getLastname(), users.get(1).getLastname());
     }
     @Test
-    void ensureFindUserByIdIncludeDeletedWorks() {
+    void ensureFindUserByTokenIncludeDeletedWorks() {
         List<User> users = TestFixtures.users(3);
+        users.get(1).setDeactivated(true);
 
-        when(userRepository.findUserByIdIncludeDeleted(2)).thenReturn(Optional.of(users.get(1)));
+        when(userRepository.findUserByToken(users.get(1).getToken())).thenReturn(Optional.of(users.get(1)));
 
-        User foundUser = userService.findUserByIdIncludeDeleted(2).get();
+        User foundUser = userService.findUserByToken(users.get(1).getToken()).get();
 
         assertEquals(foundUser.getFirstname(), users.get(1).getFirstname());
         assertEquals(foundUser.getLastname(), users.get(1).getLastname());

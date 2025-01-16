@@ -1,9 +1,11 @@
 package com.gepardec.adapter.output.persistence.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -12,8 +14,11 @@ import jakarta.persistence.Table;
 import java.util.List;
 
 @Entity
-@Table(name = "matches")
+@Table(name = "matches", indexes = @Index(name = "ux_matches_token", columnList = "token", unique = true))
 public class MatchEntity extends AbstractEntity {
+
+  @Column(unique = true)
+  private String token;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "fk_game_match", foreignKey = @ForeignKey(name = "fk_game_match"))
@@ -29,7 +34,9 @@ public class MatchEntity extends AbstractEntity {
 
   }
 
-  public MatchEntity(GameEntity game, List<UserEntity> users) {
+  public MatchEntity(Long id, String token, GameEntity game, List<UserEntity> users) {
+    this.id = id;
+    this.token = token;
     this.game = game;
     this.users = users;
   }
@@ -49,4 +56,24 @@ public class MatchEntity extends AbstractEntity {
   public void setUsers(List<UserEntity> users) {
     this.users = users;
   }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+
+  @Override
+  public String toString() {
+    return "MatchEntity{" +
+        "key='" + token + '\'' +
+        ", game=" + game +
+        ", users=" + users +
+        '}';
+  }
+
+
 }

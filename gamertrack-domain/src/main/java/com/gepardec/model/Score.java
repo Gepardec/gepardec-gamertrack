@@ -5,12 +5,18 @@ public class Score{
     private User user;
     private Game game;
     private double scorePoints;
+    private String token;
 
-    public Score(Long id, User user, Game game, double scorePoints) {
+    public Score(Long id) {
+        this.id = id;
+    }
+
+    public Score(Long id, User user, Game game, double scorePoints, String token) {
         this.id = id;
         this.user = user;
         this.game = game;
         this.scorePoints = scorePoints;
+        this.token = token;
     }
 
     public Long getId() {
@@ -43,5 +49,12 @@ public class Score{
 
     public void setScorePoints(double scorePoints) {
         this.scorePoints = scorePoints;
+    }
+
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
     }
 }
