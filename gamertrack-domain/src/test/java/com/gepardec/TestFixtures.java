@@ -4,8 +4,6 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.GameDto;
-import com.gepardec.model.dto.MatchDto;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +14,7 @@ public class TestFixtures {
     List<Game> games = new ArrayList<>();
 
     for (int i = 0; i < gameCount; i++) {
-      Game game = TestFixtures.game((long) 1 + i);
-      game.setName(game.getName() + " " + i);
-      games.add(game);
+      games.add(new Game(null, "TestGameTitle" + i, "TestGameRules" + i));
     }
     return games;
   }
@@ -28,28 +24,8 @@ public class TestFixtures {
   }
 
   public static Game game(Long id) {
-    Game game = new Game("Game Fixture", "Game Fixture Rules");
-    game.setId(id);
-    return game;
+    return new Game(id, "Game Fixture", "Game Fixture Rules");
   }
-
-  public static GameDto gameToGameDto(Game game) {
-    return new GameDto(game.getId(), game.getName(), game.getRules());
-  }
-
-  public static MatchDto matchToMatchDto(Match match) {
-    return new MatchDto(match.getId(), match.getGame().getId(),
-        match.getUsers().stream().map(User::getId).toList());
-  }
-
-  public static Game gameDtoToGame(GameDto gameDto) {
-    Game game = new Game(gameDto.title(), gameDto.rules());
-
-    game.setId(gameDto.id());
-
-    return game;
-  }
-
 
   public static Match match() {
     return match(1L, TestFixtures.game(), TestFixtures.users(10));
@@ -57,9 +33,7 @@ public class TestFixtures {
 
 
   public static Match match(Long id, Game game, List<User> users) {
-    Match match = new Match(game, users.stream().toList());
-    match.setId(id);
-
+    Match match = new Match(id, game, users.stream().toList());
     return match;
   }
 
@@ -67,16 +41,24 @@ public class TestFixtures {
     List<User> users = new ArrayList<>(userCount);
 
     for (int i = 0; i <= userCount; i++) {
-      User user = TestFixtures.user((long) i + 1);
-      users.add(user);
+      users.add(new User(null, "FirstName" + i, "LastName" + 1, false));
+
     }
 
     return users;
   }
 
+  public static List<User> usersWithId(int userCount) {
+    List<User> users = new ArrayList<>(userCount);
+
+    for (int i = 0; i <= userCount; i++) {
+      users.add(new User((long) i + 1, "FirstName" + i, "LastName" + i, true));
+    }
+    return users;
+  }
+
   public static User user(Long id) {
-    User user = new User("User", "Testfixture");
-    user.setId(id);
+    User user = new User(id, "User", "Testfixture", false);
     return user;
   }
 
@@ -99,8 +81,7 @@ public class TestFixtures {
   }
 
   public static Score score(Long scoreId, Long userId, Long gameId) {
-    Score score = new Score(user(userId), game(gameId), 10L);
-    score.setId(scoreId);
+    Score score = new Score(scoreId, user(userId), game(gameId), 10L);
     return score;
   }
 

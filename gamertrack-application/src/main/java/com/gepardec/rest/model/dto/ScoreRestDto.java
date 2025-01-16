@@ -3,9 +3,8 @@ package com.gepardec.rest.model.dto;
 import com.gepardec.model.Score;
 import jakarta.validation.constraints.NotNull;
 
-public record ScoreRestDto(@NotNull long userId, @NotNull long gameId, @NotNull double score) {
+public record ScoreRestDto(@NotNull Long id, @NotNull UserRestDto user, @NotNull GameRestDto game, double score) {
     public ScoreRestDto(Score score){
-        this(score.user.getId(),score.game.getId(), score.scorePoints);
+        this(score.getId(), new UserRestDto(score.getUser()), new GameRestDto(score.getGame()), score.getScorePoints());
     }
-
 }

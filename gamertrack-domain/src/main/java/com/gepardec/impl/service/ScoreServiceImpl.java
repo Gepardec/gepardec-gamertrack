@@ -3,7 +3,6 @@ package com.gepardec.impl.service;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.services.ScoreService;
 import com.gepardec.model.Score;
-import com.gepardec.model.dto.ScoreDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,24 +23,25 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     private ScoreRepository scoreRepository;
 
     @Override
-    public Optional<Score> saveScore(ScoreDto scoreDto) {
-        if(!scoreExists(scoreDto)) {
-            return scoreRepository.saveScore(scoreDto);
+    public Optional<Score> saveScore(Score score) {
+
+        if(!scoreExists(score)) {
+            return scoreRepository.saveScore(score);
         }
 
-        log.error("Score with userId: {} and gameId: {} already exists!", scoreDto.userId(), scoreDto.gameId());
+        log.error("Score with userId: {} and gameId: {} already exists!", score.getUser().getId(), score.getGame().getId());
         return Optional.empty();
     }
 
     @Override
-    public Optional<Score> updateScore(ScoreDto scoreDto) {
-        Optional<Score> entity = scoreRepository.findScoreById(scoreDto.id());
+    public Optional<Score> updateScore(Score score) {
+        Optional<Score> entity = scoreRepository.findScoreById(score.getId());
         if(entity.isPresent()) {
 
-            log.info("Score with the id {} is present", scoreDto.id());
-            return scoreRepository.updateScore(scoreDto);
+            log.info("Score with the id {} is present", score.getId());
+            return scoreRepository.updateScore(score);
         }
-        log.error("Could not find score with id {}. Score was not updated", scoreDto.id());
+        log.error("Could not find score with id {}. Score was not updated", score.getId());
         return Optional.empty();
     }
 
@@ -104,8 +104,8 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
-    public boolean scoreExists(ScoreDto scoreDto) {
-        return scoreRepository.scoreExists(scoreDto);
+    public boolean scoreExists(Score score) {
+        return scoreRepository.scoreExists(score);
     }
 
 }

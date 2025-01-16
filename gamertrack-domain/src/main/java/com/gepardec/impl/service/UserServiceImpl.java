@@ -5,7 +5,6 @@ import com.gepardec.core.services.ScoreService;
 import com.gepardec.core.services.UserService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.UserDto;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -28,23 +27,24 @@ public class UserServiceImpl implements UserService, Serializable {
     private ScoreService scoreService;
 
     @Override
-    public Optional<User> saveUser(UserDto userDto) {
-        return userRepository.saveUser(userDto);
+    public Optional<User> saveUser(User user) {
+
+        return userRepository.saveUser(user);
     }
 
 
     @Override
-    public Optional<User> updateUser(UserDto userDto) {
-        Optional<User> entity = userRepository.findUserById(userDto.id());
+    public Optional<User> updateUser(User user) {
+        Optional<User> entity = userRepository.findUserById(user.getId());
         if(entity.isPresent()) {
-            log.info("updating: user with the id {} is present", userDto.id());
+            log.info("updating: user with the id {} is present", user.getId());
             if(!entity.get().isDeactivated()) {
-                return userRepository.updateUser(userDto);
+                return userRepository.updateUser(user);
             }
-            log.error("User with id {}. is deactivated and was not updated", userDto.id());
+            log.error("User with id {}. is deactivated and was not updated", user.getId());
             return Optional.empty();
         }
-        log.error("Could not find user with id {}. user was not updated", userDto.id());
+        log.error("Could not find user with id {}. user was not updated", user.getId());
         return Optional.empty();
     }
 
@@ -58,17 +58,15 @@ public class UserServiceImpl implements UserService, Serializable {
                 if(scoresByUser.isEmpty()){
                     log.info("user with the id {} has no scores stored. deleting user", id);
 
-                    UserDto userDto = new UserDto(user.get());
-                    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", userDto.id(),userDto.firstname(),userDto.lastname(),userDto.deactivated());
-                    userRepository.deleteUser(userDto);
+                    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", user.get().getId(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
+                    userRepository.deleteUser(user.get());
                 }
                 else {
                     user.get().setDeactivated(true);
-                    UserDto userDto = new UserDto(user.get());
-                    log.info("deleting: user WITH SCORES with the id {} firstname {} lastname {} deactivated {} is present", userDto.id(),userDto.firstname(),userDto.lastname(),userDto.deactivated());
+                    log.info("deleting: user WITH SCORES with the id {} firstname {} lastname {} deactivated {} is present", user.get().getId(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
 
                     log.info("user with the id {} has {} scores stored. user was deactivated", id, scoresByUser.size());
-                    userRepository.updateUser(userDto);
+                    userRepository.updateUser(user.get());
                 }
                 return user;
             }

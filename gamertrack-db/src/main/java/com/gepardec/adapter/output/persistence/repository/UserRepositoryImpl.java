@@ -1,20 +1,20 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-import com.gepardec.adapter.output.persistence.repository.mapper.Mapper;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
+import com.gepardec.adapter.output.persistence.repository.mapper.EntityMapper;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.UserDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Optional;
-
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Transactional
@@ -24,84 +24,87 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   @Inject
   protected EntityManager entityManager;
   @Inject
-  Mapper mapper;
+  EntityMapper entityMapper;
 
   @Override
-  public Optional<User> saveUser(UserDto userDto) {
-    User user = mapper.toUser(userDto);
-    //User user = entityManager.getReference(User.class,userDto.id());
-    entityManager.persist(user);
-    User userSaved = entityManager.find(User.class, user.getId());
-    log.info("Saved user with id: {}", userSaved.getId());
-    return Optional.ofNullable(userSaved);
+  public Optional<User> saveUser(User user) {
+    UserEntity userEntity = entityMapper.userModelToUserEntity(user);
+
+    entityManager.persist(userEntity);
+    UserEntity userSaved = entityManager.find(UserEntity.class, userEntity.getId());
+    log.info("Saved user with id: {}", userEntity.getId());
+    return Optional.ofNullable(entityMapper.userEntityToUserModel(userSaved));
   }
 
   @Override
-  public Optional<User> updateUser(UserDto userDto) {
-    log.info("updating user with id: {}", userDto.id());
+  public Optional<User> updateUser(User user) {
+    log.info("updating user with id: {}", user.getId());
 
-    User user = mapper.toExistingUser(userDto, entityManager.find(User.class, userDto.id()));
-    entityManager.merge(user);
-    User usermerged = entityManager.find(User.class, user.getId());
+    UserEntity userEntity = entityMapper.userModeltoExistingUserEntity(user, entityManager.find(UserEntity.class, user.getId()));
+    entityManager.merge(userEntity);
+    UserEntity usermerged = entityManager.find(UserEntity.class, user.getId());
     log.info("Updated user with id: {}", usermerged.getId());
-    return Optional.ofNullable(usermerged);
+    return Optional.ofNullable(entityMapper.userEntityToUserModel(usermerged));
   }
 
 
   @Override
-  public void deleteUser(UserDto userDto) {
-    User user = mapper.toExistingUser(userDto,entityManager.find(User.class, userDto.id()));
-    log.info("Deleted user with id: {}", userDto.id());
-    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", userDto.id(),userDto.firstname(),userDto.lastname(),userDto.deactivated());
-    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", user.getId(),user.getFirstname(),user.getLastname(),user.isDeactivated());
-    entityManager.remove(user);
+  public void deleteUser(User user) {
+    UserEntity userEntity = entityMapper.userModeltoExistingUserEntity(user,entityManager.find(UserEntity.class, user.getId()));
+    log.info("Deleted user with id: {}", user.getId());
+    log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", userEntity.getId(),userEntity.getFirstname(),userEntity.getLastname(),userEntity.isDeactivated());
+    entityManager.remove(userEntity);
   }
 
   @Override
   public void deleteAllUsers() {
-    entityManager.createNativeQuery("DELETE FROM users").executeUpdate();
+    entityManager.createQuery("DELETE FROM UserEntity ").executeUpdate();
     log.info("Deleted all users. size: {}", findAllUsers().size());
   }
 
   @Override
   public List<User> findAllUsersIncludeDeleted() {
-    List<User> resultList = entityManager.createQuery("SELECT u FROM User u", User.class)
+    List<UserEntity> resultList = entityManager.createQuery("SELECT u FROM UserEntity u", UserEntity.class)
         .getResultList();
     log.info("Find all users including deleted user. Returned list of size:{}", resultList.size());
 
-    return resultList;
+    return resultList.stream().map(entityMapper::userEntityToUserModel).collect(Collectors.toList());
   }
 
   @Override
   public List<User> findAllUsers() {
-    List<User> resultList = entityManager.createQuery(
-            "SELECT u FROM User u Where u.deactivated = false", User.class)
+    List<UserEntity> resultList = entityManager.createQuery(
+            "SELECT u FROM UserEntity u Where u.deactivated = false", UserEntity.class)
         .getResultList();
     log.info("Find all users. Returned list of size:{}", resultList.size());
-    return resultList;
+    return resultList.stream().map(entityMapper::userEntityToUserModel).collect(Collectors.toList());
 
   }
 
   @Override
   public Optional<User> findUserById(long id) {
-    List<User> resultList = entityManager.createQuery(
-            "SELECT u FROM User u WHERE u.id = :id AND u.deactivated = false",
-            User.class)
+    List<UserEntity> resultList = entityManager.createQuery(
+            "SELECT u FROM UserEntity u WHERE u.id = :id AND u.deactivated = false",
+            UserEntity.class)
         .setParameter("id", id)
         .getResultList();
     log.info("Find user with id: {}. Returned list of size:{}", id, resultList.size());
-    return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.getFirst());
+    return resultList.isEmpty()
+            ? Optional.empty()
+            : Optional.of(entityMapper.userEntityToUserModel(resultList.getFirst()));
   }
 
   @Override
   public Optional<User> findUserByIdIncludeDeleted(long id) {
-    List<User> resultList = entityManager.createQuery("SELECT u FROM User u WHERE u.id = :id",
-            User.class)
+    List<UserEntity> resultList = entityManager.createQuery("SELECT u FROM UserEntity u WHERE u.id = :id",
+            UserEntity.class)
         .setParameter("id", id)
         .getResultList();
     log.info("Find user including deleted with id: {}. Returned list of size:{}", id,
         resultList.size());
-    return resultList.isEmpty() ? Optional.empty() : Optional.of(resultList.getFirst());
+    return resultList.isEmpty()
+            ? Optional.empty()
+            : Optional.of(entityMapper.userEntityToUserModel(resultList.getFirst()));
   }
 
   @Override

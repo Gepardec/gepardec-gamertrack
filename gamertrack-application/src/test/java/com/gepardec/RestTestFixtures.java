@@ -1,5 +1,7 @@
 package com.gepardec;
 
+import static com.gepardec.TestFixtures.user;
+
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
 import com.gepardec.rest.model.command.CreateGameCommand;
@@ -9,35 +11,35 @@ import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.command.UpdateMatchCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
+import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
+import com.gepardec.rest.model.dto.UserRestDto;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RestTestFixtures {
 
-  public static CreateScoreCommand createScoreCommand(Long id) {
-    CreateScoreCommand createScoreCommand = new CreateScoreCommand(1L, 1L, 10);
+  public static CreateScoreCommand createScoreCommand() {
+    CreateScoreCommand createScoreCommand = new CreateScoreCommand(user(1L), game(), 10);
     return createScoreCommand;
   }
 
-  public static CreateUserCommand createUserCommand(Long id) {
+  public static CreateUserCommand createUserCommand() {
     CreateUserCommand createUserCommand = new CreateUserCommand("Max", "Muster");
     return createUserCommand;
   }
 
-  public static UpdateUserCommand updateUserCommand(Long id) {
+  public static UpdateUserCommand updateUserCommand() {
     UpdateUserCommand updateUserCommand = new UpdateUserCommand("Max", "Muster", false);
     return updateUserCommand;
   }
 
   public static UpdateMatchCommand updateMatchCommand() {
-    return new UpdateMatchCommand(game().getId(),
-        users(5).stream().map(User::getId).toList());
+    return new UpdateMatchCommand(game(), users(5));
   }
 
   public static CreateMatchCommand createMatchCommand() {
-    return new CreateMatchCommand(game().getId(),
-        users(5).stream().map(User::getId).toList());
+    return new CreateMatchCommand(game(), users(5));
   }
 
   public static CreateGameCommand createGameCommand() {
@@ -45,8 +47,9 @@ public class RestTestFixtures {
   }
 
 
-  public static MatchRestDto matchRestDto(Long id, Long gameid, List<Long> userIds) {
-    return new MatchRestDto(id, gameid, userIds);
+  public static MatchRestDto matchRestDto(Long id, GameRestDto gameRestDto,
+      List<UserRestDto> userRestDtos) {
+    return new MatchRestDto(id, gameRestDto, userRestDtos);
   }
 
   public static Game game() {
@@ -54,7 +57,7 @@ public class RestTestFixtures {
   }
 
   public static Game game(Long id) {
-    Game game = new Game("Game Fixture", "Game Fixture Rules");
+    Game game = new Game(null, "Game Fixture", "Game Fixture Rules");
     game.setId(id);
     return game;
   }
@@ -63,7 +66,7 @@ public class RestTestFixtures {
     List<User> users = new ArrayList<>();
 
     for (int i = 0; i < userCount; i++) {
-      users.add(TestFixtures.user((long) i++));
+      users.add(user((long) i++));
     }
 
     return users;

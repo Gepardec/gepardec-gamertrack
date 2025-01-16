@@ -41,7 +41,7 @@ public class GameResourceImpl implements GameResource {
   @Override
   public Response createGame(CreateGameCommand gameCmd) {
     //Return saved Game if it was persisted or Else return Bad Request
-    return gameService.saveGame(restMapper.toGameDto(gameCmd))
+    return gameService.saveGame(restMapper.createGameCommandtoGame(gameCmd))
         .map(GameRestDto::new)
         .map(gameDto -> Response.status(Status.CREATED).entity(gameDto))
         .orElseGet(() -> Response.status(Status.BAD_REQUEST))
@@ -53,7 +53,7 @@ public class GameResourceImpl implements GameResource {
     Optional<Game> gameOld = gameService.findGameById(id);
 
     //Returns updated 200OK with updated Entity if it exists or if it does not exist the same object provided on request
-    return gameService.updateGame(restMapper.toGameDto(id, gameCmd))
+    return gameService.updateGame(restMapper.updateGameCommandtoGame(id, gameCmd))
         .map(GameRestDto::new)
         .map(Response::ok)
         .orElseGet(() -> Response.status(Status.NOT_FOUND).entity(gameCmd))

@@ -1,43 +1,28 @@
 package com.gepardec.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+public class User{
+    private Long id;
+    private  String firstname;
+    private  String lastname;
+    private boolean deactivated;
 
-import java.util.List;
-
-@Entity()
-@Table(name = "users")
-public class User extends AbstractEntity{
-
-    @NotEmpty(message = "Firstname must be set")
-    public String firstname;
-    @NotEmpty(message = "Lastname must be set")
-    public String lastname;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
-    public List<Score> scores;
-
-    public boolean deactivated;
-
-    public User(String firstname, String lastname) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-    }
-    //temp
-    public User(String firstname, String lastname, boolean deactivated) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.deactivated = deactivated;
+    public User() {
     }
 
-    public User(long id, String firstname, String lastname, boolean deactivated) {
+    public User(Long id, String firstname, String lastname, boolean deactivated) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.deactivated = deactivated;
     }
 
-    public User() {}
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getFirstname() {
         return firstname;
@@ -63,3 +48,4 @@ public class User extends AbstractEntity{
         this.deactivated = deactivated;
     }
 }
+

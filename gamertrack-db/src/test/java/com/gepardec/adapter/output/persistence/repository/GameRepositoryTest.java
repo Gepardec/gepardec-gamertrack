@@ -1,9 +1,11 @@
 package com.gepardec.adapter.output.persistence.repository;
 
+import static com.gepardec.TestFixtures.game;
+
 import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
-import com.gepardec.model.dto.GameDto;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
@@ -18,7 +20,7 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
   void beforeEach() throws Exception {
-    super.removeTableData(Game.class);
+    super.removeTableData(GameEntity.class);
   }
 
   @Inject
@@ -27,17 +29,17 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureWriteAndReadValidGameWorks() {
-    GameDto game = TestFixtures.gameToGameDto(TestFixtures.game(null));
+    Game game = game(null);
 
     var savedGame = repository.saveGame(game);
     Assertions.assertNotNull(savedGame);
-    Assertions.assertEquals(game.title(), savedGame.get().getName());
-    Assertions.assertEquals(game.rules(), savedGame.get().getRules());
+    Assertions.assertEquals(game.getName(), savedGame.get().getName());
+    Assertions.assertEquals(game.getRules(), savedGame.get().getRules());
   }
 
   @Test
   void ensureSavingInvalidGameThrowsConstrainViolationException() {
-    GameDto invalidGame = new GameDto(null, "", "TestGame");
+    Game invalidGame = new Game(null, "", "TestGame");
 
     Assertions.assertThrows(ConstraintViolationException.class,
         () -> repository.saveGame(invalidGame));
@@ -45,7 +47,7 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureDeleteExistingGameWorks() {
-    GameDto game = TestFixtures.gameToGameDto(TestFixtures.game(null));
+    Game game = game(null);
     var alreadyExistingGame = repository.saveGame(game);
 
     repository.deleteGame(alreadyExistingGame.get().getId());
@@ -55,28 +57,32 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureDeleteInvalidGameThrowsIllegalArgumentException() {
-    GameDto notExisingGame = TestFixtures.gameToGameDto(TestFixtures.game());
+    Game notExisingGame = game();
 
     Assertions.assertThrows(IllegalArgumentException.class,
-        () -> repository.deleteGame(notExisingGame.id()));
+        () -> repository.deleteGame(notExisingGame.getId()));
   }
 
   @Test
   void ensureUpdateValidGameWorks() {
-    GameDto oldGame = TestFixtures.gameToGameDto(TestFixtures.game(null));
+    Game oldGame = game(null);
     var persistedOldGame = repository.saveGame(oldGame);
 
-    GameDto newGame = new GameDto(persistedOldGame.get().getId(), "NewTitle", "NewRules");
+    System.out.println(persistedOldGame.get().getId());
 
+    Game newGame = new Game(persistedOldGame.get().getId(), "NewTitleTest", "NewRules");
+
+    System.out.println(newGame.getId());
     var persistedUpdatedGame = repository.updateGame(newGame);
+    System.out.println(persistedUpdatedGame.get());
     Assertions.assertTrue(persistedUpdatedGame.isPresent());
-    Assertions.assertEquals(newGame.title(), persistedUpdatedGame.get().getName());
-    Assertions.assertEquals(newGame.rules(), persistedUpdatedGame.get().getRules());
+    Assertions.assertEquals(newGame.getName(), persistedUpdatedGame.get().getName());
+    Assertions.assertEquals(newGame.getRules(), persistedUpdatedGame.get().getRules());
   }
 
   @Test
   void ensureUpdateNotExistingGameReturnsOptionalEmpty() {
-    GameDto newGame = new GameDto(100L, "NewTitle", "NewRules");
+    Game newGame = new Game(100000L, "NewTitle", "NewRules");
     var persistedUpdatedGame = repository.updateGame(newGame);
 
     Assertions.assertTrue(persistedUpdatedGame.isEmpty());
@@ -84,29 +90,28 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureFindGameByIdForExistingGameWorksReturnsGame() {
-    GameDto game = TestFixtures.gameToGameDto(TestFixtures.game(null));
+    Game game = game(null);
     var persistedGame = repository.saveGame(game);
 
     var foundGame = repository.findGameById(persistedGame.get().getId());
 
     Assertions.assertTrue(foundGame.isPresent());
-    Assertions.assertEquals(game.title(), foundGame.get().getName());
-    Assertions.assertEquals(game.rules(), foundGame.get().getRules());
+    Assertions.assertEquals(game.getName(), foundGame.get().getName());
+    Assertions.assertEquals(game.getRules(), foundGame.get().getRules());
   }
 
   @Test
   void ensureFindGameByIdForNotExistingGameReturnsOptionalEmpty() {
-    GameDto notExistingGame = TestFixtures.gameToGameDto(TestFixtures.game());
+    Game notExistingGame = game();
 
-    var foundGame = repository.findGameById(notExistingGame.id());
+    var foundGame = repository.findGameById(notExistingGame.getId());
     Assertions.assertTrue(foundGame.isEmpty());
   }
 
   @Test
   void ensureFindAllGamesForExistingGamesReturnsAllGames() {
     List<Game> games = TestFixtures.games(10);
-    List<GameDto> gameDtos = games.stream()
-        .map(TestFixtures::gameToGameDto)
+    List<Game> gameDtos = games.stream()
         .peek(repository::saveGame)
         .toList();
 
@@ -119,7 +124,7 @@ class GameRepositoryTest extends GamertrackDbIT {
         .toList()
         .containsAll(gameDtos
             .stream()
-            .map(GameDto::title)
+            .map(Game::getName)
             .toList()));
   }
 
@@ -130,10 +135,10 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureGameExistsByGameNameForExistingGameReturnsGame() {
-    Game game = TestFixtures.game(null);
+    Game game = game(null);
     game.setName("NewTitle");
 
-    var savedGame = repository.saveGame(TestFixtures.gameToGameDto(game));
+    var savedGame = repository.saveGame(game);
 
     boolean existsByGameName = repository.gameExistsByGameName(savedGame.get().getName());
 
@@ -151,7 +156,7 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureExistsByGameIdForExistingGameReturnsGame() {
-    GameDto game = TestFixtures.gameToGameDto(TestFixtures.game(null));
+    Game game = game(null);
     var savedGame = repository.saveGame(game);
 
     boolean existsByGameId = repository.existsByGameId(savedGame.get().getId());

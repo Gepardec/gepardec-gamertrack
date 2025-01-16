@@ -3,7 +3,6 @@ package com.gepardec.impl.service;
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.model.Score;
-import com.gepardec.model.dto.ScoreDto;
 import jakarta.persistence.EntityManager;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @EnableAutoWeld
@@ -34,35 +32,32 @@ public class ScoreServiceImplTest {
     @Test
     void ensureSaveAndReadScoreWorks() {
         Score score = TestFixtures.score(1L,1L,1L);
-        ScoreDto scoreDto = new ScoreDto(score);
 
-        when(scoreRepository.saveScore(scoreDto)).thenReturn(Optional.of(score));
+        when(scoreRepository.saveScore(score)).thenReturn(Optional.of(score));
 
-        assertEquals(scoreService.saveScore(scoreDto).get().getScorePoints(), score.getScorePoints());
+        assertEquals(scoreService.saveScore(score).get().getScorePoints(), score.getScorePoints());
     }
 
     @Test
     void ensureSaveExistingScoreWorksCorrectly() {
 
         Score score = TestFixtures.score(1L,1L,1L);
-        ScoreDto scoreDto = new ScoreDto(score);
 
-        when(scoreRepository.scoreExists(scoreDto)).thenReturn(true);
+        when(scoreRepository.scoreExists(score)).thenReturn(true);
 
-        assertTrue(scoreService.scoreExists(scoreDto));
+        assertTrue(scoreService.scoreExists(score));
     }
 
     @Test
     void ensureUpdateExistingScoreWorksAndReturnsScore() {
         Score scoreEdit = TestFixtures.score(1L,1L,1L);
-        ScoreDto scoreDto = new ScoreDto(scoreEdit);
 
         //Score was found
         when(scoreRepository.findScoreById(scoreEdit.getId())).thenReturn(Optional.of(scoreEdit));
 
-        when(scoreRepository.updateScore(scoreDto)).thenReturn(Optional.of(scoreEdit));
+        when(scoreRepository.updateScore(scoreEdit)).thenReturn(Optional.of(scoreEdit));
 
-        Optional<Score> updatedScore = scoreService.updateScore(scoreDto);
+        Optional<Score> updatedScore = scoreService.updateScore(scoreEdit);
 
         assertTrue(updatedScore.isPresent());
         assertEquals(scoreEdit.getUser().getId(), updatedScore.get().getUser().getId());
@@ -73,12 +68,11 @@ public class ScoreServiceImplTest {
     @Test
     void ensureUpdateNonExistingScoreWorksAndReturnsEmpty() {
         Score scoreEdit = TestFixtures.score(1L,1L,1L);
-        ScoreDto scoreDto = new ScoreDto(scoreEdit);
 
         //Score was found
         when(scoreRepository.findScoreById(scoreEdit.getId())).thenReturn(Optional.empty());
 
-        Optional<Score> updatedScore = scoreService.updateScore(scoreDto);
+        Optional<Score> updatedScore = scoreService.updateScore(scoreEdit);
 
         assertFalse(updatedScore.isPresent());
     }
@@ -195,28 +189,19 @@ public class ScoreServiceImplTest {
     void ensureScoreExistsWorksAndReturnsFalse() {
         List<Score> scores = TestFixtures.scores(3);
 
-        ScoreDto scoreDto1 = new ScoreDto(scores.get(0));
-        ScoreDto scoreDto2 = new ScoreDto(scores.get(1));
-        ScoreDto scoreDto3 = new ScoreDto(scores.get(2));
-
-
         //Score does not exist yet
-        when(scoreRepository.scoreExists(scoreDto3)).thenReturn(false);
+        when(scoreRepository.scoreExists(scores.get(2))).thenReturn(false);
 
-        assertFalse(scoreService.scoreExists(scoreDto3));
+        assertFalse(scoreService.scoreExists(scores.get(2)));
     }
 
     @Test
     void ensureScoreExistsWorksAndReturnsTrue() {
         List<Score> scores = TestFixtures.scores(3);
 
-        ScoreDto scoreDto1 = new ScoreDto(scores.get(0));
-        ScoreDto scoreDto2 = new ScoreDto(scores.get(1));
-        ScoreDto scoreDto3 = new ScoreDto(scores.get(2));
-
         //Score does not exist yet
-        when(scoreRepository.scoreExists(scoreDto3)).thenReturn(true);
+        when(scoreRepository.scoreExists(scores.get(2))).thenReturn(true);
 
-        assertTrue(scoreService.scoreExists(scoreDto3));
+        assertTrue(scoreService.scoreExists(scores.get(2)));
     }
 }

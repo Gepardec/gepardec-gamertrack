@@ -1,37 +1,32 @@
 package com.gepardec.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-@Entity
-@Table(name = "matches")
-public class Match extends AbstractEntity {
+public class Match {
 
-  @ManyToOne()
-  @JoinColumn(name = "fk_game_match", foreignKey = @ForeignKey(name = "fk_game_match"))
+  private Long id;
+  @NotNull(message = "Game must not be null")
   private Game game;
-
-  @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-  @JoinTable(name = "matches_users", joinColumns =
-  @JoinColumn(name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")), inverseJoinColumns =
-  @JoinColumn(name = "fk_match", foreignKey = @ForeignKey(name = "fk_match")))
+  @NotEmpty(message = "User List must not be null or Empty")
   private List<User> users;
 
   public Match() {
-
   }
 
-  public Match(Game game, List<User> users) {
+  public Match(Long id, Game game, List<User> users) {
+    this.id = id;
     this.game = game;
     this.users = users;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public Game getGame() {
