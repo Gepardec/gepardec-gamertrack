@@ -34,5 +34,7 @@ build/
 ### Mac OS ###
 .DS_Store
 
-### Docs ###
-docs/openapi-spec.*
+### WILDFLY PROVISIONED
+/wildfly
+/application.properties
+/*.properties

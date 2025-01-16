@@ -11,12 +11,44 @@
   <packaging>war</packaging>
   <artifactId>gamertrack-war</artifactId>
   <properties>
-    <maven.compiler.source>23</maven.compiler.source>
-    <maven.compiler.target>23</maven.compiler.target>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
     <finalName>gepardec-gamertrack</finalName>
+
+    <plugins>
+      <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>5.1.1.Final</version>
+        <configuration>
+          <feature-packs>
+            <feature-pack>
+              <!-- Latest released version -->
+              <location>wildfly@maven(org.jboss.universe:community-universe)</location>
+            </feature-pack>
+            <feature-pack>
+              <location>org.wildfly:wildfly-datasources-galleon-pack:8.0.1.Final</location>
+            </feature-pack>
+          </feature-packs>
+          <layers>
+            <layer>jaxrs-server</layer>
+            <layer>ejb</layer>
+            <layer>bean-validation</layer>
+            <layer>postgresql-default-datasource</layer>
+          </layers>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>image</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <dependencies>
@@ -36,5 +68,6 @@
       <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
+
 
 </project>

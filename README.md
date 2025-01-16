@@ -13,6 +13,17 @@ The following technologies are used by Gepardec-Gamertrack
 4. `H2-Database`
 5. `Mockito`
 
+## application.properties
+
+The application needs the following variables set:
+
+jboss.Home
+
+e.g
+> jboss.home=\${basedir}\${file.separator}..\${file.separator}wildfly
+
+or any other wildfly location
+
 ## Build Project and deploy application
 
 - *In order for all used relative paths to work  
@@ -30,27 +41,43 @@ The following technologies are used by Gepardec-Gamertrack
 **Start wildfly**
 
 ```zsh
-  $WILDFLY_HOME/bin/standalone.sh
+  $WILDFLY_HOME/bin//wildfly-34.0.0.Final/bin/standalone.sh
 ```
 
 **Deploy application to wildfly**
 
 ```zsh
-  $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="deploy --force gamertrack-war/target/gepardec-gamertrack.war"
+  $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="deploy --force ./gamertrack-war/target/gepardec-gamertrack.war"
 ```
-
-Application is now available at http://127.0.0.1:8080/gepardec-gamertrack/api/v1/
 
 **Undeploy and stop wildfly**
 
 ```zsh
-  $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="undeploy gamertrack-war-1.0-SNAPSHOT.war"
+  $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="undeploy gepardec-gamertrack.war"
 ```
 
 **Stop wildfly**
 
 ```zsh
   $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="shutdown"
+```
+
+## Docker
+
+When ```mvn clean install``` is executed an image with the application is generated and
+automatically added to the existing docker environment
+
+The docker image requires an already running postgres database which can be started with the
+following command:
+
+```bash
+  docker run -d -p5432:5432 --name gamertrack-database -e POSTGRES_PASSWORD=gepardec -e POSTGRES_USER=gamertrack -e POSTGRES_DB=gamertrack postgres
+```
+
+Afterward the container with wildfly and the deployed application can be started as follows:
+
+```bash
+  docker run -p8080:8080 -e POSTGRESQL_USER=gamertrack -e POSTGRESQL_PASSWORD=gepardec -e POSTGRESQL_URL=jdbc:postgresql://10.254.100.58:5432/gamertrack gamertrack-war
 ```
 
 ## ER-diagram
