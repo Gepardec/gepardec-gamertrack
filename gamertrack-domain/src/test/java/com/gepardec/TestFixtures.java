@@ -16,7 +16,9 @@ public class TestFixtures {
     List<Game> games = new ArrayList<>();
 
     for (int i = 0; i < gameCount; i++) {
-      games.add(TestFixtures.game((long) i++));
+      Game game = TestFixtures.game((long) 1 + i);
+      game.setName(game.getName() + " " + i);
+      games.add(game);
     }
     return games;
   }
@@ -89,7 +91,9 @@ public class TestFixtures {
   public static List<Match> matches(int matchCount) {
     List<Match> matches = new ArrayList<>();
     for (int i = 0; i < matchCount; i++) {
-      matches.add(match((long) i++));
+      Match match = match((long) i + 1);
+      match.getGame().setName(String.valueOf(i + 1));
+      matches.add(match);
     }
     return matches;
   }

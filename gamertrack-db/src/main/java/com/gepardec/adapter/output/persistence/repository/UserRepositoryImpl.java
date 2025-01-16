@@ -11,14 +11,17 @@ import jakarta.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
+@Transactional
 public class UserRepositoryImpl implements UserRepository, Serializable {
 
   private static final Logger log = LoggerFactory.getLogger(UserRepositoryImpl.class);
-  @PersistenceContext()
+  @Inject
   protected EntityManager entityManager;
   @Inject
   Mapper mapper;
@@ -53,6 +56,13 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
     log.info("deleting: user WITH NO SCORES with the id {} firstname {} lastname {} deactivated {} is present", user.getId(),user.getFirstname(),user.getLastname(),user.isDeactivated());
     entityManager.remove(user);
   }
+
+  @Override
+  public void deleteAllUsers() {
+    entityManager.createNativeQuery("DELETE FROM users").executeUpdate();
+    log.info("Deleted all users. size: {}", findAllUsers().size());
+  }
+
   @Override
   public List<User> findAllUsersIncludeDeleted() {
     List<User> resultList = entityManager.createQuery("SELECT u FROM User u", User.class)
@@ -95,16 +105,11 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   }
 
   @Override
-  public Optional<User> findUserReferencesById(Long userId) {
-    return Optional.of(entityManager.getReference(User.class, userId));
-  }
-
-  @Override
   public Boolean existsByUserId(List<Long> userIds) {
     long foundUserIds = userIds.stream()
-        .map(this::findUserById)
-        .count();
-
+            .map(this::findUserById)
+            .filter(Optional::isPresent)
+            .count();
     return foundUserIds == userIds.size();
   }
 }

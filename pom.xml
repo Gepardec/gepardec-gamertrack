@@ -18,6 +18,7 @@
 
 
   <properties>
+    <jboss.home>${basedir}${file.separator}..${file.separator}wildfly</jboss.home>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>23</maven.compiler.target>
     <maven.compiler.source>23</maven.compiler.source>
@@ -111,6 +112,50 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>5.0.0.Final</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>provision</goal>
+            </goals>
+            <configuration>
+              <provisioning-dir>${project.basedir}${file.separator}wildfly</provisioning-dir>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.3.0</version>
+
+        <configuration>
+          <argLine>-Djboss.home=${jboss.home}</argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <id>setArquillianEnvironmentVar</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <skip>false</skip>
+              <systemPropertyVariables>
+                <jboss.home>${jboss.home}</jboss.home>
+              </systemPropertyVariables>
+              <environmentVariables>
+                <JBOSS_HOME>${jboss.home}</JBOSS_HOME>
+              </environmentVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>

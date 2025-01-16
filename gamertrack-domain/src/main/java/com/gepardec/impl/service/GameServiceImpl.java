@@ -20,7 +20,7 @@ public class GameServiceImpl implements GameService, Serializable {
 
   @Override
   public Optional<Game> saveGame(GameDto gameDto) {
-    if (gameRepository.GameExistsByGameName(gameDto.title())) {
+    if (gameRepository.gameExistsByGameName(gameDto.title())) {
       return Optional.empty();
     }
     return gameRepository.saveGame(gameDto);

@@ -4,10 +4,10 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import com.gepardec.model.dto.ScoreDto;
-import com.gepardec.model.dto.UserDto;
 import com.gepardec.model.dto.GameDto;
 import com.gepardec.model.dto.MatchDto;
+import com.gepardec.model.dto.ScoreDto;
+import com.gepardec.model.dto.UserDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -44,29 +44,29 @@ public class Mapper {
   }
 
 
-  public Match toMatchWithReference(MatchDto gameOutcomeDto) {
-    return toMatchWithReference(gameOutcomeDto, new Match());
+  public Match toMatchWithReference(MatchDto matchDto) {
+    return toMatchWithReference(matchDto, new Match());
   }
 
-  public Match toMatchWithReference(MatchDto gameOutcomeDto,
-      Match gameOutcome) {
-    if (gameOutcomeDto == null && gameOutcome == null) {
+  public Match toMatchWithReference(MatchDto matchDtoDto,
+      Match match) {
+    if (matchDtoDto == null && match == null) {
       return null;
     }
 
     List<User> users = new ArrayList<>();
 
-    if (gameOutcomeDto.id() != null) {
-      gameOutcome.setId(gameOutcomeDto.id());
+    if (matchDtoDto.id() != null) {
+      match.setId(matchDtoDto.id());
     }
 
-    gameOutcomeDto.userIds()
+    matchDtoDto.userIds()
         .forEach(userid -> users.add(
             entityManager.getReference(User.class, userid)));
 
-    gameOutcome.setGame(entityManager.getReference(Game.class, gameOutcomeDto.gameId()));
-    gameOutcome.setUsers(users);
-    return gameOutcome;
+    match.setGame(entityManager.getReference(Game.class, matchDtoDto.gameId()));
+    match.setUsers(users);
+    return match;
   }
 
   public Game toGame(GameDto gameDto) {
