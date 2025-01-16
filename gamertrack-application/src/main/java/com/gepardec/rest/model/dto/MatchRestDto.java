@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public record MatchRestDto(@NotBlank String token, @NotNull GameRestDto gameRestDto,
-                           @NotNull List<UserRestDto> userRestDtos) {
+public record MatchRestDto(@NotBlank String token, @NotNull GameRestDto game,
+                           @NotNull List<UserRestDto> users) {
 
     public MatchRestDto(Match match) {
         this(match.getToken(),
@@ -27,21 +27,21 @@ public record MatchRestDto(@NotBlank String token, @NotNull GameRestDto gameRest
             return false;
         }
         MatchRestDto that = (MatchRestDto) o;
-        return Objects.equals(gameRestDto, that.gameRestDto) && Objects.equals(token, that.token)
-                && Objects.equals(userRestDtos, that.userRestDtos);
+        return Objects.equals(game, that.game) && Objects.equals(token, that.token)
+                && Objects.equals(users, that.users);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(token, gameRestDto, userRestDtos);
+        return Objects.hash(token, game, users);
     }
 
     @Override
     public String toString() {
         return "MatchRestDto{" +
                 "token='" + token + '\'' +
-                ", game=" + gameRestDto +
-                ", users=" + userRestDtos +
+                ", game=" + game +
+                ", users=" + users +
                 '}';
     }
 }

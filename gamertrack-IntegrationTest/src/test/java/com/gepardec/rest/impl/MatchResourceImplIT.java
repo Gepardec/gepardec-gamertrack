@@ -157,8 +157,8 @@ public class MatchResourceImplIT {
                 .getList("", MatchRestDto.class);
 
         assertTrue(foundMatches.stream()
-                .allMatch(match -> match.gameRestDto().token().equals(createdGame.token())
-                        && match.userRestDtos().stream().map(UserRestDto::token).toList().contains(createdUser.token())));
+                .allMatch(match -> match.game().token().equals(createdGame.token())
+                        && match.users().stream().map(UserRestDto::token).toList().contains(createdUser.token())));
         assertFalse(
                 foundMatches.containsAll(List.of(matchThatShouldNotBeFound2, matchThatShouldNotBeFound)));
         assertTrue(foundMatches.containsAll(List.of(matchThatShouldBeFound1, matchThatShouldBeFound2)));
@@ -205,12 +205,13 @@ public class MatchResourceImplIT {
                         .then()
                         .statusCode(Status.CREATED.getStatusCode())
                         .body("token", notNullValue())
+                        .log().body()
                         .extract()
                         .body()
                         .as(MatchRestDto.class);
 
-        assertEquals(createdMatch.gameRestDto().token(), createMatchCommand.game().getToken());
-        assertTrue(createdMatch.userRestDtos().containsAll(createMatchCommand.users()));
+        assertEquals(createdMatch.game().token(), createMatchCommand.game().getToken());
+        assertTrue(createdMatch.users().containsAll(createMatchCommand.users().stream().map(UserRestDto::new).toList()));
         usesMatchTokens.add(createdMatch.token());
     }
 
@@ -236,11 +237,11 @@ public class MatchResourceImplIT {
         MatchRestDto existingMatch = createMatch();
         UserRestDto userRestDto = createUser();
         UpdateMatchCommand matchToUpdate = new UpdateMatchCommand(
-                new Game(null, existingMatch.gameRestDto().token(),
-                        existingMatch.gameRestDto().name(),
-                        existingMatch.gameRestDto().rules()),
+                new Game(null, existingMatch.game().token(),
+                        existingMatch.game().name(),
+                        existingMatch.game().rules()),
                 List.of(
-                        existingMatch.userRestDtos().stream().map(urd -> new User(urd.id(), urd.firstname(), urd.lastname(), urd.deactivated(), urd.token()))
+                        existingMatch.users().stream().map(urd -> new User(urd.id(), urd.firstname(), urd.lastname(), urd.deactivated(), urd.token()))
                                 .findFirst().get(),
                         new User(null, userRestDto.firstname(), userRestDto.lastname(),
                                 userRestDto.deactivated(), userRestDto.token())));
@@ -259,7 +260,7 @@ public class MatchResourceImplIT {
                         .as(MatchRestDto.class);
 
         assertEquals(updatedMatch.token(), existingMatch.token());
-        assertNotEquals(matchToUpdate.users().size(), existingMatch.userRestDtos().size());
+        assertNotEquals(matchToUpdate.users().size(), existingMatch.users().size());
     }
 
     @Test
