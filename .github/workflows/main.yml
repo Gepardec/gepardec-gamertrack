@@ -8,4 +8,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Howdy
-        run: echo "Howdy from main"
+        run: echo "Howdy from ${GITHUB_REF#refs/heads/}"
