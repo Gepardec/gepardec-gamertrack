@@ -36,5 +36,4 @@ build/
 
 ### WILDFLY PROVISIONED
 /wildfly
-/application.properties
 /*.properties
