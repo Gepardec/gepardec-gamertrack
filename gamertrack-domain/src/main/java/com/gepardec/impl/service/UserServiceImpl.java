@@ -1,9 +1,11 @@
 package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.GameService;
 import com.gepardec.core.services.ScoreService;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.core.services.UserService;
+import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
@@ -28,13 +30,18 @@ public class UserServiceImpl implements UserService, Serializable {
     private ScoreService scoreService;
     @Inject
     private TokenService tokenService;
+    @Inject
+    private GameService gameService;
 
     @Override
     public Optional<User> saveUser(User user) {
         String token = tokenService.generateToken();
-        System.out.println("Token: " + token);
         user.setToken(token);
-        return userRepository.saveUser(user);
+        Optional<User> savedUser = userRepository.saveUser(user);
+        for (Game game : gameService.findAllGames()) {
+            scoreService.saveScore(new Score(0L,savedUser.get(),game,1500L,""));
+        }
+        return savedUser;
     }
 
 

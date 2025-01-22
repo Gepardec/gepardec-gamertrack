@@ -1,5 +1,23 @@
 package com.gepardec.impl.service;
 
+import com.gepardec.TestFixtures;
+import com.gepardec.core.repository.GameRepository;
+import com.gepardec.core.repository.MatchRepository;
+import com.gepardec.core.repository.ScoreRepository;
+import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.EloService;
+import com.gepardec.core.services.TokenService;
+import com.gepardec.model.Match;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import static com.gepardec.TestFixtures.match;
 import static com.gepardec.TestFixtures.matches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,21 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-
-import com.gepardec.TestFixtures;
-import com.gepardec.core.repository.GameRepository;
-import com.gepardec.core.repository.MatchRepository;
-import com.gepardec.core.repository.UserRepository;
-import com.gepardec.core.services.TokenService;
-import com.gepardec.model.Match;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class MatchServiceImplTest {
@@ -38,6 +41,13 @@ class MatchServiceImplTest {
 
   @InjectMocks
   MatchServiceImpl matchService;
+  @Mock
+  ScoreServiceImpl scoreService;
+  @Mock
+  ScoreRepository scoreRepository;
+  @Mock
+  EloService eloService;
+
 
 
   @Test
@@ -54,6 +64,7 @@ class MatchServiceImplTest {
         invocation -> match.getUsers().stream()
             .filter(user -> user.getToken().equals(invocation.getArgument(0)))
             .findFirst());
+
 
     assertEquals(matchService.saveMatch(match).get().getId(),
         match().getId());
