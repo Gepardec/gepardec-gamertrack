@@ -18,11 +18,6 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Set up Maven
-        uses: actions/setup-maven@v2
-        with:
-          maven-version: '3.9.6'
-
       - name: Build with Maven
         run: mvn clean install
 
