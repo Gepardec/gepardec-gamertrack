@@ -1,0 +1,11 @@
+name: Release Containerimage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Howdy
+        run: echo "Howdy from main"
