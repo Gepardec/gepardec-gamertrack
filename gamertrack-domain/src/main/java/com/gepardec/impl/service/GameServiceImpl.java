@@ -44,12 +44,9 @@ public class GameServiceImpl implements GameService, Serializable {
     Optional<Game> savedGame = gameRepository.saveGame(game);
 
     List<User> userList = userService.findAllUsers(true);
-    System.out.println("userList: " + userList);
     if (!userList.isEmpty()) {
 
       for (User user : userList) {
-        System.out.println("Drinnen");
-
         scoreService.saveScore(new Score(0L, user, savedGame.get(), 1500L, ""));
       }
     }

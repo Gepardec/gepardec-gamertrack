@@ -96,13 +96,10 @@ public class MatchServiceImpl implements MatchService {
         for (User user : match.getUsers()) {
           List<Score> filteredScores = scoreService.filterScores(null, null, user.getToken(), match.getGame().getToken(), true);
           scoreList.add(filteredScores.isEmpty() ? null : filteredScores.getFirst());
-          System.out.println(user.getToken() + " Hier");
         }
 
         List<Score> updatedScores = eloService.updateElo(match.getGame(), scoreList, match.getUsers());
         for (Score score : updatedScores) {
-          System.out.println("Updating" + score.getScorePoints());
-
           scoreService.updateScore(score);
         }
         return savedMatch;

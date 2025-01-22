@@ -36,11 +36,9 @@ public class UserServiceImpl implements UserService, Serializable {
     @Override
     public Optional<User> saveUser(User user) {
         String token = tokenService.generateToken();
-        System.out.println("Token: " + token);
         user.setToken(token);
         Optional<User> savedUser = userRepository.saveUser(user);
         for (Game game : gameService.findAllGames()) {
-            System.out.println("Game!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!: " + game);
             scoreService.saveScore(new Score(0L,savedUser.get(),game,1500L,""));
         }
         return savedUser;
