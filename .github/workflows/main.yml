@@ -33,5 +33,5 @@ jobs:
 
       - name: Build Docker Image and Push to GHCR
         run: |
-          docker tag gepardec-gamertrack:${GITHUB_REF#refs/heads/} ghcr.io/gepardec/gepardec-gamertrack:${GITHUB_REF#refs/heads/}
+          docker tag gamertrack-war:latest ghcr.io/gepardec/gepardec-gamertrack:${GITHUB_REF#refs/heads/}
           docker push ghcr.io/gepardec/gepardec-gamertrack:${GITHUB_REF#refs/heads/}
