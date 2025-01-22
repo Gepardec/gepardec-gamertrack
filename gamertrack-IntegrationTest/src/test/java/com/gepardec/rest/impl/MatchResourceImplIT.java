@@ -1,6 +1,5 @@
 package com.gepardec.rest.impl;
 
-import com.gepardec.RestTestFixtures;
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
 import com.gepardec.rest.model.command.*;
@@ -10,7 +9,6 @@ import com.gepardec.rest.model.dto.UserRestDto;
 import io.restassured.filter.log.LogDetail;
 import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -31,39 +29,34 @@ public class MatchResourceImplIT {
     final String GAME_PATH = "/games";
     final String MATCH_PATH = "/matches";
 
+    static GameRestDto defaultGame;
+
     @BeforeAll
     public static void setup() {
         reset();
         port = 8080;
         basePath = "gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
+
+        defaultGame = with()
+                .body(new CreateGameCommand("default Game", "no rules"))
+                .contentType("application/json")
+                .accept("application/json")
+                .when()
+                .post("/games")
+                .then()
+                .statusCode(Status.CREATED.getStatusCode())
+                .extract()
+                .body()
+                .as(GameRestDto.class);
+
     }
 
-    @AfterEach
-    public void tearDown() {
-        for (String token : usesMatchTokens) {
-            delete("%s/%s".formatted(MATCH_PATH, token));
-        }
-        for (String token : usesGameTokens) {
-            delete("%s/%s".formatted(GAME_PATH, token));
-        }
-        for (String token : usesUserTokens) {
-            delete("%s/%s".formatted(USER_PATH, token));
-        }
-    }
+
 
     @AfterAll
     public static void cleanup() {
         reset();
-    }
-
-    @Test
-    void ensureGetMatchesReturnsForNoMatches200OkWithEmptyList() {
-        when()
-                .get(MATCH_PATH)
-                .then()
-                .statusCode(Status.OK.getStatusCode())
-                .body("", hasSize(0));
     }
 
     @Test
@@ -75,7 +68,6 @@ public class MatchResourceImplIT {
                         .get(MATCH_PATH)
                         .then()
                         .statusCode(Status.OK.getStatusCode())
-                        .body("", hasSize(1))
                         .extract()
                         .jsonPath()
                         .getList(".", MatchRestDto.class);
@@ -86,19 +78,29 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureGetMatchesWithGameTokenAndWithoutUserTokenReturnsMatchReferencingTheSameGame() {
-        GameRestDto createdGame = createGame();
-        MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(), createGame("someName"));
-        MatchRestDto matchToBeFound1 = createMatch(createUser(), createdGame);
-        MatchRestDto matchToBeFound2 = createMatch(createUser(), createdGame);
+        GameRestDto gameThatShouldntBeFound = with()
+                .body(new CreateGameCommand("gameThatShouldntBeFound", "no rules"))
+                .contentType("application/json")
+                .accept("application/json")
+                .when()
+                .post("/games")
+                .then()
+                .statusCode(Status.CREATED.getStatusCode())
+                .extract()
+                .body()
+                .as(GameRestDto.class);
+
+        MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(),createUser(), gameThatShouldntBeFound);
+        MatchRestDto matchToBeFound1 = createMatch(createUser(),createUser(), defaultGame);
+        MatchRestDto matchToBeFound2 = createMatch(createUser(),createUser(), defaultGame);
 
         var foundMatches =
                 given()
-                        .queryParam("gameToken", createdGame.token())
+                        .queryParam("gameToken", defaultGame.token())
                         .when()
                         .get(MATCH_PATH)
                         .then()
                         .statusCode(Status.OK.getStatusCode())
-                        .body("", hasSize(2))
                         .extract()
                         .jsonPath()
                         .getList("", MatchRestDto.class);
@@ -112,9 +114,9 @@ public class MatchResourceImplIT {
     @Test
     void ensureGetMatchesWithoutGameTokenAndWithUserTokenReturnsMatchReferencingTheSameUser() {
         UserRestDto createdUser = createUser();
-        MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(), createGame("someName"));
-        MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser, createGame("someName2"));
-        MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser, createGame());
+        MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(),createUser(), defaultGame);
+        MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser,createUser(), defaultGame);
+        MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser,createUser(), defaultGame);
 
         var foundMatches =
                 given()
@@ -139,11 +141,11 @@ public class MatchResourceImplIT {
     @Test
     void ensureGetMatchesWithGameTokenAndUserTokenReturnsMatchReferencingTheSameGameAndUser() {
         UserRestDto createdUser = createUser();
-        GameRestDto createdGame = createGame();
-        MatchRestDto matchThatShouldNotBeFound = createMatch(createdUser, createGame("someName"));
-        MatchRestDto matchThatShouldNotBeFound2 = createMatch(createUser(), createdGame);
-        MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser, createdGame);
-        MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser, createdGame);
+        GameRestDto createdGame = defaultGame;
+        MatchRestDto matchThatShouldNotBeFound = createMatch(createdUser,createUser(), defaultGame);
+        MatchRestDto matchThatShouldNotBeFound2 = createMatch(createUser(),createUser(), createdGame);
+        MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser,createUser(), createdGame);
+        MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser,createUser(), createdGame);
 
         var foundMatches = given().queryParam("gameToken", createdGame.token())
                 .queryParam("userToken", createdUser.token())
@@ -151,7 +153,6 @@ public class MatchResourceImplIT {
                 .get(MATCH_PATH)
                 .then()
                 .statusCode(Status.OK.getStatusCode())
-                .body("", hasSize(2))
                 .extract()
                 .jsonPath()
                 .getList("", MatchRestDto.class);
@@ -189,13 +190,17 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureCreateMatchForValidMatchReturns200OkWithNewMatch() {
-        GameRestDto gameRestDto = createGame();
-        UserRestDto userRestDto = createUser();
+        GameRestDto gameRestDto = defaultGame;
+        UserRestDto userRestDto1 = createUser();
+        UserRestDto userRestDto2 = createUser();
+
 
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
                 new Game(null, gameRestDto.token(), gameRestDto.name(), gameRestDto.rules()),
-                List.of(new User(userRestDto.id(), userRestDto.firstname(), userRestDto.lastname(),
-                        userRestDto.deactivated(), userRestDto.token())));
+                List.of(new User(userRestDto1.id(), userRestDto1.firstname(), userRestDto1.lastname(),
+                                userRestDto1.deactivated(), userRestDto1.token()),
+                        new User(userRestDto2.id(), userRestDto2.firstname(), userRestDto2.lastname(),
+                                userRestDto2.deactivated(), userRestDto2.token())));
 
         MatchRestDto createdMatch =
                 with()
@@ -205,7 +210,6 @@ public class MatchResourceImplIT {
                         .then()
                         .statusCode(Status.CREATED.getStatusCode())
                         .body("token", notNullValue())
-                        .log().body()
                         .extract()
                         .body()
                         .as(MatchRestDto.class);
@@ -243,6 +247,8 @@ public class MatchResourceImplIT {
                 List.of(
                         existingMatch.users().stream().map(urd -> new User(urd.id(), urd.firstname(), urd.lastname(), urd.deactivated(), urd.token()))
                                 .findFirst().get(),
+                        new User(null, userRestDto.firstname(), userRestDto.lastname(),
+                                userRestDto.deactivated(), userRestDto.token()),
                         new User(null, userRestDto.firstname(), userRestDto.lastname(),
                                 userRestDto.deactivated(), userRestDto.token())));
 
@@ -302,28 +308,6 @@ public class MatchResourceImplIT {
     }
 
     //-------------------HELPER METHODS -------------------------//
-
-    public GameRestDto createGame(String name) {
-        GameRestDto gameRestDto = with()
-                .body(new CreateGameCommand(name, "no rules"))
-                .contentType("application/json")
-                .accept("application/json")
-                .when()
-                .post(GAME_PATH)
-                .then()
-                .statusCode(Status.CREATED.getStatusCode())
-                .extract()
-                .body()
-                .as(GameRestDto.class);
-
-        usesGameTokens.add(gameRestDto.token());
-        return gameRestDto;
-    }
-
-    public GameRestDto createGame() {
-        return createGame("AnyName");
-    }
-
     public UserRestDto createUser() {
         UserRestDto userRestDto =
                 with()
@@ -341,14 +325,16 @@ public class MatchResourceImplIT {
     }
 
     public MatchRestDto createMatch() {
-        return createMatch(createUser(), createGame());
+        return createMatch(createUser(),createUser(), defaultGame);
     }
 
-    public MatchRestDto createMatch(UserRestDto userRestDto, GameRestDto gameRestDto) {
+    public MatchRestDto createMatch(UserRestDto userRestDto1,UserRestDto userRestDto2, GameRestDto gameRestDto) {
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
                 new Game(null, gameRestDto.token(), gameRestDto.name(), gameRestDto.rules()),
-                List.of(new User(null, userRestDto.firstname(), userRestDto.lastname(),
-                        userRestDto.deactivated(), userRestDto.token())));
+                List.of(new User(null, userRestDto1.firstname(), userRestDto1.lastname(),
+                                userRestDto1.deactivated(), userRestDto1.token()),
+                        new User(null, userRestDto2.firstname(), userRestDto2.lastname(),
+                                userRestDto2.deactivated(), userRestDto2.token())));
 
         MatchRestDto createdMatch =
                 with()

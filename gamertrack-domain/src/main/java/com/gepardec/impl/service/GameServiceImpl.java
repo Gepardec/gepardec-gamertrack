@@ -2,16 +2,21 @@ package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.services.GameService;
+import com.gepardec.core.services.ScoreService;
 import com.gepardec.core.services.TokenService;
+import com.gepardec.core.services.UserService;
 import com.gepardec.model.Game;
+import com.gepardec.model.Score;
+import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless
 @Transactional
@@ -19,11 +24,14 @@ public class GameServiceImpl implements GameService, Serializable {
 
   private final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
 
-
   @Inject
   private GameRepository gameRepository;
   @Inject
   TokenService tokenService;
+  @Inject
+  private UserService userService;
+  @Inject
+  private ScoreService scoreService;
 
   @Override
   public Optional<Game> saveGame(Game game) {
@@ -33,7 +41,20 @@ public class GameServiceImpl implements GameService, Serializable {
       return Optional.empty();
     }
     game.setToken(tokenService.generateToken());
-    return gameRepository.saveGame(game);
+    Optional<Game> savedGame = gameRepository.saveGame(game);
+
+    List<User> userList = userService.findAllUsers(true);
+    System.out.println("userList: " + userList);
+    if (!userList.isEmpty()) {
+
+      for (User user : userList) {
+        System.out.println("Drinnen");
+
+        scoreService.saveScore(new Score(0L, user, savedGame.get(), 1500L, ""));
+      }
+    }
+
+    return savedGame;
   }
 
   @Override

@@ -1,32 +1,21 @@
-package com.gepardec;
-
-import static com.gepardec.TestFixtures.user;
+package com.gepardec.rest.impl;
 
 import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
-import com.gepardec.rest.model.command.CreateGameCommand;
-import com.gepardec.rest.model.command.CreateMatchCommand;
-import com.gepardec.rest.model.command.CreateScoreCommand;
-import com.gepardec.rest.model.command.CreateUserCommand;
-import com.gepardec.rest.model.command.UpdateGameCommand;
-import com.gepardec.rest.model.command.UpdateMatchCommand;
-import com.gepardec.rest.model.command.UpdateUserCommand;
+import com.gepardec.rest.model.command.*;
 import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.dto.UserRestDto;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.gepardec.TestFixtures.user;
 
 public class RestTestFixtures {
 
   private static final TokenServiceImpl tokenService = new TokenServiceImpl();
-
-
-  public static CreateScoreCommand createScoreCommand(Long id) {
-    CreateScoreCommand createScoreCommand = new CreateScoreCommand(user(1L), game(), 10);
-    return createScoreCommand;
-  }
 
   public static CreateUserCommand createUserCommand(Long id) {
     CreateUserCommand createUserCommand = new CreateUserCommand("Max", "Muster");

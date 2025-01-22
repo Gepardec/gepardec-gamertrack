@@ -3,19 +3,24 @@ package com.gepardec.impl.service;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
+import com.gepardec.core.services.EloService;
 import com.gepardec.core.services.MatchService;
+import com.gepardec.core.services.ScoreService;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
+import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless
 @Transactional
@@ -34,6 +39,12 @@ public class MatchServiceImpl implements MatchService {
 
   @Inject
   private TokenService tokenService;
+
+  @Inject
+  private EloService eloService;
+
+  @Inject
+  private ScoreService scoreService;
 
 
   @Override
@@ -57,30 +68,49 @@ public class MatchServiceImpl implements MatchService {
 
   @Override
   public Optional<Match> saveMatch(Match match) {
+    if(match.getUsers().size() >= 2) {
+      Optional<Game> foundGame = gameRepository.findGameByToken(match.getGame().getToken());
+      List<User> foundUsers = match.getUsers().stream()
+              .map(User::getToken)
+              .map(token -> userRepository.findUserByToken(token))
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .toList();
 
-    Optional<Game> foundGame = gameRepository.findGameByToken(match.getGame().getToken());
-    List<User> foundUsers = match.getUsers().stream()
-        .map(User::getToken)
-        .map(token -> userRepository.findUserByToken(token))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .toList();
+      if (!foundUsers.isEmpty()
+              && foundUsers.size() == match.getUsers().size()
+              && foundGame.isPresent()) {
 
-    if (!foundUsers.isEmpty()
-        && foundUsers.size() == match.getUsers().size()
-        && foundGame.isPresent()) {
+        match.setToken(tokenService.generateToken());
+        match.setGame(foundGame.get());
+        match.setUsers(foundUsers);
 
-      match.setToken(tokenService.generateToken());
-      match.setGame(foundGame.get());
-      match.setUsers(foundUsers);
+        logger.info(
+                "Saving match containing GameID: %s and UserIDs: %s".formatted(
+                        match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
 
-      logger.info(
-          "Saving match containing GameID: %s and UserIDs: %s".formatted(
-              match.getGame().getId(), match.getUsers().stream().map(User::getId).toList()));
+        Optional<Match> savedMatch = matchRepository.saveMatch(match);
 
-      return matchRepository.saveMatch(match);
+        List<Score> scoreList = new ArrayList<>();
+
+        for (User user : match.getUsers()) {
+          List<Score> filteredScores = scoreService.filterScores(null, null, user.getToken(), match.getGame().getToken(), true);
+          scoreList.add(filteredScores.isEmpty() ? null : filteredScores.getFirst());
+          System.out.println(user.getToken() + " Hier");
+        }
+
+        List<Score> updatedScores = eloService.updateElo(match.getGame(), scoreList, match.getUsers());
+        for (Score score : updatedScores) {
+          System.out.println("Updating" + score.getScorePoints());
+
+          scoreService.updateScore(score);
+        }
+        return savedMatch;
+      }
+
     }
 
+    logger.error("Match.users.size()< 2 or foundUsers is empty");
     return Optional.empty();
 
   }

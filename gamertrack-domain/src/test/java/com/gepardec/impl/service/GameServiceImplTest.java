@@ -28,6 +28,10 @@ class GameServiceImplTest {
     TokenService tokenService;
     @InjectMocks
     GameServiceImpl gameService;
+    @Mock
+    UserServiceImpl userService;
+    @Mock
+    ScoreServiceImpl scoreService;
 
 
     @Test

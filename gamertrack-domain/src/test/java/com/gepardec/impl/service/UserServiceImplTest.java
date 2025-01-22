@@ -1,6 +1,8 @@
 package com.gepardec.impl.service;
 
 import com.gepardec.TestFixtures;
+import com.gepardec.core.repository.GameRepository;
+import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
@@ -24,6 +26,10 @@ public class UserServiceImplTest {
 
     @Mock
     UserRepository userRepository;
+    @Mock
+    GameRepository gameRepository;
+    @Mock
+    ScoreRepository scoreRepository;
 
     @InjectMocks
     UserServiceImpl userService;
@@ -33,6 +39,9 @@ public class UserServiceImplTest {
 
     @Mock
     TokenService tokenService;
+
+    @Mock
+    GameServiceImpl gameService;
 
     @Test
     void ensureSaveAndReadGameWorksAndReturnsUser() {
