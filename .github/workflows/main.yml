@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - dev
+      - feature/44WorkFlow
+
   workflow_dispatch:
 
 jobs:
