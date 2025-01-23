@@ -35,5 +35,5 @@ jobs:
 
       - name: Build Docker Image and Push to GHCR
         run: |
-          docker tag gamertrack-war:latest ghcr.io/gepardec/gepardec-gamertrack:$(if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then echo "latest"; else echo "dev"; fi)
-          docker push ghcr.io/gepardec/gepardec-gamertrack:${GITHUB_REF#refs/heads/}
+          docker tag gamertrack-war:latest ghcr.io/gepardec/gepardec-gamertrack:dev
+          docker push ghcr.io/gepardec/gepardec-gamertrack:dev
