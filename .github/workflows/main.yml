@@ -26,6 +26,16 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
+      - name: Run integrationTests
+        run:  |
+          docker run -d --name gamertrack-test-container -p 8080:8080 gamertrack-war:latest
+          
+          sleep 30
+          mvn verify -Prun-integrationtests
+
+          docker stop gamertrack-test-container
+          docker rm gamertrack-test-container
+
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
