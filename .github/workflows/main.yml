@@ -30,7 +30,11 @@ jobs:
         run:  |
           docker run -d --name gamertrack-test-container -p 8080:8080 gamertrack-war:latest
           
-          sleep 30
+          until curl -s http://localhost:8080/gepardec-gamertrack/api/v1/health | grep -q "running"; do
+            echo "Waiting for the Application..."
+            sleep 5
+          done
+
           mvn verify -Prun-integrationtests
 
           docker stop gamertrack-test-container
