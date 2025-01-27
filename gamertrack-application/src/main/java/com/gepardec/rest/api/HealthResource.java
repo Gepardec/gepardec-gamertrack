@@ -23,6 +23,6 @@ public interface HealthResource {
             @ApiResponse(responseCode = "200", description = "App is running!"),
     })
     @GET
-    public Response getUsers();
+    public Response healthCheck();
 
 }
