@@ -18,28 +18,6 @@
   <build>
     <finalName>gepardec-gamertrack</finalName>
 
-    <plugins>
-      <plugin>
-        <groupId>org.wildfly.plugins</groupId>
-        <artifactId>wildfly-maven-plugin</artifactId>
-        <version>5.1.1.Final</version>
-        <configuration>
-          <feature-packs>
-            <feature-pack>
-              <!-- Latest released version -->
-              <location>wildfly@maven(org.jboss.universe:community-universe)</location>
-            </feature-pack>
-          </feature-packs>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>image</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
   </build>
 
   <dependencies>

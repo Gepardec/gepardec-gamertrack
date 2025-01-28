@@ -26,13 +26,17 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
+      - name: Create Image
+        run:  |
+          docker build -t gamertrack-war .
+
       - name: Run integrationTests
         run:  |
           docker run -d --name gamertrack-test-container -p 8080:8080 gamertrack-war:latest
           
           until curl -s http://localhost:8080/gepardec-gamertrack/api/v1/health | grep -q "running"; do
             echo "Waiting for the Application..."
-            sleep 5
+            sleep 2
           done
 
           mvn verify -Prun-integrationtests
@@ -49,6 +53,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
+
 
       - name: Build Docker Image and Push to GHCR
         run: |
