@@ -28,7 +28,7 @@ jobs:
 
       - name: Create Image
         run:  |
-          docker build -t gamertrack-war .
+          docker build -t gamertrack-war --platform linux/amd64,linux/arm64 .
 
       - name: Run integrationTests
         run:  |
