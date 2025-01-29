@@ -12,8 +12,13 @@ public class CorsFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        responseContext.getHeaders().add("Access-Control-Allow-Origin", "*");
-        responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-        responseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
+        String origin = requestContext.getHeaders().getFirst("Origin");
+
+        if (origin != null && origin.matches("^(http|https)://gamertrack-frontend.apps.cloudscale-lpg-2.appuio.cloud")) {
+            responseContext.getHeaders().add("Access-Control-Allow-Origin", origin);
+            responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+            responseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+        }
     }
 }
