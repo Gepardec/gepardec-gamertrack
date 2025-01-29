@@ -78,9 +78,7 @@ public class UserServiceImpl implements UserService, Serializable {
                 }
                 else {
                     user.get().setDeactivated(true);
-                    log.info("deleting: user WITH SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
-
-                    log.info("user with the token {} has {} scores stored. user was deactivated", token, scoresByUser.size());
+                    log.info("user with the token {} was deactivated", token);
                     userRepository.updateUser(user.get());
                 }
                 return user;
