@@ -67,9 +67,12 @@ public class UserServiceImpl implements UserService, Serializable {
             if(user.isPresent()){
                 log.info("deleting: user with the token {} is present", token);
                 List<Score> scoresByUser = scoreService.findScoresByUser(user.get().getToken(),true);
-                if(scoresByUser.isEmpty()){
+                if(scoresByUser.stream().allMatch(Score::isDefaultScore)) {
                     log.info("user with the token {} has just default scores stored.", token);
 
+                    for(Score score : scoresByUser) {
+                        scoreService.deleteScore(score.getToken());
+                    }
                     log.info("deleting: user WITH DEFAULT SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
                     userRepository.deleteUser(user.get());
                 }

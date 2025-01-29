@@ -43,7 +43,7 @@ public class UserResourceImplIT {
         public void ensureCreateUserWorks() {
                 String token = with().when()
                         .contentType("application/json")
-                        .body(new CreateUserCommand("max","USERDEFAULT"))
+                        .body(new CreateUserCommand("max","Muster"))
                         .request("POST", "/users")
                         .then()
                         .statusCode(201)
