@@ -1,11 +1,9 @@
 package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.GameRepository;
-import com.gepardec.core.services.GameService;
-import com.gepardec.core.services.ScoreService;
-import com.gepardec.core.services.TokenService;
-import com.gepardec.core.services.UserService;
+import com.gepardec.core.services.*;
 import com.gepardec.model.Game;
+import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import jakarta.ejb.Stateless;
@@ -17,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Stateless
 @Transactional
@@ -32,6 +31,9 @@ public class GameServiceImpl implements GameService, Serializable {
   private UserService userService;
   @Inject
   private ScoreService scoreService;
+
+  @Inject
+  private MatchService matchService;
 
   @Override
   public Optional<Game> saveGame(Game game) {
@@ -60,6 +62,18 @@ public class GameServiceImpl implements GameService, Serializable {
     Optional<Game> game = gameRepository.findGameByToken(token);
     if (game.isEmpty()) {
       return Optional.empty();
+    }
+
+    List<Match> matchesByGame = matchService.findAllMatches().stream().filter(score -> score.getGame().getToken().equals(token)).collect(Collectors.toList());
+
+    List<Score> scoresByGame = scoreService.filterScores(null,null,null,token,true);
+
+    for (Match match : matchesByGame) {
+      matchService.deleteMatch(match.getToken());
+    }
+
+    for (Score score : scoresByGame) {
+      scoreService.deleteScore(score.getToken());
     }
 
     gameRepository.deleteGame(game.get().getId());
