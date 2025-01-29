@@ -8,7 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class ScoreRestMapper {
 
   public Score createScoreCommandtoScore(CreateScoreCommand scoreCommand) {
-    return new Score(null, scoreCommand.user(), scoreCommand.game(), scoreCommand.scorePoints(),null);
+    return new Score(null, scoreCommand.user(), scoreCommand.game(), scoreCommand.scorePoints(),null,scoreCommand.defaultScore());
   }
 
 

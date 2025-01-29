@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService, Serializable {
         user.setToken(token);
         Optional<User> savedUser = userRepository.saveUser(user);
         for (Game game : gameService.findAllGames()) {
-            scoreService.saveScore(new Score(0L,savedUser.get(),game,1500L,""));
+            scoreService.saveScore(new Score(0L,savedUser.get(),game,1500L,"",true));
         }
         return savedUser;
     }
@@ -68,9 +68,9 @@ public class UserServiceImpl implements UserService, Serializable {
                 log.info("deleting: user with the token {} is present", token);
                 List<Score> scoresByUser = scoreService.findScoresByUser(user.get().getToken(),true);
                 if(scoresByUser.isEmpty()){
-                    log.info("user with the token {} has no scores stored. deleting user", token);
+                    log.info("user with the token {} has just default scores stored.", token);
 
-                    log.info("deleting: user WITH NO SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
+                    log.info("deleting: user WITH DEFAULT SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
                     userRepository.deleteUser(user.get());
                 }
                 else {

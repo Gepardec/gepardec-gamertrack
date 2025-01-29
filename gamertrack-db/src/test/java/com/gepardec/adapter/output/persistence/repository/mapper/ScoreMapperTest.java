@@ -49,7 +49,7 @@ public class ScoreMapperTest {
   @Test
   public void ensureScoreModelToExistingScoreEntityWorks() {
     Score score = TestFixtures.score(1L, 3L, 4L);
-    ScoreEntity existingScore = new ScoreEntity(null, null, 10L, null);
+    ScoreEntity existingScore = new ScoreEntity(null, null, 10L, null, true);
     existingScore.setId(1L);
     existingScore.setToken(score.getToken());
 
@@ -68,6 +68,4 @@ public class ScoreMapperTest {
     assertEquals(score.getGame().getToken(), mappedScore.getGame().getToken());
     assertEquals(score.getScorePoints(), mappedScore.getScorePoints());
   }
-
-
 }

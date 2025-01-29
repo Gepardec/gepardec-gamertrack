@@ -85,7 +85,7 @@ public class TestFixtures {
   }
 
   public static Score score(Long scoreId, Long userId, Long gameId) {
-    Score score = new Score(scoreId, user(userId), game(gameId), 10L, tokenService.generateToken());
+    Score score = new Score(scoreId, user(userId), game(gameId), 10L, tokenService.generateToken(),true);
     return score;
   }
 
