@@ -38,6 +38,8 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
 
   @Inject
   ScoreMapper entityMapper;
+    @Inject
+    private ScoreMapper scoreMapper;
 
   @Override
   public Optional<Score> saveScore(Score score) {
@@ -84,6 +86,14 @@ public class ScoreRepositoryImpl implements ScoreRepository, Serializable {
     }
     log.error("Game with Token: {} does not exist! Updating Aborted", score.getGame().getToken());
     return Optional.empty();
+  }
+
+  @Override
+  public void deleteScore(Score score) {
+    ScoreEntity scoreEntity = scoreMapper.scoreModeltoExistingScoreEntity(score,
+            entityManager.find(ScoreEntity.class, findScoreByToken(score.getToken()).get().getId()));
+    log.info("Deleted score with token: {}", score.getToken());
+    entityManager.remove(scoreEntity);
   }
 
   @Override
