@@ -2,7 +2,6 @@ package com.gepardec.rest.impl;
 
 import com.gepardec.core.services.ScoreService;
 import com.gepardec.rest.api.ScoreResource;
-import com.gepardec.rest.model.command.CreateScoreCommand;
 import com.gepardec.rest.model.dto.ScoreRestDto;
 import com.gepardec.rest.model.mapper.ScoreRestMapper;
 import jakarta.enterprise.context.RequestScoped;
@@ -41,14 +40,6 @@ public class ScoreResourceImpl implements ScoreResource {
             .map(ScoreRestDto::new)
             .toList())
         .build();
-  }
-
-  //Only temporary for testing
-  @Override
-  public Response createScore(CreateScoreCommand score) {
-    return scoreService.saveScore(mapper.createScoreCommandtoScore(score)).map(ScoreRestDto::new)
-        .map(score1 -> Response.status(Response.Status.CREATED).entity(score1))
-        .orElseGet(() -> Response.status(Response.Status.NOT_FOUND)).build();
   }
 
 }
