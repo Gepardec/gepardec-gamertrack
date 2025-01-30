@@ -7,6 +7,7 @@ COPY ChangeDataSource.sh /opt/jboss/wildfly/ChangeDataSource.sh
 
 USER root
 RUN chmod +x /opt/jboss/wildfly/ChangeDataSource.sh
+USER jboss
 RUN /opt/jboss/wildfly/ChangeDataSource.sh
 
 ENTRYPOINT ["/bin/bash", "-c", "/opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0"]
