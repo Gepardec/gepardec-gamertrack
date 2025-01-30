@@ -50,11 +50,7 @@ public class UserServiceImpl implements UserService, Serializable {
         Optional<User> entity = userRepository.findUserByToken(user.getToken());
         if(entity.isPresent()) {
             log.info("updating: user with the token {} is present", user.getId());
-            if(!user.isDeactivated()) {
-                return userRepository.updateUser(user);
-            }
-            log.error("User with token {}. is deactivated and was not updated", user.getToken());
-            return Optional.empty();
+            return userRepository.updateUser(user);
         }
         log.error("Could not find user with token {}. user was not updated", user.getToken());
         return Optional.empty();
