@@ -62,7 +62,7 @@ public class EloServiceImpl implements EloService {
             double newRating = calculateNewScore(playerRating, expectedResult, result);
 
             UpdatedScoreList.get(i).setScorePoints(newRating);
-            UpdatedScoreList.get(i).setDefaultScore(false);
+            UpdatedScoreList.get(i).setDeletable(false);
         }
         return UpdatedScoreList;
     }

@@ -24,20 +24,20 @@ public class ScoreMapper {
   public ScoreEntity scoreModeltoScoreEntity(Score score) {
     return new ScoreEntity(entityManager.getReference(UserEntity.class, score.getUser().getId()),
         entityManager.getReference(GameEntity.class, score.getGame().getId()),
-        score.getScorePoints(), score.getToken(), score.isDefaultScore());
+        score.getScorePoints(), score.getToken(), score.isDeletable());
   }
 
   public Score scoreEntityToScoreModel(ScoreEntity scoreEntity) {
     return new Score(scoreEntity.getId(), userMapper.userEntityToUserModel(scoreEntity.getUser()),
         gameMapper.gameEntityToGameModel(scoreEntity.getGame()), scoreEntity.getScorePoints(),scoreEntity.getToken(),
-            scoreEntity.isDefaultScore());
+            scoreEntity.isDeletable());
   }
 
   public ScoreEntity scoreModeltoExistingScoreEntity(Score score, ScoreEntity scoreEntity) {
     scoreEntity.setUser(entityManager.getReference(UserEntity.class, score.getUser().getId()));
     scoreEntity.setGame(entityManager.getReference(GameEntity.class, score.getGame().getId()));
     scoreEntity.setScorePoints(score.getScorePoints());
-    scoreEntity.setDefaultScore(score.isDefaultScore());
+    scoreEntity.setDeletable(score.isDeletable());
     return scoreEntity;
   }
 }

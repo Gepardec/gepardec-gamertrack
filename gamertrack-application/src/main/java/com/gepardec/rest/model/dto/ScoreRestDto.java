@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record ScoreRestDto(@NotNull String token, @NotNull UserRestDto user, @NotNull GameRestDto game, double score, boolean defaultScore) {
     public ScoreRestDto(Score score){
-        this(score.getToken(), new UserRestDto(score.getUser()), new GameRestDto(score.getGame()), score.getScorePoints(), score.isDefaultScore());
+        this(score.getToken(), new UserRestDto(score.getUser()), new GameRestDto(score.getGame()), score.getScorePoints(), score.isDeletable());
     }
 
 }
