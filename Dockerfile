@@ -7,6 +7,8 @@ COPY ChangeDataSource.sh /opt/jboss/wildfly/ChangeDataSource.sh
 
 USER root
 RUN chmod +x /opt/jboss/wildfly/ChangeDataSource.sh
+RUN chmod -R 777 jboss/
+
 USER jboss
 RUN /opt/jboss/wildfly/ChangeDataSource.sh
 
