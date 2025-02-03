@@ -6,8 +6,7 @@
   <!--JTA -> container does everything EntityManager related, EM can only be accessed when a transaction is in progress-->
   <persistence-unit name="gamertrack" transaction-type="JTA">
     <properties>
-      <property name="jakarta.persistence.schema-generation.database.action"
-        value="drop-and-create"/>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
     </properties>
   </persistence-unit>
 </persistence>
