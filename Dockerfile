@@ -4,15 +4,17 @@ ADD gamertrack-war/target/gepardec-gamertrack.war /opt/jboss/wildfly/standalone/
 
 COPY ChangeDataSource.sh /opt/jboss/wildfly/ChangeDataSource.sh
 
-
 USER root
+
 RUN chmod +x /opt/jboss/wildfly/ChangeDataSource.sh
 RUN chmod -R 777 /opt/jboss/
 
-
+USER jboss
 
 RUN /opt/jboss/wildfly/ChangeDataSource.sh
 
+USER root
+RUN chmod -R 777 /opt/jboss/wildfly/standalone/data
 USER jboss
 
 

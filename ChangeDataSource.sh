@@ -15,4 +15,3 @@ echo "=> WildFly started. Now configuring datasource."
 exit
 EOF
 
-chmod -R 777 /opt/jboss/wildfly/standalone/data/content
