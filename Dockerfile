@@ -11,6 +11,9 @@ RUN chmod -R 777 /opt/jboss/
 
 USER jboss
 
+RUN whoami
+
 #RUN /opt/jboss/wildfly/ChangeDataSource.sh
+
 
 ENTRYPOINT ["/bin/bash", "-c", "/opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0"]
