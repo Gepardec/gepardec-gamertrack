@@ -14,7 +14,7 @@ USER jboss
 RUN /opt/jboss/wildfly/ChangeDataSource.sh
 
 USER root
-RUN chmod -R 777 /opt/jboss/wildfly/standalone/data
+RUN chmod -R 777 /opt/jboss/wildfly
 USER jboss
 
 
