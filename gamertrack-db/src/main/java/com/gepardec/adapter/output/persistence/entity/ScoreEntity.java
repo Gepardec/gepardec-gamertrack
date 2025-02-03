@@ -28,12 +28,15 @@ public class ScoreEntity extends AbstractEntity {
 
   @NotEmpty(message = "Token must be set")
   private String token;
+  @NotNull
+  private boolean deletable;
 
-  public ScoreEntity(UserEntity user, GameEntity game, double scorePoints, String token) {
+  public ScoreEntity(UserEntity user, GameEntity game, double scorePoints, String token, boolean deletable) {
     this.user = user;
     this.game = game;
     this.scorePoints = scorePoints;
     this.token = token;
+    this.deletable = deletable;
   }
 
   public ScoreEntity() {
@@ -70,5 +73,12 @@ public class ScoreEntity extends AbstractEntity {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  public boolean isDeletable() {
+    return deletable;
+  }
+  public void setDeletable(boolean defaultScore) {
+    this.deletable = defaultScore;
   }
 }

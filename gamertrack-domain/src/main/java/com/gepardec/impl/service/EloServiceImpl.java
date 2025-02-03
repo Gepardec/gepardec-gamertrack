@@ -33,13 +33,13 @@ public class EloServiceImpl implements EloService {
         List<Score> results = new ArrayList<>();
         List<Score> UpdatedScoreList = new ArrayList<>();
         for( Score score : scoreList ) {
-            UpdatedScoreList.add(new Score(score.getId(),score.getUser(),score.getGame(),score.getScorePoints(),score.getToken()));
+            UpdatedScoreList.add(new Score(score.getId(),score.getUser(),score.getGame(),score.getScorePoints(),score.getToken(),false));
         }
 
         for (int i = 0; i < numPlayers; i++) {
             User user = playerOrder.get(i);
             double score = 1.0 - (i / (double) (numPlayers - 1));
-            results.add(new Score(0L,user, game, score,""));
+            results.add(new Score(0L,user, game, score,"",false));
         }
 
         for (int i = 0; i < numPlayers; i++) {
@@ -62,6 +62,7 @@ public class EloServiceImpl implements EloService {
             double newRating = calculateNewScore(playerRating, expectedResult, result);
 
             UpdatedScoreList.get(i).setScorePoints(newRating);
+            UpdatedScoreList.get(i).setDeletable(false);
         }
         return UpdatedScoreList;
     }

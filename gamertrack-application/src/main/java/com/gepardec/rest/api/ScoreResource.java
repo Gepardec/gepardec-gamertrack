@@ -1,10 +1,8 @@
 package com.gepardec.rest.api;
 
-import com.gepardec.rest.model.command.CreateScoreCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -20,16 +18,6 @@ public interface ScoreResource {
     public static final String ID_PATH = "{id}";
     public static final String SCOREPOINTS_PATH = "scorepoints/{points}";
 
-    //Only temporary for testing
-    //-------------------------------
-    @Operation(summary = "Post a score", description = "Returns the created score")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
-            @ApiResponse(responseCode = "404", description = "Not Created - The score was not created")
-    })
-    @POST
-    public Response createScore(@Valid CreateScoreCommand createScoreCommand);
-    //-------------------------------
 
     @Operation(summary = "Get all Scores (optional filter: min, max, user & game)", description = "Returns list of scores")
     @ApiResponses(value = {

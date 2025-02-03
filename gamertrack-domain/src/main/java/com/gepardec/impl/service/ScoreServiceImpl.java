@@ -49,6 +49,17 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
     }
 
     @Override
+    public void deleteScore(String token) {
+        Optional<Score> score = scoreRepository.findScoreByToken(token);
+
+        if(score.isPresent()){
+            log.info("deleting: score with the token {} user: {} game: {}", score.get().getToken(),score.get().getUser().getToken(),score.get().getGame().getToken());
+                scoreRepository.deleteScore(score.get());
+            }
+        log.error("Could not find score with token {}. Score was not deleted", token);
+    }
+
+    @Override
     public List<Score> findAllScores(Boolean includeDeactivatedUsers) {
         return scoreRepository.filterScores(null,null,null,null, includeDeactivatedUsers);
     }

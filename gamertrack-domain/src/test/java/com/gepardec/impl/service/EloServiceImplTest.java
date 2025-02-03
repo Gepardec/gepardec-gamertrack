@@ -79,11 +79,11 @@ public class EloServiceImplTest {
         User user4 = TestFixtures.user(1L);
         User user5 = TestFixtures.user(1L);
 
-        Score score1 = new Score(0L,user1,game,1500,"");
-        Score score2 = new Score(0L,user2,game,1500,"");
-        Score score3 = new Score(0L,user3,game,1500,"");
-        Score score4 = new Score(0L,user4,game,1500,"");
-        Score score5 = new Score(0L,user5,game,1500,"");
+        Score score1 = new Score(0L,user1,game,1500,"",true);
+        Score score2 = new Score(0L,user2,game,1500,"",true);
+        Score score3 = new Score(0L,user3,game,1500,"",true);
+        Score score4 = new Score(0L,user4,game,1500,"",true);
+        Score score5 = new Score(0L,user5,game,1500,"",true);
 
         List<Score> scoresList = List.of(score1,score2, score3, score4, score5);
         List<User> usersList = List.of(user1,user2, user3, user4, user5);

@@ -16,5 +16,6 @@ public interface ScoreService {
     List<Score> findScoreByMinMaxScoresPoints(double minPoints, double maxPoints, Boolean includeDeactivatedUsers);
     Optional<Score> saveScore(Score scoreDto);
     Optional<Score> updateScore(Score scoreDto);
+    void deleteScore(String token);
     boolean scoreExists(Score scoreDto);
 }

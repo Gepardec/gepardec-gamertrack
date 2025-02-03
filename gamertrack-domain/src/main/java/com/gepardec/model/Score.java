@@ -6,17 +6,19 @@ public class Score{
     private Game game;
     private double scorePoints;
     private String token;
+    private boolean deletable;
 
     public Score(Long id) {
         this.id = id;
     }
 
-    public Score(Long id, User user, Game game, double scorePoints, String token) {
+    public Score(Long id, User user, Game game, double scorePoints, String token, boolean deletable) {
         this.id = id;
         this.user = user;
         this.game = game;
         this.scorePoints = scorePoints;
         this.token = token;
+        this.deletable = deletable;
     }
 
     public Long getId() {
@@ -56,5 +58,12 @@ public class Score{
     }
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public boolean isDeletable() {
+        return deletable;
+    }
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
     }
 }

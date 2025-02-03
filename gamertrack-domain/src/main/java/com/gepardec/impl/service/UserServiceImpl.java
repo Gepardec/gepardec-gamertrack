@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService, Serializable {
         user.setToken(token);
         Optional<User> savedUser = userRepository.saveUser(user);
         for (Game game : gameService.findAllGames()) {
-            scoreService.saveScore(new Score(0L,savedUser.get(),game,1500L,""));
+            scoreService.saveScore(new Score(0L,savedUser.get(),game,1500L,"",true));
         }
         return savedUser;
     }
@@ -50,11 +50,7 @@ public class UserServiceImpl implements UserService, Serializable {
         Optional<User> entity = userRepository.findUserByToken(user.getToken());
         if(entity.isPresent()) {
             log.info("updating: user with the token {} is present", user.getId());
-            if(!entity.get().isDeactivated()) {
-                return userRepository.updateUser(user);
-            }
-            log.error("User with token {}. is deactivated and was not updated", user.getToken());
-            return Optional.empty();
+            return userRepository.updateUser(user);
         }
         log.error("Could not find user with token {}. user was not updated", user.getToken());
         return Optional.empty();
@@ -67,17 +63,18 @@ public class UserServiceImpl implements UserService, Serializable {
             if(user.isPresent()){
                 log.info("deleting: user with the token {} is present", token);
                 List<Score> scoresByUser = scoreService.findScoresByUser(user.get().getToken(),true);
-                if(scoresByUser.isEmpty()){
-                    log.info("user with the token {} has no scores stored. deleting user", token);
+                if(scoresByUser.stream().allMatch(Score::isDeletable)) {
+                    log.info("user with the token {} has just default scores stored.", token);
 
-                    log.info("deleting: user WITH NO SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
+                    for(Score score : scoresByUser) {
+                        scoreService.deleteScore(score.getToken());
+                    }
+                    log.info("deleting: user WITH DEFAULT SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
                     userRepository.deleteUser(user.get());
                 }
                 else {
                     user.get().setDeactivated(true);
-                    log.info("deleting: user WITH SCORES with the token {} firstname {} lastname {} deactivated {} is present", user.get().getToken(),user.get().getFirstname(),user.get().getLastname(),user.get().isDeactivated());
-
-                    log.info("user with the token {} has {} scores stored. user was deactivated", token, scoresByUser.size());
+                    log.info("user with the token {} was deactivated", token);
                     userRepository.updateUser(user.get());
                 }
                 return user;

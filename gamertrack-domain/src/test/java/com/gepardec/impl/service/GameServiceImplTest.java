@@ -32,6 +32,8 @@ class GameServiceImplTest {
     UserServiceImpl userService;
     @Mock
     ScoreServiceImpl scoreService;
+    @Mock
+    MatchServiceImpl matchService;
 
 
     @Test

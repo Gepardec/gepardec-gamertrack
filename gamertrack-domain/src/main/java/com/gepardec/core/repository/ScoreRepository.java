@@ -12,5 +12,6 @@ public interface ScoreRepository {
     List<Score> findScoreByScorePoints(double scorePoints, Boolean includeDeactivatedUsers);
     Optional<Score> saveScore(Score scoreDto);
     Optional<Score> updateScore(Score scoreDto);
+    void deleteScore(Score score);
     boolean scoreExists(Score scoreDto);
 }
