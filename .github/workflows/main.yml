@@ -69,7 +69,9 @@ jobs:
       - name: Build Docker Image and Push to GHCR
         run: |
           docker tag gamertrack-war:latest ghcr.io/gepardec/gepardec-gamertrack:${{ env.branch_name }}-${{ env.commit_hash }}
+          docker tag gamertrack-war:latest ghcr.io/gepardec/gepardec-gamertrack:latest
           docker push ghcr.io/gepardec/gepardec-gamertrack:${{ env.branch_name }}-${{ env.commit_hash }}
+          docker push ghcr.io/gepardec/gepardec-gamertrack:latest
 
   scan:
     name: scanning
