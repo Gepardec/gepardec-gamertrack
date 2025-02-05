@@ -12,6 +12,10 @@ jobs:
   build-test-push:
     runs-on: ubuntu-latest
 
+    outputs:
+      branch_name: ${{ steps.branch.outputs.branch_name }}
+      commit_hash: ${{ steps.commit.outputs.commit_hash }}
+
     steps:
       - uses: actions/checkout@v3
         name: checkout
@@ -56,16 +60,16 @@ jobs:
 
       - name: Get branch name
         id: branch
-        run: echo "BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+        run: echo "branch_name=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
 
       - name: Get commit hash
         id: commit
-        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: echo "commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Build Docker Image and Push to GHCR
         run: |
-          docker tag gamertrack-war:latest ghcr.io/gepardec/gepardec-gamertrack:${{ env.BRANCH_NAME }}-${{ env.COMMIT_HASH }}
-          docker push ghcr.io/gepardec/gepardec-gamertrack:${{ env.BRANCH_NAME }}-${{ env.COMMIT_HASH }}
+          docker tag gamertrack-war:latest ghcr.io/gepardec/gepardec-gamertrack:${{ env.branch_name }}-${{ env.commit_hash }}
+          docker push ghcr.io/gepardec/gepardec-gamertrack:${{ env.branch_name }}-${{ env.commit_hash }}
 
   scan:
     name: scanning
@@ -76,7 +80,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.29.0
         with:
-          image-ref: 'ghcr.io/gepardec/gepardec-gamertrack:${{ env.BRANCH_NAME }}-${{ env.COMMIT_HASH }}'
+          image-ref: 'ghcr.io/gepardec/gepardec-gamertrack:latest'
           format: 'sarif'
           ignore-unfixed: true
           scanners: 'vuln,secret,misconfig'
