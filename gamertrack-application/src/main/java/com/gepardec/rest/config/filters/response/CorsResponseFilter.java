@@ -1,4 +1,4 @@
-package com.gepardec.rest.config;
+package com.gepardec.rest.config.filters.response;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -8,7 +8,7 @@ import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 
 @Provider
-public class CorsFilter implements ContainerResponseFilter {
+public class CorsResponseFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
