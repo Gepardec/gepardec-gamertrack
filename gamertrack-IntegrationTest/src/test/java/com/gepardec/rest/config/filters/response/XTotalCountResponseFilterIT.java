@@ -1,7 +1,9 @@
 package com.gepardec.rest.config.filters.response;
 
+import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
 import io.restassured.filter.log.LogDetail;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,10 +60,30 @@ public class XTotalCountResponseFilterIT {
 
     @Test
     void ensureXTotalCountHeaderIsNotPresentForEndpointsThatReturnsNoList() {
+        //GIVEN
+        GameRestDto existingGame =
+                with()
+                        .body(new CreateGameCommand("news game2000100", "no rules"))
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .when()
+                        .post()
+                        .then()
+                        .extract()
+                        .body()
+                        .as(GameRestDto.class);
+
+        //WHEN THEN
         when()
-                .get("/asfasjdfaksdj")
+                .get("/%s".formatted(existingGame.token()))
                 .then()
-                .statusCode(404)
+                .statusCode(200)
                 .header("X-Total-Count", nullValue());
+
+        //TEARDOWN
+        with()
+                .delete("/%s".formatted(existingGame.token()))
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode());
     }
 }
