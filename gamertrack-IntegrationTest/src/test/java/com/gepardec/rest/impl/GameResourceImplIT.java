@@ -1,9 +1,12 @@
 package com.gepardec.rest.impl;
 
+import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -21,18 +24,48 @@ public class GameResourceImplIT {
 
     ArrayList<String> usesTokens = new ArrayList<>();
 
+    static String authHeader;
+    String bearerToken = authHeader.replace("Bearer ", "");
+
+    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
+    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
+
+
     @BeforeAll
     public static void setup() {
         reset();
         port = 8080;
-        basePath = "gepardec-gamertrack/api/v1/games";
+        basePath = "gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
+
+        authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand("admin",SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
     }
 
     @AfterEach
     public void after() {
         for (String token : usesTokens) {
-            delete("/%s".formatted(token));
+            with()
+                    .headers(
+                            "Authorization",
+                            "Bearer " + bearerToken,
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .when()
+                    .contentType("application/json")
+                    .pathParam("token", token)
+                    .request("DELETE", "/games/{token}")
+            ;
         }
     }
 
@@ -49,7 +82,7 @@ public class GameResourceImplIT {
         //WHEN THEN
         var foundGames =
                 when()
-                        .get()
+                        .get("/games")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -66,7 +99,7 @@ public class GameResourceImplIT {
 
         var foundGame =
                 when()
-                        .get("/%s".formatted(existingGame.token()))
+                        .get("/games/%s".formatted(existingGame.token()))
                         .then()
                         .statusCode(Status.OK.getStatusCode())
                         .extract()
@@ -80,7 +113,7 @@ public class GameResourceImplIT {
     @Test
     void ensureGetGameWithNoExistingGameReturns404() {
         when()
-                .get("askjfaskl1230qqis")
+                .get("/games/askjfaskl1230qqis")
                 .then()
                 .statusCode(Status.NOT_FOUND.getStatusCode());
     }
@@ -91,10 +124,17 @@ public class GameResourceImplIT {
 
         var responeObjectFromRequest =
                 with()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .body(gameToBeCreated)
                         .contentType("application/json")
                         .when()
-                        .post()
+                        .post("/games")
                         .then()
                         .statusCode(Status.CREATED.getStatusCode())
                         .body("token", notNullValue())
@@ -108,9 +148,16 @@ public class GameResourceImplIT {
     void ensureCreateGameWithInvalidGameReturns400BadRequest() {
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateGameCommand("", "invalid game"))
                 .contentType("application/json")
-                .post()
+                .post("/games")
                 .then()
                 .statusCode(Status.BAD_REQUEST.getStatusCode());
     }
@@ -122,9 +169,16 @@ public class GameResourceImplIT {
         UpdateGameCommand gameToBeUpdated = new UpdateGameCommand("UpatedTestGame", "still no rules");
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(gameToBeUpdated)
                 .contentType("application/json")
-                .put("/%s".formatted(existingGame.token()))
+                .put("/games/%s".formatted(existingGame.token()))
                 .then()
                 .statusCode(Status.OK.getStatusCode())
                 .body("token", samePropertyValuesAs(existingGame.token()))
@@ -140,9 +194,16 @@ public class GameResourceImplIT {
         UpdateGameCommand gameToBeUpdated = new UpdateGameCommand("UpatedTestGame", "still no rules");
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(gameToBeUpdated)
                 .contentType("application/json")
-                .put("/asdaskjfalsfj")
+                .put("/games/asdaskjfalsfj")
                 .then()
                 .statusCode(Status.NOT_FOUND.getStatusCode());
     }
@@ -168,11 +229,18 @@ public class GameResourceImplIT {
     public GameRestDto createGame() {
         GameRestDto gameRestDto =
                 with()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .body(new CreateGameCommand("news game", "no rules"))
                         .contentType("application/json")
                         .accept("application/json")
                         .when()
-                        .post()
+                        .post("/games")
                         .then()
                         .statusCode(Status.CREATED.getStatusCode())
                         .extract()

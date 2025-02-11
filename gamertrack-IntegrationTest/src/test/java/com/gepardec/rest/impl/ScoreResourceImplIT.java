@@ -1,10 +1,14 @@
 package com.gepardec.rest.impl;
 
+import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,15 +21,40 @@ public class ScoreResourceImplIT {
 
     private static String gameToken;
 
+
+    static String authHeader;
+    String bearerToken = authHeader.replace("Bearer ", "");
+
+    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
+    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
+
+
     @BeforeAll
     public static void setup() {
         RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
 
+        authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand("admin",SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
 
         gameToken = with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateGameCommand("Vier Gewinnt", "Nicht Schummeln"))
                 .request("POST", "/games")
                 .then()
@@ -34,11 +63,34 @@ public class ScoreResourceImplIT {
                 .path("token");
     }
 
+    @AfterAll
+    static public void tearDown() {
+            with()
+                    .headers(
+                            "Authorization",
+                            "Bearer " + authHeader.replace("Bearer ", ""),
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .when()
+                    .contentType("application/json")
+                    .pathParam("token", gameToken)
+                    .request("DELETE", "/games/{token}");
+    }
+
     @Test
     public void ensureCreateScoreWorks() {
         String userToken = with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
                 .request("POST", "/users")
                 .then()
@@ -72,6 +124,13 @@ public class ScoreResourceImplIT {
         String userToken = with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
                 .request("POST", "/users")
                 .then()
@@ -116,6 +175,13 @@ public class ScoreResourceImplIT {
                 .when()
                 .contentType("application/json")
                 .body(new CreateUserCommand("Jakob", "Muster"))
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .request("POST", "/users")
                 .then()
                 .statusCode(201)
@@ -125,6 +191,13 @@ public class ScoreResourceImplIT {
         with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new UpdateUserCommand("Jakob", "Muster", true))
                 .pathParam("userToken", userToken)
                 .request("PUT", "/users/{userToken}")
@@ -146,6 +219,13 @@ public class ScoreResourceImplIT {
         String userToken = with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
                 .request("POST", "/users")
                 .then()
@@ -171,6 +251,13 @@ public class ScoreResourceImplIT {
         String userToken = with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
                 .request("POST", "/users")
                 .then()
@@ -196,6 +283,13 @@ public class ScoreResourceImplIT {
         String userToken = with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
                 .request("POST", "/users")
                 .then()
@@ -228,6 +322,13 @@ public class ScoreResourceImplIT {
         String userToken = with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
                 .request("POST", "/users")
                 .then()
@@ -238,6 +339,13 @@ public class ScoreResourceImplIT {
         with()
                 .when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(new UpdateUserCommand("Jakob", "Muster", true))
                 .pathParam("userToken", userToken)
                 .request("PUT", "/users/{userToken}")

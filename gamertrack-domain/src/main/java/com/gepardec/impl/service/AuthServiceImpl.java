@@ -19,7 +19,7 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService {
 
     static Dotenv dotenv = Dotenv.configure().directory("../../").filename("secret.env").ignoreIfMissing().load();
-    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW");
+    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Inject
@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     public boolean authenticate(AuthCredential credential) {
         if (!credential.getUsername().isBlank() || credential.getPassword().isBlank()) {
             Optional<AuthCredential> dbCredential = authRepository.findByUsername(credential);
-            log.info("Found credential {}", credential.getUsername());
+
             if (dbCredential.isPresent()){
                 if(jwtUtil.passwordsMatches(dbCredential.get().getPassword(), dbCredential.get().getSalt(), credential.getPassword())){
                     log.info("Credential {} authenticated", credential.getUsername());

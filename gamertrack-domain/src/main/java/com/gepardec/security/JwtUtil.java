@@ -17,8 +17,8 @@ import java.util.Map;
 
 @ApplicationScoped
 public class JwtUtil {
-    static Dotenv dotenv = Dotenv.configure().directory("../../").filename("secret.env").load();
-    private static final String SECRET_KEY = dotenv.get("SECRET_JWT_HASH");
+    static Dotenv dotenv = Dotenv.configure().directory("../../").filename("secret.env").ignoreIfMissing().load();
+    private static final String SECRET_KEY = dotenv.get("SECRET_JWT_HASH", System.getenv("SECRET_JWT_HASH"));
 
     public String generateToken(String username) {
         return Jwts.builder()

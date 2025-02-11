@@ -55,7 +55,8 @@ public class ScoreServiceImpl implements ScoreService, Serializable {
         if(score.isPresent()){
             log.info("deleting: score with the token {} user: {} game: {}", score.get().getToken(),score.get().getUser().getToken(),score.get().getGame().getToken());
                 scoreRepository.deleteScore(score.get());
-            }
+                return;
+        }
         log.error("Could not find score with token {}. Score was not deleted", token);
     }
 

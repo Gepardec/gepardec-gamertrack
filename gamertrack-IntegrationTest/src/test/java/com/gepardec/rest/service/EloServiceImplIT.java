@@ -2,12 +2,15 @@ package com.gepardec.rest.service;
 
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
+import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.dto.ScoreRestDto;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,10 +25,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EloServiceImplIT {
 
+    static String authHeader;
+    String bearerToken = authHeader.replace("Bearer ", "");
+
+    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
+    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
+
     @BeforeAll
     public static void setup() {
         RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
+
+        authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand("admin",SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
     }
 
     @Test
@@ -37,6 +57,13 @@ public class EloServiceImplIT {
 
         String gameToken1 = with()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(gameCommand)
                 .contentType("application/json")
                 .when()
@@ -48,6 +75,13 @@ public class EloServiceImplIT {
 
         String userToken1 = with().when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(userCommand1)
                 .request("POST", "/users")
                 .then()
@@ -59,6 +93,13 @@ public class EloServiceImplIT {
 
         String userToken2 = with().when()
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(userCommand2)
                 .request("POST", "/users")
                 .then()
@@ -80,6 +121,13 @@ public class EloServiceImplIT {
                         , new User(0L, "Max","Muster",false, userToken1)));
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                         .body(createMatchCommandUser1Wins)
                         .contentType("application/json")
                         .request("POST", "/matches")
@@ -107,6 +155,13 @@ public class EloServiceImplIT {
                         score.score() == 1484.0));
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                         .body(createMatchCommandUser1Wins)
                         .contentType("application/json")
                         .request("POST", "/matches")
@@ -132,6 +187,13 @@ public class EloServiceImplIT {
 
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                         .body(createMatchCommandUser1Wins)
                         .contentType("application/json")
                         .request("POST", "/matches")
@@ -157,6 +219,13 @@ public class EloServiceImplIT {
 
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(createMatchCommandUser2Wins)
                 .contentType("application/json")
                 .request("POST", "/matches")
@@ -179,7 +248,5 @@ public class EloServiceImplIT {
         assertTrue(foundScores4.stream().anyMatch(
                 score -> score.user().token().equals(userToken2) &&
                         score.score() == 1476.0));
-
-
     }
 }
