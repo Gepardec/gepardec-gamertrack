@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean authenticate(AuthCredential credential) {
-        if (!credential.getUsername().isBlank() || credential.getPassword().isBlank()) {
+        if (!(credential.getUsername().isBlank() || credential.getPassword().isBlank())) {
             Optional<AuthCredential> dbCredential = authRepository.findByUsername(credential);
 
             if (dbCredential.isPresent()){

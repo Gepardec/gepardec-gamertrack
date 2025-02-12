@@ -11,6 +11,9 @@ on:
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
+    env:
+      SECRET_JWT_HASH: ${{ secrets.SECRET_JWT_HASH }}
+      SECRET_DEFAULT_PW: ${{ secrets.SECRET_DEFAULT_PW }}
 
     outputs:
       branch_name: ${{ steps.branch.outputs.branch_name }}
@@ -39,8 +42,7 @@ jobs:
 
       - name: Run integrationTests
         run:  |
-          docker run -d --name gamertrack-test-container -p 8080:8080 -e SECRET_JWT_HASH=${{ secrets.SECRET_JWT_HASH }} \
-          -e SECRET_DEFAULT_PW=${{ secrets.SECRET_DEFAULT_PW }} gamertrack-war:latest
+          docker run -d --name gamertrack-test-container -p 8080:8080 -e SECRET_JWT_HASH=${{ secrets.SECRET_JWT_HASH }} -e SECRET_DEFAULT_PW=${{ secrets.SECRET_DEFAULT_PW }} gamertrack-war:latest
           
           until curl -s http://localhost:8080/gepardec-gamertrack/api/v1/health | grep -q "running"; do
             echo "Waiting for the Application..."
