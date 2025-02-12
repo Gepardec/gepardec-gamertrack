@@ -9,8 +9,11 @@ import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
 import static io.restassured.RestAssured.with;
@@ -20,6 +23,8 @@ import static org.hamcrest.Matchers.hasItem;
 public class ScoreResourceImplIT {
 
     private static String gameToken;
+    ArrayList<String> usesUserTokens = new ArrayList<>();
+
 
 
     static String authHeader;
@@ -63,6 +68,25 @@ public class ScoreResourceImplIT {
                 .path("token");
     }
 
+    @AfterEach
+    public void cleanup() {
+        for (String token : usesUserTokens) {
+            with()
+                    .headers(
+                            "Authorization",
+                            "Bearer " + bearerToken,
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .when()
+                    .contentType("application/json")
+                    .pathParam("token", token)
+                    .request("DELETE", "/users/{token}");
+        }
+        usesUserTokens.clear();
+    }
+
     @AfterAll
     static public void tearDown() {
             with()
@@ -77,6 +101,7 @@ public class ScoreResourceImplIT {
                     .contentType("application/json")
                     .pathParam("token", gameToken)
                     .request("DELETE", "/games/{token}");
+
     }
 
     @Test
@@ -97,6 +122,7 @@ public class ScoreResourceImplIT {
                 .statusCode(201)
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken);
 
         with()
                 .when()
@@ -137,6 +163,7 @@ public class ScoreResourceImplIT {
                 .statusCode(201)
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken);
 
 
 
@@ -187,6 +214,7 @@ public class ScoreResourceImplIT {
                 .statusCode(201)
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken);
 
         with()
                 .when()
@@ -232,6 +260,7 @@ public class ScoreResourceImplIT {
                 .statusCode(201)
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken);
 
         with()
                 .when()
@@ -264,6 +293,7 @@ public class ScoreResourceImplIT {
                 .statusCode(201)
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken);
 
         with()
                 .when()
@@ -296,6 +326,7 @@ public class ScoreResourceImplIT {
                 .statusCode(201)
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken);
 
         with()
                 .when()
@@ -335,6 +366,7 @@ public class ScoreResourceImplIT {
                 .statusCode(201)
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken);
 
         with()
                 .when()
@@ -351,7 +383,6 @@ public class ScoreResourceImplIT {
                 .request("PUT", "/users/{userToken}")
                 .then()
                 .statusCode(200);
-
 
         with()
                 .when()

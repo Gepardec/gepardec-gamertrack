@@ -12,9 +12,11 @@ import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
@@ -24,6 +26,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EloServiceImplIT {
+
+    static List<String> usesGameTokens = new ArrayList<>();
+    static List<String> usesUserTokens = new ArrayList<>();
 
     static String authHeader;
     String bearerToken = authHeader.replace("Bearer ", "");
@@ -46,6 +51,39 @@ public class EloServiceImplIT {
                 .statusCode(200)
                 .extract()
                 .header("Authorization");
+    }
+    @AfterEach
+    public void tearDown() {
+        for (String token : usesGameTokens) {
+            with()
+                    .headers(
+                            "Authorization",
+                            "Bearer " + bearerToken,
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .when()
+                    .contentType("application/json")
+                    .pathParam("token", token)
+                    .request("DELETE", "/games/{token}")
+            ;
+        }
+        for (String token : usesUserTokens) {
+            with()
+                    .headers(
+                            "Authorization",
+                            "Bearer " + bearerToken,
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .when()
+                    .contentType("application/json")
+                    .pathParam("token", token)
+                    .request("DELETE", "/users/{token}")
+            ;
+        }
     }
 
     @Test
@@ -72,6 +110,7 @@ public class EloServiceImplIT {
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .body("token", notNullValue()).extract()
                 .path("token");
+        usesGameTokens.add(gameToken1);
 
         String userToken1 = with().when()
                 .contentType("application/json")
@@ -90,6 +129,7 @@ public class EloServiceImplIT {
                 .body("firstname", equalTo("Max"))
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken1);
 
         String userToken2 = with().when()
                 .contentType("application/json")
@@ -108,6 +148,7 @@ public class EloServiceImplIT {
                 .body("firstname", equalTo("Jakob"))
                 .extract()
                 .path("token");
+        usesUserTokens.add(userToken2);
 
         CreateMatchCommand createMatchCommandUser1Wins = new CreateMatchCommand(
                 new Game(null, gameToken1, "4Gewinnt", "Nicht schummeln"),
