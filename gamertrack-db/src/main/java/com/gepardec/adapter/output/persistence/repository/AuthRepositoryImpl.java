@@ -40,8 +40,9 @@ public class AuthRepositoryImpl implements AuthRepository, Serializable {
     }
 
     @Override
-    public void createDefaultUserIfNotExists(AuthCredential authCredential){
+    public boolean createDefaultUserIfNotExists(AuthCredential authCredential){
         AuthCredentialEntity authCredentialEntity = authCredentialMapper.authCredentialModelToAuthCredentialEntity(authCredential);
         entityManager.persist(authCredentialEntity);
+        return true;
     }
 }

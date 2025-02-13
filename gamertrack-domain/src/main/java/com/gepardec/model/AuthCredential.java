@@ -17,6 +17,13 @@ public class AuthCredential {
 
     }
 
+    public AuthCredential(String token, String username, String password, String salt) {
+        this.username = username;
+        this.password = password;
+        this.token = token;
+        this.salt = salt;
+    }
+
     public AuthCredential(String username, String password) {
         this.username = username;
         this.password = password;

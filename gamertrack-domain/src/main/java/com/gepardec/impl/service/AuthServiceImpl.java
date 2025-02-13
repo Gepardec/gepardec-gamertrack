@@ -2,6 +2,7 @@ package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.AuthRepository;
 import com.gepardec.core.services.AuthService;
+import com.gepardec.core.services.TokenService;
 import com.gepardec.model.AuthCredential;
 import com.gepardec.security.JwtUtil;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -24,9 +25,10 @@ public class AuthServiceImpl implements AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Inject
     private AuthRepository authRepository;
-
     @Inject
     private JwtUtil jwtUtil;
+    @Inject
+    private TokenService tokenService;
 
     @Override
     public boolean authenticate(AuthCredential credential) {
@@ -52,13 +54,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void createDefaultUserIfNotExists() {
+    public boolean createDefaultUserIfNotExists() {
         Map<String, String> credMap = jwtUtil.hashPassword(SECRET_DEFAULT_PW);
 
-        AuthCredential credential = new AuthCredential();
-        credential.setUsername("admin");
-        credential.setPassword(credMap.get("hashedPassword"));
-        credential.setSalt(credMap.get("salt"));
+        AuthCredential credential = new AuthCredential(tokenService.generateToken(),"admin",
+                credMap.get("hashedPassword"), credMap.get("salt"));
 
         Optional<AuthCredential> dbAuthCredentialEntity = authRepository.findByUsername(credential);
 
@@ -66,9 +66,11 @@ public class AuthServiceImpl implements AuthService {
             authRepository.createDefaultUserIfNotExists(credential);
             credMap = null;
             log.info("Default user created");
+            return true; //user was created
         }
         else{
             log.info("Default user exists");
+            return false; //user was not created
         }
     }
 }
