@@ -18,10 +18,11 @@ public class AuthCredentialEntity extends AbstractEntity {
     @NotBlank(message = "salt must be set")
     private String salt;
 
-    public AuthCredentialEntity(String username, String password, String salt) {
+    public AuthCredentialEntity(String username, String password, String salt, String token) {
         this.username = username;
         this.password = password;
         this.salt = salt;
+        this.token = token;
     }
 
     public AuthCredentialEntity() {}

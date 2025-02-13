@@ -3,7 +3,7 @@ package com.gepardec.rest.impl;
 import com.gepardec.core.services.AuthService;
 import com.gepardec.rest.api.AuthResource;
 import com.gepardec.rest.model.command.AuthCredentialCommand;
-import com.gepardec.rest.model.mapper.AuthCredentialsRestMapper;
+import com.gepardec.rest.model.mapper.AuthCredentialRestMapper;
 import com.gepardec.security.JwtUtil;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -19,7 +19,7 @@ public class AuthResourceImpl implements AuthResource {
     @Inject
     private AuthService authService;
     @Inject
-    private AuthCredentialsRestMapper mapper;
+    private AuthCredentialRestMapper mapper;
     @Inject
     private JwtUtil jwtUtil;
 
@@ -27,7 +27,7 @@ public class AuthResourceImpl implements AuthResource {
     @Override
     public Response login(AuthCredentialCommand authCredentialCommand) {
         authService.createDefaultUserIfNotExists();
-        if (authService.authenticate(mapper.AuthCredentialCommandToAuthCredential(authCredentialCommand))) {
+        if (authService.authenticate(mapper.authCredentialCommandToAuthCredential(authCredentialCommand))) {
 
             String token = jwtUtil.generateToken(authCredentialCommand.username());
 

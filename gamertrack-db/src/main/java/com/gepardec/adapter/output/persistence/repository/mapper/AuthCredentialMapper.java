@@ -7,7 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class AuthCredentialMapper {
     public AuthCredentialEntity authCredentialModelToAuthCredentialEntity(AuthCredential authCredential) {
-        return new AuthCredentialEntity(authCredential.getUsername(), authCredential.getPassword(), authCredential.getSalt());
+        return new AuthCredentialEntity(authCredential.getUsername(), authCredential.getPassword(), authCredential.getSalt(), authCredential.getToken());
     }
 
     public AuthCredential authCredentialEntityToAuthCredentialModel(AuthCredentialEntity authCredentialEntity) {

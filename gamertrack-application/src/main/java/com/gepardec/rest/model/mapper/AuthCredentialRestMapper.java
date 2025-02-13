@@ -5,8 +5,8 @@ import com.gepardec.rest.model.command.AuthCredentialCommand;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class AuthCredentialsRestMapper {
-    public AuthCredential AuthCredentialCommandToAuthCredential(AuthCredentialCommand authCredentialCommand) {
+public class AuthCredentialRestMapper {
+    public AuthCredential authCredentialCommandToAuthCredential(AuthCredentialCommand authCredentialCommand) {
         return new AuthCredential(authCredentialCommand.username(), authCredentialCommand.password() );
     }
 }
