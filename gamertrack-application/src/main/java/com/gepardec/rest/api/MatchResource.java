@@ -1,5 +1,6 @@
 package com.gepardec.rest.api;
 
+import com.gepardec.rest.config.Secure;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.UpdateMatchCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
@@ -29,7 +30,7 @@ import java.util.Optional;
 public interface MatchResource {
 
 
-  @Operation(summary = "Gets all existing matches from the database, or all Matches filtered either by gameID or userID")
+  @Operation(summary = "Gets all existing matches from the database, or all Matches filtered either by gameToken or userToken")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Ok")})
 
@@ -60,6 +61,7 @@ public interface MatchResource {
   })
 
   @POST
+  @Secure
   Response createMatch(CreateMatchCommand matchCmd);
 
 
@@ -74,6 +76,7 @@ public interface MatchResource {
 
   @PUT
   @Path("{token}")
+  @Secure
   Response updateMatch(@PathParam("token") String token,
       @Valid UpdateMatchCommand matchCommand);
 
@@ -87,5 +90,6 @@ public interface MatchResource {
 
   @DELETE
   @Path("{token}")
+  @Secure
   Response deleteMatch(@PathParam("token") String token);
 }

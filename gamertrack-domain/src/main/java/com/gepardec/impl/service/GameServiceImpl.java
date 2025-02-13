@@ -40,6 +40,7 @@ public class GameServiceImpl implements GameService, Serializable {
     logger.info("Saving game: %s".formatted(game));
 
     if (gameRepository.gameExistsByGameName(game.getName())) {
+      logger.info("Game already exists.");
       return Optional.empty();
     }
     game.setToken(tokenService.generateToken());

@@ -1,5 +1,6 @@
 package com.gepardec.rest.api;
 
+import com.gepardec.rest.config.Secure;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
@@ -55,6 +56,7 @@ public interface GameResource {
       @ApiResponse(responseCode = "400", description = "Could not create Game")})
 
   @POST
+  @Secure
   Response createGame(@Valid CreateGameCommand gameCmd);
 
 
@@ -70,6 +72,7 @@ public interface GameResource {
 
   @PUT
   @Path("{token}")
+  @Secure
   Response updateGame(@PathParam("token") String token, UpdateGameCommand gameCmd);
 
 
@@ -82,5 +85,6 @@ public interface GameResource {
 
   @DELETE
   @Path("{token}")
+  @Secure
   Response deleteGame(@PathParam("token") String token);
 }
