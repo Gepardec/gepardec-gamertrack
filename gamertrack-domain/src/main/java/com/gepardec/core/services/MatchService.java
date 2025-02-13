@@ -10,6 +10,8 @@ public interface MatchService {
 
     Optional<Match> saveMatch(Match match);
 
+    List<Match> findAllMatches(PageRequest pageRequest);
+
     List<Match> findAllMatches();
 
     Optional<Match> findMatchByToken(String token);
@@ -22,5 +24,4 @@ public interface MatchService {
             Optional<String> gameToken,
             Optional<String> userToken,
             PageRequest pageRequest);
-
 }

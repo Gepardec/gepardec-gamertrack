@@ -12,6 +12,8 @@ public interface MatchRepository {
 
     List<Match> findAllMatches();
 
+    List<Match> findAllMatches(PageRequest pageRequest);
+
     Optional<Match> findMatchById(Long id);
 
     void deleteMatch(Long matchId);
@@ -23,8 +25,6 @@ public interface MatchRepository {
     List<Match> findMatchesByGameToken(String gameId, PageRequest pageRequest);
 
     Boolean existsMatchById(Long matchId);
-
-    List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken);
 
     List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest);
 
