@@ -116,8 +116,13 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public List<Match> findAllMatches() {
+    public List<Match> findAllMatches(PageRequest pageRequest) {
         logger.info("Getting all existing matches");
+        return matchRepository.findAllMatches(pageRequest);
+    }
+
+    @Override
+    public List<Match> findAllMatches() {
         return matchRepository.findAllMatches();
     }
 

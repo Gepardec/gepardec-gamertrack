@@ -1,7 +1,6 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
-import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.MatchMapper;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.model.Match;
@@ -9,13 +8,10 @@ import jakarta.data.page.PageRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +41,15 @@ public class MatchRepositoryImpl implements MatchRepository {
     @Override
     public List<Match> findAllMatches() {
         logger.info("Finding all matches");
+        return findAllMatches(PageRequest.ofPage(1L, Integer.MAX_VALUE, true));
+    }
+
+    @Override
+    public List<Match> findAllMatches(PageRequest pageRequest) {
+        logger.info("Finding all matches");
         return em.createQuery("select go from MatchEntity go", MatchEntity.class)
+                .setFirstResult(Math.max(0, ((int) pageRequest.page() - 1) * pageRequest.size()))
+                .setMaxResults(pageRequest.size())
                 .getResultList()
                 .stream()
                 .map(matchMapper::matchEntityToMatchModel)
@@ -118,7 +122,7 @@ public class MatchRepositoryImpl implements MatchRepository {
         int pageIndex = (int) pageRequest.page() - 1;
         int offset = Math.max(0, pageIndex * pageRequest.size());
 
-        var query = em.createQuery("select m from MatchEntity m where m.game.token = :gameToken ",
+        var query = em.createQuery("select m from MatchEntity m where m.game.token = :gameToken order by  m.id desc",
                 MatchEntity.class);
 
         query.setParameter("gameToken", gameToken);
@@ -128,37 +132,19 @@ public class MatchRepositoryImpl implements MatchRepository {
     }
 
     @Override
-    public List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken) {
-        logger.info(
-                "Finding matches by UserToken: %s and GameToken: %s".formatted(userToken, gameToken));
+    public List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest) {
         var query = em.createQuery(
-                "select m from MatchEntity m inner join m.users u where (:userToken is NULL OR u.token = :userToken) and (:gameToken is NULL OR m.game.token = :gameToken)",
+                "select m from MatchEntity m inner join m.users u where (:userToken is NULL OR u.token = :userToken) and (:gameToken is NULL OR m.game.token = :gameToken) order by m.id desc",
                 MatchEntity.class);
+
+
+        int pageIndex = (int) pageRequest.page() - 1;
+        int offset = Math.max(0, pageIndex * pageRequest.size());
+
         query.setParameter("userToken", userToken);
         query.setParameter("gameToken", gameToken);
 
-        return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
-    }
-
-    @Override
-    public List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest) {
-        logger.info("Finding matches by UserToken: %s and GameToken: %s".formatted(userToken, gameToken));
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<MatchEntity> cq = cb.createQuery(MatchEntity.class);
-
-        Root<MatchEntity> matchEntityRoot = cq.from(MatchEntity.class);
-        Join<MatchEntity, UserEntity> userJoin = matchEntityRoot.join("users");
-        List<Predicate> predicates = new ArrayList<>();
-
-        predicates.add(cb.equal(userJoin.get("token"), userToken));
-        predicates.add(cb.equal(matchEntityRoot.get("game").get("token"), gameToken));
-
-        cq.where(predicates.toArray(new Predicate[0]));
-
-        System.out.println("PageRequest: " + pageRequest);
-
-        TypedQuery<MatchEntity> query = em.createQuery(cq);
-        query.setFirstResult((int) pageRequest.page() * pageRequest.size());
+        query.setFirstResult(offset);
         query.setMaxResults(pageRequest.size());
 
 

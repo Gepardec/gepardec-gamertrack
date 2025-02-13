@@ -7,6 +7,7 @@ import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Score;
+import jakarta.data.page.Page;
 import jakarta.data.page.PageRequest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -53,7 +54,8 @@ public class GamertrackDbIT {
                 .addPackage(TestFixtures.class.getPackage())
                 .addClass(TokenService.class)
                 .addClass(TokenServiceImpl.class)
-                .addClass(PageRequest.class)
+                .addPackage(PageRequest.class.getPackage())
+                .addPackage(Page.class.getPackage())
                 .addAsManifestResource("beans.xml")
                 .addAsManifestResource("persistence.xml");
     }
