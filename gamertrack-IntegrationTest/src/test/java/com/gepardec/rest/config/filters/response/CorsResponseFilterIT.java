@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.nullValue;
 
 public class CorsResponseFilterIT {
@@ -14,6 +15,7 @@ public class CorsResponseFilterIT {
     private final String INVALID_ORIGIN = "http://lkadsjlksjdfgamertrack-frontend.apps.cloudscale-lpg-2.appuio.com";
     private final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, HEAD";
     private final String ALLOWED_HEADERS = "Content-Type";
+    private final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "true";
 
     @BeforeAll
     public static void setup() {
@@ -37,7 +39,8 @@ public class CorsResponseFilterIT {
                 .then()
                 .header("Access-Control-Allow-Origin", VALID_ORIGIN)
                 .header("Access-Control-Allow-Methods", ALLOWED_METHODS)
-                .header("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+                .header("Access-Control-Allow-Headers", ALLOWED_HEADERS)
+                .header("Access-Control-Allow-Credentials", ACCESS_CONTROL_ALLOW_CREDENTIALS);
     }
 
     @Test
@@ -49,7 +52,9 @@ public class CorsResponseFilterIT {
                 .then()
                 .header("Access-Control-Allow-Origin", VALID_ORIGIN.replace("http", "https"))
                 .header("Access-Control-Allow-Methods", ALLOWED_METHODS)
-                .header("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+                .header("Access-Control-Allow-Headers", ALLOWED_HEADERS)
+                .header("Access-Control-Allow-Credentials", ACCESS_CONTROL_ALLOW_CREDENTIALS);
+        ;
     }
 
     @Test
@@ -61,6 +66,22 @@ public class CorsResponseFilterIT {
                 .then()
                 .header("Access-Control-Allow-Origin", nullValue())
                 .header("Access-Control-Allow-Methods", nullValue())
-                .header("Access-Control-Allow-Headers", nullValue());
+                .header("Access-Control-Allow-Headers", nullValue())
+                .header("Access-Control-Allow-Credentials", nullValue());
+        ;
+    }
+
+    @Test
+    void ensureCorsWorksWhenMakingAHeadRequest() {
+        given()
+                .header("Origin", VALID_ORIGIN)
+                .when()
+                .head()
+                .then()
+                .header("Access-Control-Allow-Origin", VALID_ORIGIN)
+                .header("Access-Control-Allow-Methods", ALLOWED_METHODS)
+                .header("Access-Control-Allow-Headers", ALLOWED_HEADERS)
+                .header("Access-Control-Allow-Credentials", ACCESS_CONTROL_ALLOW_CREDENTIALS)
+                .body(blankOrNullString());
     }
 }
