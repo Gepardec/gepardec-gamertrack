@@ -1,4 +1,4 @@
-package com.gepardec.rest.config;
+package com.gepardec.rest.config.filters.request;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Provider
-public class RequestLoggingFilter implements ContainerRequestFilter {
+public class LoggingRequestFilter implements ContainerRequestFilter {
 
-    private final Logger logger = LoggerFactory.getLogger(RequestLoggingFilter.class);
+    private final Logger logger = LoggerFactory.getLogger(LoggingRequestFilter.class);
 
 
     @Override

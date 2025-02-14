@@ -7,6 +7,7 @@ RUN ./jboss-cli.sh --commands="embed-server --std-out=echo --server-config=stand
 FROM quay.io/wildfly/wildfly:latest-jdk21
 COPY --from=build /opt/jboss/wildfly/standalone/configuration/standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
 ADD gamertrack-war/target/gepardec-gamertrack.war /opt/jboss/wildfly/standalone/deployments/
+ADD application.properties ../../application.properties
 
 
 ENTRYPOINT ["/bin/bash", "-c", "/opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0"]
