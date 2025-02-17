@@ -3,6 +3,7 @@ package com.gepardec.impl.service;
 import com.gepardec.TestFixtures;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.services.TokenService;
+import com.gepardec.foundation.exception.ApplicationException;
 import com.gepardec.model.Game;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -62,11 +62,11 @@ class GameServiceImplTest {
     }
 
     @Test
-    void ensureSavingAlreadyExistingGameFailsAndReturnsOptionalEmpty() {
+    void ensureSavingAlreadyExistingGameFailsAndReturnsThrowsException() {
         Game game = TestFixtures.game();
 
         when(gameRepository.gameExistsByGameName(any())).thenReturn(true);
-        assertFalse(gameService.saveGame(game).isPresent());
+        assertThrows(ApplicationException.GameAlreadyExistsException.class, () -> gameService.saveGame(game));
     }
 
     @Test
@@ -108,8 +108,8 @@ class GameServiceImplTest {
     void ensureUpdatingNotExistingGameReturnsOptionalEmpty() {
         Game gameWithNewValues = TestFixtures.game();
 
-        assertEquals(gameService.updateGame(gameWithNewValues),
-                Optional.empty());
+        assertThrows(ApplicationException.GameDoesNotExistException.class,
+                () -> gameService.updateGame(gameWithNewValues));
     }
 
     @Test
