@@ -1,30 +1,34 @@
 package com.gepardec.core.repository;
 
 import com.gepardec.model.Match;
+import jakarta.data.page.PageRequest;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface MatchRepository {
 
-  Optional<Match> saveMatch(Match match);
+    Optional<Match> saveMatch(Match match);
 
-  List<Match> findAllMatches();
+    List<Match> findAllMatches();
 
-  Optional<Match> findMatchById(Long id);
+    List<Match> findAllMatches(PageRequest pageRequest);
 
-  void deleteMatch(Long matchId);
+    Optional<Match> findMatchById(Long id);
 
-  Optional<Match> updateMatch(Match match);
+    void deleteMatch(Long matchId);
 
-  List<Match> findMatchesByUserToken(String userId);
+    Optional<Match> updateMatch(Match match);
 
-  List<Match> findMatchesByGameToken(String gameId);
+    List<Match> findMatchesByUserToken(String userId);
 
-  Boolean existsMatchById(Long matchId);
+    List<Match> findMatchesByGameToken(String gameId, PageRequest pageRequest);
 
-  List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken);
+    Boolean existsMatchById(Long matchId);
 
-  Optional<Match> findMatchByToken(String token);
+    List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest);
+
+    Optional<Match> findMatchByToken(String token);
 
 
 }

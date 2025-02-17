@@ -1,22 +1,27 @@
 package com.gepardec.core.services;
 
 import com.gepardec.model.Match;
+import jakarta.data.page.PageRequest;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface MatchService {
 
-  Optional<Match> saveMatch(Match match);
+    Optional<Match> saveMatch(Match match);
 
-  List<Match> findAllMatches();
+    List<Match> findAllMatches(PageRequest pageRequest);
 
-  Optional<Match> findMatchByToken(String token);
+    List<Match> findAllMatches();
 
-  Optional<Match> deleteMatch(String matchToken);
+    Optional<Match> findMatchByToken(String token);
 
-  Optional<Match> updateMatch(Match matchDto);
+    Optional<Match> deleteMatch(String matchToken);
 
-  List<Match> findMatchesByGameTokenAndUserToken(Optional<String> gameToken,
-      Optional<String> userToken);
+    Optional<Match> updateMatch(Match matchDto);
 
+    List<Match> findMatchesByGameTokenAndUserToken(
+            Optional<String> gameToken,
+            Optional<String> userToken,
+            PageRequest pageRequest);
 }
