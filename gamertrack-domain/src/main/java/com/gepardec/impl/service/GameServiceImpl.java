@@ -2,6 +2,8 @@ package com.gepardec.impl.service;
 
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.services.*;
+import com.gepardec.foundation.exception.ApplicationException;
+import com.gepardec.foundation.exception.ErrorMessage;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
@@ -40,8 +42,11 @@ public class GameServiceImpl implements GameService, Serializable {
     logger.info("Saving game: %s".formatted(game));
 
     if (gameRepository.gameExistsByGameName(game.getName())) {
-      logger.info("Game already exists.");
-      return Optional.empty();
+        String errorMessage = "Game with name %s already exists".formatted(game.getName());
+        logger.error(errorMessage);
+        throw new ApplicationException.GameAlreadyExistsException(new
+                ErrorMessage(errorMessage,
+                errorMessage + "\n Duplicate game not allowed. Choose another name or use the already existing game"));
     }
     game.setToken(tokenService.generateToken());
     Optional<Game> savedGame = gameRepository.saveGame(game);
