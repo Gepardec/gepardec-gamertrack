@@ -242,6 +242,35 @@ public class MatchResourceImplIT {
     }
 
     @Test
+    void ensureGetMatchesWithPaginationReturnsPaginatedMatches() {
+        UserRestDto createdUser = createUser();
+        GameRestDto createdGame = createGame();
+        var existingMatches = List.of(createMatch(createdUser, createUser(), createdGame),
+                createMatch(createUser(), createUser(), createdGame),
+                createMatch(createdUser, createUser(), createdGame),
+                createMatch(createdUser, createUser(), createdGame));
+
+        var foundMatches = given()
+                .queryParam("gameToken", createdGame.token())
+                .queryParam("pageSize", 2)
+                .queryParam("pageNumber", 1)
+                .when()
+                .get(MATCH_PATH)
+                .then()
+                .statusCode(Status.OK.getStatusCode())
+                .header("X-Total-Count", String.valueOf(existingMatches.size()))
+                .header("X-Total-Pages", "2")
+                .header("X-Page-Size", "2")
+                .header("X-Current-Page", "1")
+                .extract()
+                .jsonPath()
+                .getList("", MatchRestDto.class);
+
+        assertEquals(2, foundMatches.size());
+        assertNotEquals(existingMatches.size(), foundMatches.size());
+    }
+
+    @Test
     void ensureGetMatchByTokenForExistingMatchReturnsMatch() {
         MatchRestDto existingMatch = createMatch();
 

@@ -171,36 +171,36 @@ class MatchServiceImplTest {
     }
 
     @Test
-    void ensureFindMatchByGameTokenAndUserTokenReturnsListOfMatchesForExistingMatch() {
+    void ensureFindAllFilteredOrUnfilteredMatchesListOfMatchesForExistingMatch() {
         List<Match> matches = TestFixtures.matches(5);
-        when(matchRepository.findMatchesByGameTokenAndUserToken(anyString(), anyString(), any())).thenReturn(
+        when(matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(anyString(), anyString(), any())).thenReturn(
                 matches);
 
-        var foundMatches = matchService.findMatchesByGameTokenAndUserToken(Optional.of(""),
+        var foundMatches = matchService.findAllFilteredOrUnfilteredMatches(Optional.of(""),
                 Optional.of(""), PageRequest.ofPage(10));
         assertTrue(matches.contains(matches.getFirst()));
         assertEquals(matches.size(), foundMatches.size());
     }
 
     @Test
-    void ensureFindMatchByGameTokenAndUserTokenReturnsEmptyListForNonExistingMatch() {
-        when(matchRepository.findMatchesByGameTokenAndUserToken(anyString(), anyString(), any())).thenReturn(
+    void ensureFindAllFilteredOrUnfilteredMatchesReturnsEmptyListForNonExistingMatch() {
+        when(matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(anyString(), anyString(), any())).thenReturn(
                 List.of());
-        var foundMatches = matchService.findMatchesByGameTokenAndUserToken(Optional.of(""),
+        var foundMatches = matchService.findAllFilteredOrUnfilteredMatches(Optional.of(""),
                 Optional.of(""), PageRequest.ofPage(10));
 
         assertTrue(foundMatches.isEmpty());
     }
 
     @Test
-    void ensureFindMatchByGameTokenAndUserTokenReturnsExistingMatchForUserTokenNotBeingSpecified() {
+    void ensureFindAllFilteredOrUnfilteredMatchesReturnsExistingMatchForUserTokenNotBeingSpecified() {
         Match match = match();
         List<Match> matches = new ArrayList<>();
         matches.add(match);
-        when(matchRepository.findMatchesByGameToken(anyString(), any())).thenReturn(matches);
+        when(matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(anyString(), any(), any())).thenReturn(matches);
 
-        var foundMatches = matchService.findMatchesByGameTokenAndUserToken(
-                Optional.of(match.getToken()), Optional.empty(), PageRequest.ofPage(10));
+        var foundMatches = matchService.findAllFilteredOrUnfilteredMatches(
+                Optional.of(match.getToken()), Optional.empty(), PageRequest.ofPage(1));
 
         assertTrue(foundMatches.contains(match));
         assertEquals(foundMatches.size(), matches.size());
@@ -209,15 +209,15 @@ class MatchServiceImplTest {
     }
 
     @Test
-    void ensureFindMatchByGameTokenAndUserTokenReturnsExistingMatchForGameTokenNotBeingSpecified() {
+    void ensureFindAllFilteredOrUnfilteredMatchesReturnsExistingMatchForGameTokenNotBeingSpecified() {
         Match match = match();
         match.setUsers(TestFixtures.usersWithId(1));
         List<Match> matches = new ArrayList<>();
         matches.add(match);
 
-        when(matchRepository.findMatchesByUserToken(anyString())).thenReturn(matches);
-        var foundMatches = matchService.findMatchesByGameTokenAndUserToken(
-                Optional.empty(), Optional.of(match.getUsers().getFirst().getToken()), PageRequest.ofPage(10));
+        when(matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(any(), anyString(), any())).thenReturn(matches);
+        var foundMatches = matchService.findAllFilteredOrUnfilteredMatches(
+                Optional.empty(), Optional.of(match.getUsers().getFirst().getToken()), PageRequest.ofPage(1));
 
         assertTrue(foundMatches.contains(match));
         assertEquals(foundMatches.size(), matches.size());
@@ -225,11 +225,70 @@ class MatchServiceImplTest {
     }
 
     @Test
-    void ensureFindMatchByGameTokenAndUserTokenReturnsEmptyListForBothEmptyParameters() {
+    void ensureFindAllFilteredOrUnfilteredMatchesReturnsAllMatchesForNoTokensBeingSpecified() {
+        Match match = match();
+        Match match1 = match();
+        match.setUsers(TestFixtures.usersWithId(1));
+        List<Match> matches = new ArrayList<>();
+        matches.add(match);
+        matches.add(match1);
 
-        var foundMatches = matchService.findMatchesByGameTokenAndUserToken(Optional.empty(),
-                Optional.empty(), PageRequest.ofPage(10));
+        when(matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(any(), any(), any())).thenReturn(matches);
 
-        assertTrue(foundMatches.isEmpty());
+        var foundMatches = matchService.findAllFilteredOrUnfilteredMatches(Optional.empty(),
+                Optional.empty(), PageRequest.ofPage(1));
+
+        assertEquals(matches.size(), foundMatches.size());
+    }
+
+    @Test
+    void ensureCountAllFilteredOrUnfilteredMatchesReturnsCountOfAllMatches() {
+        Match match = match();
+        match.setUsers(TestFixtures.usersWithId(1));
+        List<Match> matches = new ArrayList<>();
+        matches.add(match);
+
+        when(matchRepository.countMatchesFilteredAndUnfiltered(any(), any())).thenReturn((long) matches.size());
+
+        assertEquals(matches.size(), matchService.countAllFilteredOrUnfilteredMatches(Optional.empty(), Optional.empty()));
+    }
+
+    @Test
+    void ensureCountAllFilteredOrUnfilteredMatchesReturnsForGameTokenCountOfFilteredMatches() {
+        Match match = match();
+        match.setUsers(TestFixtures.usersWithId(1));
+        List<Match> matches = new ArrayList<>();
+        matches.add(match);
+
+        when(matchRepository.countMatchesFilteredAndUnfiltered(any(), any())).thenReturn((long) matches.size());
+
+        assertEquals(matches.size(), matchService.countAllFilteredOrUnfilteredMatches(Optional.of(match.getGame().getToken()), Optional.empty()));
+    }
+
+    @Test
+    void ensureCountAllFilteredOrUnfilteredMatchesReturnsForUserTokenCountOfFilteredMatches() {
+        Match match = match();
+        match.setUsers(TestFixtures.usersWithId(1));
+        List<Match> matches = new ArrayList<>();
+        matches.add(match);
+
+        when(matchRepository.countMatchesFilteredAndUnfiltered(any(), any())).thenReturn((long) matches.size());
+
+        assertEquals(matches.size(), matchService.countAllFilteredOrUnfilteredMatches(Optional.empty(),
+                Optional.of(match.getUsers().getFirst().getToken())));
+    }
+
+    @Test
+    void ensureCountAllFilteredOrUnfilteredMatchesReturnsForGameTokenAndUserTokenCountOfFilteredMatches() {
+        Match match = match();
+        match.setUsers(TestFixtures.usersWithId(1));
+        List<Match> matches = new ArrayList<>();
+        matches.add(match);
+
+        when(matchRepository.countMatchesFilteredAndUnfiltered(any(), any())).thenReturn((long) matches.size());
+
+        assertEquals(matches.size(), matchService.countAllFilteredOrUnfilteredMatches(
+                Optional.of(match.getGame().getToken()),
+                Optional.of(match.getUsers().getFirst().getToken())));
     }
 }

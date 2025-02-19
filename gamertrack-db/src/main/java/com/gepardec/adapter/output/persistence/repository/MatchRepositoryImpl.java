@@ -8,6 +8,8 @@ import jakarta.data.page.PageRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,37 +107,18 @@ public class MatchRepositoryImpl implements MatchRepository {
     }
 
     @Override
-    public List<Match> findMatchesByUserToken(String userToken) {
-        logger.info("Finding all matches by user token: %s".formatted(userToken));
-        var query = em.createQuery(
-                "select m from MatchEntity m inner join m.users u where u.token = :userToken ",
-                MatchEntity.class);
-
-        query.setParameter("userToken", userToken);
-        return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
-    }
-
-    @Override
-    public List<Match> findMatchesByGameToken(String gameToken, PageRequest pageRequest) {
-        logger.info("Finding all games outcomes by game token: %s".formatted(gameToken));
-
-        int pageIndex = (int) pageRequest.page() - 1;
-        int offset = Math.max(0, pageIndex * pageRequest.size());
-
-        var query = em.createQuery("select m from MatchEntity m where m.game.token = :gameToken order by  m.id desc",
-                MatchEntity.class);
-
-        query.setParameter("gameToken", gameToken);
-        query.setFirstResult(offset);
-        query.setMaxResults(pageRequest.size());
-        return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
-    }
-
-    @Override
-    public List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest) {
-        var query = em.createQuery(
-                "select m from MatchEntity m inner join m.users u where (:userToken is NULL OR u.token = :userToken) and (:gameToken is NULL OR m.game.token = :gameToken) order by m.id desc",
-                MatchEntity.class);
+    public List<Match> findAllMatchesOrFilteredByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest) {
+        TypedQuery<MatchEntity> query =
+                //Subquery needed in order to avoid pagination conflict when using joins
+                em.createQuery(
+                        "select m from MatchEntity m where m.id in " +
+                                "(select m1.id from MatchEntity m1 " +
+                                "inner join m1.users u " +
+                                "where (:userToken is null OR u.token = :userToken) " +
+                                "and (:gameToken is null OR m1.game.token = :gameToken)" +
+                                "group by m1.id) " +
+                                "order by m.id desc", MatchEntity.class
+                );
 
 
         int pageIndex = (int) pageRequest.page() - 1;
@@ -148,12 +131,27 @@ public class MatchRepositoryImpl implements MatchRepository {
         query.setMaxResults(pageRequest.size());
 
 
-        return query.getResultList().stream().map(matchMapper::matchEntityToMatchModel).toList();
-
+        return query.getResultList()
+                .stream()
+                .map(matchMapper::matchEntityToMatchModel)
+                .toList();
     }
 
     @Override
     public Boolean existsMatchById(Long matchId) {
         return findMatchById(matchId).isPresent();
+    }
+
+    @Override
+    public long countMatchesFilteredAndUnfiltered(String gameToken, String userToken) {
+        Query query = em.createQuery(
+                "select count(distinct m.id) " +
+                        "from MatchEntity m inner join m.users u " +
+                        "where (:userToken is NULL OR u.token = :userToken) " +
+                        "and (:gameToken is NULL OR m.game.token = :gameToken)", long.class);
+        query.setParameter("userToken", userToken);
+        query.setParameter("gameToken", gameToken);
+
+        return (long) query.getSingleResult();
     }
 }

@@ -10,8 +10,6 @@ public interface MatchService {
 
     Optional<Match> saveMatch(Match match);
 
-    List<Match> findAllMatches(PageRequest pageRequest);
-
     List<Match> findAllMatches();
 
     Optional<Match> findMatchByToken(String token);
@@ -20,8 +18,10 @@ public interface MatchService {
 
     Optional<Match> updateMatch(Match matchDto);
 
-    List<Match> findMatchesByGameTokenAndUserToken(
+    List<Match> findAllFilteredOrUnfilteredMatches(
             Optional<String> gameToken,
             Optional<String> userToken,
             PageRequest pageRequest);
+
+    long countAllFilteredOrUnfilteredMatches(Optional<String> gameToken, Optional<String> userToken);
 }

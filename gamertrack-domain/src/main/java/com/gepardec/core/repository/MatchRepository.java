@@ -20,15 +20,13 @@ public interface MatchRepository {
 
     Optional<Match> updateMatch(Match match);
 
-    List<Match> findMatchesByUserToken(String userId);
-
-    List<Match> findMatchesByGameToken(String gameId, PageRequest pageRequest);
-
     Boolean existsMatchById(Long matchId);
 
-    List<Match> findMatchesByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest);
+    List<Match> findAllMatchesOrFilteredByGameTokenAndUserToken(String gameToken, String userToken, PageRequest pageRequest);
 
     Optional<Match> findMatchByToken(String token);
+
+    long countMatchesFilteredAndUnfiltered(String gameToken, String userToken);
 
 
 }

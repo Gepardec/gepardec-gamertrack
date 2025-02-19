@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +48,7 @@ public class MatchServiceImpl implements MatchService {
 
 
     @Override
-    public List<Match> findMatchesByGameTokenAndUserToken(
+    public List<Match> findAllFilteredOrUnfilteredMatches(
             Optional<String> gameToken,
             Optional<String> userToken,
             PageRequest pageRequest) {
@@ -57,16 +56,16 @@ public class MatchServiceImpl implements MatchService {
         if (userToken.isPresent() && gameToken.isPresent()) {
             logger.info(
                     "Finding matches by userToken %s and gameToken %s".formatted(userToken, gameToken));
-            return matchRepository.findMatchesByGameTokenAndUserToken(gameToken.get(), userToken.get(), pageRequest);
+            return matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(gameToken.get(), userToken.get(), pageRequest);
         }
 
         return userToken
-                .map(ut -> matchRepository.findMatchesByUserToken(
-                        ut))
+                .map(ut -> matchRepository
+                        .findAllMatchesOrFilteredByGameTokenAndUserToken(null, ut, pageRequest))
                 .orElseGet(() -> gameToken
-                        .map(gt -> matchRepository.findMatchesByGameToken(
-                                gt, pageRequest))
-                        .orElse(Collections.emptyList()));
+                        .map(gt -> matchRepository
+                                .findAllMatchesOrFilteredByGameTokenAndUserToken(gt, null, pageRequest))
+                        .orElse(matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(null, null, pageRequest)));
     }
 
     @Override
@@ -113,12 +112,6 @@ public class MatchServiceImpl implements MatchService {
         logger.error("Match.users.size()< 2 or foundUsers is empty");
         return Optional.empty();
 
-    }
-
-    @Override
-    public List<Match> findAllMatches(PageRequest pageRequest) {
-        logger.info("Getting all existing matches");
-        return matchRepository.findAllMatches(pageRequest);
     }
 
     @Override
@@ -182,5 +175,19 @@ public class MatchServiceImpl implements MatchService {
                 "Saving updated match with ID: %s aborted due to provided ID not existing".formatted(
                         match.getId()));
         return Optional.empty();
+    }
+
+    @Override
+    public long countAllFilteredOrUnfilteredMatches(Optional<String> gameToken, Optional<String> userToken) {
+        if (userToken.isPresent() && gameToken.isPresent()) {
+            return matchRepository.countMatchesFilteredAndUnfiltered(gameToken.get(), userToken.get());
+        }
+        return userToken
+                .map(ut -> matchRepository
+                        .countMatchesFilteredAndUnfiltered(null, ut))
+                .orElseGet(() -> gameToken
+                        .map(gt -> matchRepository
+                                .countMatchesFilteredAndUnfiltered(gt, null))
+                        .orElse(matchRepository.countMatchesFilteredAndUnfiltered(null, null)));
     }
 }
