@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.*;
+import static java.lang.Math.ceil;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -245,7 +246,14 @@ public class MatchResourceImplIT {
     void ensureGetMatchesWithPaginationReturnsPaginatedMatches() {
         UserRestDto createdUser = createUser();
         GameRestDto createdGame = createGame();
-        var existingMatches = List.of(createMatch(createdUser, createUser(), createdGame),
+        var existingMatches = List.of(createMatch(createdUser, createUser(), createdGame));
+        int existingMatchCount = Integer.parseInt(given()
+                .queryParam("gameToken", createdGame.token())
+                .when()
+                .head(MATCH_PATH)
+                .header("X-Total-Count"));
+
+        var newAddedMatches = List.of(
                 createMatch(createUser(), createUser(), createdGame),
                 createMatch(createdUser, createUser(), createdGame),
                 createMatch(createdUser, createUser(), createdGame));
@@ -258,16 +266,16 @@ public class MatchResourceImplIT {
                 .get(MATCH_PATH)
                 .then()
                 .statusCode(Status.OK.getStatusCode())
-                .header("X-Total-Count", String.valueOf(existingMatches.size()))
-                .header("X-Total-Pages", "2")
-                .header("X-Page-Size", "2")
+                .header("X-Total-Count", String.valueOf(newAddedMatches.size() + existingMatchCount))
+                .header("X-Total-Pages", String.valueOf((int) ceil((existingMatchCount + newAddedMatches.size()) / 4.0)))
+                .header("X-Page-Size", "4")
                 .header("X-Current-Page", "1")
                 .extract()
                 .jsonPath()
                 .getList("", MatchRestDto.class);
 
-        assertEquals(2, foundMatches.size());
-        assertNotEquals(existingMatches.size(), foundMatches.size());
+        assertEquals(4, foundMatches.size());
+        assertTrue(foundMatches.containsAll(newAddedMatches));
     }
 
     @Test
@@ -506,7 +514,7 @@ public class MatchResourceImplIT {
         return createMatch(createUser(),createUser(), createGame());
     }
 
-    public MatchRestDto createMatch(UserRestDto userRestDto1,UserRestDto userRestDto2, GameRestDto gameRestDto) {
+    public MatchRestDto createMatch(UserRestDto userRestDto1, UserRestDto userRestDto2, GameRestDto gameRestDto) {
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
                 new Game(null, gameRestDto.token(), gameRestDto.name(), gameRestDto.rules()),
                 List.of(new User(null, userRestDto1.firstname(), userRestDto1.lastname(),
