@@ -26,7 +26,7 @@ public class CorsResponseFilter implements ContainerResponseFilter {
         if (origin != null && origin.matches(dotenv.get("ALLOWED_ORIGINS_AS_REGEX"))) {
             responseContext.getHeaders().add("Access-Control-Allow-Origin", origin);
             responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD");
-            responseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+            responseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
             responseContext.getHeaders().add("Access-Control-Allow-Credentials", true);
         }
     }

@@ -14,7 +14,7 @@ public class CorsResponseFilterIT {
     private final String VALID_ORIGIN = "http://gamertrack-frontend.apps.cloudscale-lpg-2.appuio.cloud";
     private final String INVALID_ORIGIN = "http://lkadsjlksjdfgamertrack-frontend.apps.cloudscale-lpg-2.appuio.com";
     private final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, HEAD";
-    private final String ALLOWED_HEADERS = "Content-Type";
+    private final String ALLOWED_HEADERS = "Content-Type, Authorization";
     private final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "true";
 
     @BeforeAll
