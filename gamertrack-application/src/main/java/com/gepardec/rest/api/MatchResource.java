@@ -11,17 +11,10 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import java.util.Optional;
 
 @Path("matches")
@@ -36,7 +29,7 @@ public interface MatchResource {
 
   @GET
   Response getMatches(@QueryParam("gameToken") Optional<String> gameToken,
-      @QueryParam("userToken") Optional<String> userToken);
+      @QueryParam("userToken") Optional<String> userToken, @QueryParam("pageNumber") Optional<Long> pageNumber, @QueryParam("pageSize") Optional<Integer> pageSize);
 
 
   @Operation(summary = "Gets match by token", description = "Match must exist")

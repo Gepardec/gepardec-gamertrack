@@ -246,7 +246,6 @@ public class MatchResourceImplIT {
     void ensureGetMatchesWithPaginationReturnsPaginatedMatches() {
         UserRestDto createdUser = createUser();
         GameRestDto createdGame = createGame();
-        var existingMatches = List.of(createMatch(createdUser, createUser(), createdGame));
         int existingMatchCount = Integer.parseInt(given()
                 .queryParam("gameToken", createdGame.token())
                 .when()
@@ -260,7 +259,7 @@ public class MatchResourceImplIT {
 
         var foundMatches = given()
                 .queryParam("gameToken", createdGame.token())
-                .queryParam("pageSize", 2)
+                .queryParam("pageSize", 3)
                 .queryParam("pageNumber", 1)
                 .when()
                 .get(MATCH_PATH)
@@ -268,13 +267,13 @@ public class MatchResourceImplIT {
                 .statusCode(Status.OK.getStatusCode())
                 .header("X-Total-Count", String.valueOf(newAddedMatches.size() + existingMatchCount))
                 .header("X-Total-Pages", String.valueOf((int) ceil((existingMatchCount + newAddedMatches.size()) / 4.0)))
-                .header("X-Page-Size", "4")
+                .header("X-Page-Size", "3")
                 .header("X-Current-Page", "1")
                 .extract()
                 .jsonPath()
                 .getList("", MatchRestDto.class);
 
-        assertEquals(4, foundMatches.size());
+        assertEquals(3, foundMatches.size());
         assertTrue(foundMatches.containsAll(newAddedMatches));
     }
 
