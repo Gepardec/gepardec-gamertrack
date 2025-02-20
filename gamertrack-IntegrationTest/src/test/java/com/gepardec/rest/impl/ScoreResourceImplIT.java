@@ -32,6 +32,8 @@ public class ScoreResourceImplIT {
 
     static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
     private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
+    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
+
 
 
     @BeforeAll
@@ -41,7 +43,7 @@ public class ScoreResourceImplIT {
 
         authHeader = with().when()
                 .contentType("application/json")
-                .body(new AuthCredentialCommand("admin",SECRET_DEFAULT_PW))
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
                 .headers("Content-Type", ContentType.JSON,
                         "Accept", ContentType.JSON)
                 .request("POST", "/auth/login")

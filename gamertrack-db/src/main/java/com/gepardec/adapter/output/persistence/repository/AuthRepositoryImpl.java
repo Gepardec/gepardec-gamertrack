@@ -27,11 +27,11 @@ public class AuthRepositoryImpl implements AuthRepository, Serializable {
     private AuthCredentialMapper authCredentialMapper;
 
     @Override
-    public Optional<AuthCredential> findByUsername(AuthCredential credential) {
+    public Optional<AuthCredential> findByUsername(String username) {
         List<AuthCredentialEntity> resultList = entityManager.createQuery(
                         "SELECT ac FROM AuthCredentialEntity ac " +
                                 "WHERE ac.username = :username ", AuthCredentialEntity.class)
-                .setParameter("username", credential.getUsername())
+                .setParameter("username", username)
                 .getResultList();
 
         return resultList.isEmpty()

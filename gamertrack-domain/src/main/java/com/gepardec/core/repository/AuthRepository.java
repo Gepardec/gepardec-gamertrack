@@ -6,6 +6,6 @@ import java.util.Optional;
 
 
 public interface AuthRepository {
-    Optional<AuthCredential> findByUsername(AuthCredential authCredential);
+    Optional<AuthCredential> findByUsername(String username);
     boolean createDefaultUserIfNotExists(AuthCredential authCredential);
 }

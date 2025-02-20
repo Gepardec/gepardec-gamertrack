@@ -35,7 +35,7 @@ public class JwtUtil {
         return hashedPassword.equals(dbHashedPassword);
     }
 
-    public Map<String, String> hashPassword(String clearTextPassword) {
+    public Map<String, String> calcHashedCredentialMap(String clearTextPassword) {
         ByteSource salt = getSalt();
 
         Map<String, String> credMap = new HashMap<>();

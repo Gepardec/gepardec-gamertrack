@@ -36,7 +36,7 @@ public class AuthRepositoryTest extends GamertrackDbIT {
     void ensureFindByUsernameReturnsEmpty() {
         AuthCredential authCredential = new AuthCredential(tokenService.generateToken(), "WrongName",
                 "password", "salt");
-        assertTrue(authRepository.findByUsername(authCredential).isEmpty());
+        assertTrue(authRepository.findByUsername(authCredential.getUsername()).isEmpty());
     }
 
     @Test
@@ -46,6 +46,6 @@ public class AuthRepositoryTest extends GamertrackDbIT {
 
         authRepository.createDefaultUserIfNotExists(authCredential);
 
-        assertEquals("CorrectName", authRepository.findByUsername(authCredential).get().getUsername());
+        assertEquals("CorrectName", authRepository.findByUsername(authCredential.getUsername()).get().getUsername());
     }
 }

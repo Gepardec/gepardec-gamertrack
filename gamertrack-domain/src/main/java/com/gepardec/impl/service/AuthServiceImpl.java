@@ -21,6 +21,7 @@ public class AuthServiceImpl implements AuthService {
 
     static Dotenv dotenv = Dotenv.configure().directory("../../").filename("secret.env").ignoreIfMissing().load();
     private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
+    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Inject
@@ -33,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean authenticate(AuthCredential credential) {
         if (!(credential.getUsername().isBlank() || credential.getPassword().isBlank())) {
-            Optional<AuthCredential> dbCredential = authRepository.findByUsername(credential);
+            Optional<AuthCredential> dbCredential = authRepository.findByUsername(credential.getUsername());
 
             if (dbCredential.isPresent()){
                 if(jwtUtil.passwordsMatches(dbCredential.get().getPassword(), dbCredential.get().getSalt(), credential.getPassword())){
@@ -55,12 +56,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean createDefaultUserIfNotExists() {
-        Map<String, String> credMap = jwtUtil.hashPassword(SECRET_DEFAULT_PW);
+        Map<String, String> credMap = jwtUtil.calcHashedCredentialMap(SECRET_DEFAULT_PW);
 
-        AuthCredential credential = new AuthCredential(tokenService.generateToken(),"admin",
+        AuthCredential credential = new AuthCredential(tokenService.generateToken(),SECRET_ADMIN_NAME,
                 credMap.get("hashedPassword"), credMap.get("salt"));
 
-        Optional<AuthCredential> dbAuthCredentialEntity = authRepository.findByUsername(credential);
+        Optional<AuthCredential> dbAuthCredentialEntity = authRepository.findByUsername(credential.getUsername());
 
         if (!dbAuthCredentialEntity.isPresent()) {
             authRepository.createDefaultUserIfNotExists(credential);
