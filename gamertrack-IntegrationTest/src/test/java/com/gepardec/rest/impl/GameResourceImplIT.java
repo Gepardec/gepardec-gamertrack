@@ -217,7 +217,14 @@ public class GameResourceImplIT {
         GameRestDto existingGame = createGame();
 
         with()
-                .delete("/%s".formatted(existingGame.token()))
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .delete("/games/%s".formatted(existingGame.token()))
                 .then()
                 .statusCode(Status.OK.getStatusCode())
                 .body("token", samePropertyValuesAs(existingGame.token()))
