@@ -16,7 +16,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -210,7 +211,7 @@ public class GameResourceImplIT {
                 .statusCode(Status.NOT_FOUND.getStatusCode());
     }
 
-    /*
+
     @Test
     void ensureDeleteExistingGameReturns200OkWithDeletedGame() {
         GameRestDto existingGame = createGame();
@@ -223,8 +224,6 @@ public class GameResourceImplIT {
                 .body("name", samePropertyValuesAs(existingGame.name()))
                 .body("rules", samePropertyValuesAs(existingGame.rules()));
     }
-    /*
-     */
 
     //--------------Helper Methods------------------------
 
