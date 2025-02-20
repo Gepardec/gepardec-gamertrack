@@ -14,4 +14,8 @@ public class AuthCredentialMapper {
         return new AuthCredential(authCredentialEntity.getId(), authCredentialEntity.getToken(), authCredentialEntity.getUsername(),
                 authCredentialEntity.getPassword(),  authCredentialEntity.getSalt());
     }
+    public AuthCredentialEntity authCredentialModeltoExistingauthCredentialEntity(AuthCredential authCredential, AuthCredentialEntity authCredentialEntity) {
+        authCredentialEntity.setPassword(authCredential.getPassword());
+        return authCredentialEntity;
+    }
 }

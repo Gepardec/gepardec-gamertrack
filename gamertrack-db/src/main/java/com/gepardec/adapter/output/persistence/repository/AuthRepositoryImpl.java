@@ -45,4 +45,11 @@ public class AuthRepositoryImpl implements AuthRepository, Serializable {
         entityManager.persist(authCredentialEntity);
         return true;
     }
+
+    @Override
+    public void updateDefaultUserPassword(AuthCredential authCredential) {
+        AuthCredentialEntity authCredentialEntity = authCredentialMapper.authCredentialModeltoExistingauthCredentialEntity(
+                authCredential,entityManager.find(AuthCredentialEntity.class, findByUsername(authCredential.getUsername()).get().getId()));
+        entityManager.merge(authCredentialEntity);
+    }
 }

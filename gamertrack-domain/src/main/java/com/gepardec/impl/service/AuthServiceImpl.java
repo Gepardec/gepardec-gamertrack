@@ -71,6 +71,10 @@ public class AuthServiceImpl implements AuthService {
         }
         else{
             log.info("Default user exists");
+            if(!jwtUtil.passwordsMatches(dbAuthCredentialEntity.get().getPassword(), dbAuthCredentialEntity.get().getSalt(),SECRET_DEFAULT_PW)){
+                authRepository.updateDefaultUserPassword(credential);
+                log.info("Default user password was updated!");
+            }
             return false; //user was not created
         }
     }
