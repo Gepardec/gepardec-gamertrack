@@ -6,9 +6,12 @@ import com.gepardec.rest.model.command.*;
 import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.dto.UserRestDto;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.filter.log.LogDetail;
+import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -25,11 +28,18 @@ public class MatchResourceImplIT {
     ArrayList<String> usesUserTokens = new ArrayList<>();
     ArrayList<String> usesGameTokens = new ArrayList<>();
 
+    static String authHeader;
+    String bearerToken = authHeader.replace("Bearer ", "");
+
+    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
+    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
+    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
+
+
+
     final String USER_PATH = "/users";
     final String GAME_PATH = "/games";
     final String MATCH_PATH = "/matches";
-
-    static GameRestDto defaultGame;
 
     @BeforeAll
     public static void setup() {
@@ -38,21 +48,52 @@ public class MatchResourceImplIT {
         basePath = "gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
 
-        defaultGame = with()
-                .body(new CreateGameCommand("default Game", "no rules"))
+        authHeader = with().when()
                 .contentType("application/json")
-                .accept("application/json")
-                .when()
-                .post("/games")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "/auth/login")
                 .then()
-                .statusCode(Status.CREATED.getStatusCode())
+                .statusCode(200)
                 .extract()
-                .body()
-                .as(GameRestDto.class);
+                .header("Authorization");
 
     }
 
-
+    @AfterEach
+    public void tearDown() {
+        for (String token : usesGameTokens) {
+            with()
+                    .headers(
+                            "Authorization",
+                            "Bearer " + bearerToken,
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .when()
+                    .contentType("application/json")
+                    .pathParam("token", token)
+                    .request("DELETE", "/games/{token}");
+        }
+        usesGameTokens.clear();
+        for (String token : usesUserTokens) {
+            with()
+                    .headers(
+                            "Authorization",
+                            "Bearer " + bearerToken,
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .when()
+                    .contentType("application/json")
+                    .pathParam("token", token)
+                    .request("DELETE", "/users/{token}");
+        }
+        usesUserTokens.clear();
+    }
 
     @AfterAll
     public static void cleanup() {
@@ -80,6 +121,13 @@ public class MatchResourceImplIT {
     void ensureGetMatchesWithGameTokenAndWithoutUserTokenReturnsMatchReferencingTheSameGame() {
         GameRestDto gameThatShouldntBeFound = with()
                 .body(new CreateGameCommand("gameThatShouldntBeFound", "no rules"))
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .contentType("application/json")
                 .accept("application/json")
                 .when()
@@ -90,13 +138,18 @@ public class MatchResourceImplIT {
                 .body()
                 .as(GameRestDto.class);
 
+        usesGameTokens.add(gameThatShouldntBeFound.token());
+
+        GameRestDto createdGame = createGame();
+
+
         MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(),createUser(), gameThatShouldntBeFound);
-        MatchRestDto matchToBeFound1 = createMatch(createUser(),createUser(), defaultGame);
-        MatchRestDto matchToBeFound2 = createMatch(createUser(),createUser(), defaultGame);
+        MatchRestDto matchToBeFound1 = createMatch(createUser(),createUser(), createdGame);
+        MatchRestDto matchToBeFound2 = createMatch(createUser(),createUser(), createdGame);
 
         var foundMatches =
                 given()
-                        .queryParam("gameToken", defaultGame.token())
+                        .queryParam("gameToken", createdGame.token())
                         .when()
                         .get(MATCH_PATH)
                         .then()
@@ -114,9 +167,10 @@ public class MatchResourceImplIT {
     @Test
     void ensureGetMatchesWithoutGameTokenAndWithUserTokenReturnsMatchReferencingTheSameUser() {
         UserRestDto createdUser = createUser();
-        MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(),createUser(), defaultGame);
-        MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser,createUser(), defaultGame);
-        MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser,createUser(), defaultGame);
+        GameRestDto createdGame = createGame();
+        MatchRestDto matchThatShouldNotBeFound = createMatch(createUser(),createUser(), createdGame);
+        MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser,createUser(), createdGame);
+        MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser,createUser(), createdGame);
 
         var foundMatches =
                 given()
@@ -141,9 +195,31 @@ public class MatchResourceImplIT {
     @Test
     void ensureGetMatchesWithGameTokenAndUserTokenReturnsMatchReferencingTheSameGameAndUser() {
         UserRestDto createdUser = createUser();
-        GameRestDto createdGame = defaultGame;
-        MatchRestDto matchThatShouldNotBeFound = createMatch(createdUser,createUser(), defaultGame);
-        MatchRestDto matchThatShouldNotBeFound2 = createMatch(createUser(),createUser(), createdGame);
+        GameRestDto createdGame = createGame();
+
+        GameRestDto gameThatShouldntBeFound = with()
+                .body(new CreateGameCommand("gameThatShouldntBeFound", "no rules"))
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .contentType("application/json")
+                .accept("application/json")
+                .when()
+                .post(GAME_PATH)
+                .then()
+                .statusCode(Status.CREATED.getStatusCode())
+                .extract()
+                .body()
+                .as(GameRestDto.class);
+
+        usesGameTokens.add(gameThatShouldntBeFound.token());
+
+        MatchRestDto matchThatShouldNotBeFound = createMatch(createdUser,createUser(), gameThatShouldntBeFound);
+        MatchRestDto matchThatShouldNotBeFound2 = createMatch(createUser(),createUser(), gameThatShouldntBeFound);
         MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser,createUser(), createdGame);
         MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser,createUser(), createdGame);
 
@@ -190,7 +266,7 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureCreateMatchForValidMatchReturns200OkWithNewMatch() {
-        GameRestDto gameRestDto = defaultGame;
+        GameRestDto gameRestDto = createGame();
         UserRestDto userRestDto1 = createUser();
         UserRestDto userRestDto2 = createUser();
 
@@ -204,6 +280,13 @@ public class MatchResourceImplIT {
 
         MatchRestDto createdMatch =
                 with()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .body(createMatchCommand)
                         .contentType("application/json")
                         .post(MATCH_PATH)
@@ -229,6 +312,13 @@ public class MatchResourceImplIT {
                         userRestDto.deactivated(), userRestDto.token())));
 
         with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(createMatchCommand)
                 .contentType("application/json")
                 .post(MATCH_PATH)
@@ -254,8 +344,16 @@ public class MatchResourceImplIT {
 
         var updatedMatch =
                 given()
+
                         .pathParam("token", existingMatch.token())
                         .contentType("application/json")
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .body(matchToUpdate)
                         .put("%s/{token}".formatted(MATCH_PATH))
                         .then()
@@ -271,11 +369,18 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureUpdateMatchForNonExistingMatchReturns400BadRequest() {
-        UpdateGameCommand matchToUpdate = RestTestFixtures.updateGameCommand();
+        UpdateMatchCommand matchToUpdate = RestTestFixtures.updateMatchCommand();
 
         given()
                 .pathParam("token", "12k31k2j3ksadj")
                 .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .body(matchToUpdate)
                 .put("%s/{token}".formatted(MATCH_PATH))
                 .then()
@@ -289,6 +394,13 @@ public class MatchResourceImplIT {
         MatchRestDto deletedMatch =
                 given()
                         .pathParam("token", existingMatch.token())
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .delete("%s/{token}".formatted(MATCH_PATH))
                         .then()
                         .statusCode(Status.OK.getStatusCode())
@@ -302,6 +414,13 @@ public class MatchResourceImplIT {
     void ensureDeleteMatchForNonExistingMatchReturns404NotFound() {
         given()
                 .pathParam("token", "12k31k2j3ksadj")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
                 .delete("%s/{token}".formatted(MATCH_PATH))
                 .then()
                 .statusCode(Status.NOT_FOUND.getStatusCode());
@@ -312,6 +431,13 @@ public class MatchResourceImplIT {
         UserRestDto userRestDto =
                 with()
                         .contentType("application/json")
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .body(new CreateUserCommand("max", "Muster"))
                         .post(USER_PATH)
                         .then()
@@ -323,9 +449,32 @@ public class MatchResourceImplIT {
         usesUserTokens.add(userRestDto.token());
         return userRestDto;
     }
+    public GameRestDto createGame() {
+        GameRestDto gameRestDto = with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("default Game", "no rules"))
+                .contentType("application/json")
+                .accept("application/json")
+                .when()
+                .post(GAME_PATH)
+                .then()
+                .statusCode(Status.CREATED.getStatusCode())
+                .extract()
+                .body()
+                .as(GameRestDto.class);
+
+        usesGameTokens.add(gameRestDto.token());
+        return gameRestDto;
+    }
 
     public MatchRestDto createMatch() {
-        return createMatch(createUser(),createUser(), defaultGame);
+        return createMatch(createUser(),createUser(), createGame());
     }
 
     public MatchRestDto createMatch(UserRestDto userRestDto1,UserRestDto userRestDto2, GameRestDto gameRestDto) {
@@ -338,6 +487,13 @@ public class MatchResourceImplIT {
 
         MatchRestDto createdMatch =
                 with()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .body(createMatchCommand)
                         .contentType("application/json")
                         .post(MATCH_PATH)

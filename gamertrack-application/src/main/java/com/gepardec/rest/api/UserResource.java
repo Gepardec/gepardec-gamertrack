@@ -1,5 +1,6 @@
 package com.gepardec.rest.api;
 
+import com.gepardec.rest.config.Secure;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +26,7 @@ public interface UserResource {
             @ApiResponse(responseCode = "404", description = "Not Created - The user was not created")
     })
     @POST
+    @Secure
     Response createUser(@Valid CreateUserCommand userCommand);
 
     @Operation(summary = "Updated user by token", description = "Returns the updated user")
@@ -34,6 +36,7 @@ public interface UserResource {
     })
     @Path("{token}")
     @PUT
+    @Secure
     public Response updateUser(@PathParam("token") String token, @Valid UpdateUserCommand updateUserCommand);
 
     @Operation(summary = "Delete User by token", description = "Returns the deleted user")
@@ -43,6 +46,7 @@ public interface UserResource {
     })
     @Path("{token}")
     @DELETE
+    @Secure
     public Response deleteUser(@PathParam("token") String token);
 
     @Operation(summary = "Get all users", description = "Returns a list of users")
@@ -52,7 +56,7 @@ public interface UserResource {
     })    @GET
     public Response getUsers(@QueryParam("includeDeactivated") @DefaultValue(value = "true") Boolean includeDeactivated);
 
-    @Operation(summary = "Get User by token", description = "Returns user by id")
+    @Operation(summary = "Get User by token", description = "Returns user by token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
     })
