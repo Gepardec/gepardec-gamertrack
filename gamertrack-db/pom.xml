@@ -12,11 +12,12 @@
 
   <artifactId>gamertrack-db</artifactId>
 
-  <properties>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <jboss.home>${basedir}${file.separator}..${file.separator}wildfly</jboss.home>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
   <dependencies>
     <dependency>

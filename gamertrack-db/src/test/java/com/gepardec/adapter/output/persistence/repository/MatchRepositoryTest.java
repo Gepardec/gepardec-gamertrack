@@ -1,11 +1,5 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-import static com.gepardec.TestFixtures.game;
-import static com.gepardec.TestFixtures.games;
-import static com.gepardec.TestFixtures.match;
-import static com.gepardec.TestFixtures.user;
-import static com.gepardec.TestFixtures.users;
-
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.adapter.output.persistence.entity.MatchEntity;
 import com.gepardec.adapter.output.persistence.entity.UserEntity;
@@ -15,15 +9,19 @@ import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
+import jakarta.data.page.PageRequest;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
-import java.util.List;
-import java.util.Optional;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.gepardec.TestFixtures.*;
 
 @ExtendWith(ArquillianExtension.class)
 public class MatchRepositoryTest extends GamertrackDbIT {
@@ -156,4 +154,104 @@ public class MatchRepositoryTest extends GamertrackDbIT {
     Assertions.assertFalse(matchRepository.existsMatchById(10000L));
 
   }
+
+  @Test
+  public void countMatchesFilteredAndUnfilteredReturnsCorrectCount() {
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser1 = userRepository.saveUser(user(null));
+    Optional<User> savedUser2 = userRepository.saveUser(user(null));
+    Optional<User> savedUser3 = userRepository.saveUser(user(null));
+
+    Match match1 = match(null, savedGame.get(), List.of(savedUser1.get(), savedUser2.get()));
+    matchRepository.saveMatch(match1);
+    Match match2 = match(null, savedGame.get(), List.of(savedUser2.get()));
+    matchRepository.saveMatch(match2);
+    Match match3 = match(null, savedGame.get(), List.of(savedUser3.get()));
+    matchRepository.saveMatch(match3);
+
+    long countFilteredWithUser1AndGame = matchRepository.countMatchesFilteredAndUnfiltered(savedGame.get().getToken(),
+            savedUser1.get().getToken());
+    long countFilteredWithUser2AndGame = matchRepository.countMatchesFilteredAndUnfiltered(savedGame.get().getToken(),
+            savedUser2.get().getToken());
+
+    long countFilteredWithGameOnly = matchRepository.countMatchesFilteredAndUnfiltered(savedGame.get().getToken(),
+            null);
+    long countFilteredWithUser2only = matchRepository.countMatchesFilteredAndUnfiltered(null,
+            savedUser2.get().getToken());
+
+    long countAllMatches = matchRepository.countMatchesFilteredAndUnfiltered(null, null);
+
+    Assertions.assertEquals(1, countFilteredWithUser1AndGame);
+    Assertions.assertEquals(2, countFilteredWithUser2AndGame);
+    Assertions.assertEquals(3, countFilteredWithGameOnly);
+    Assertions.assertEquals(2, countFilteredWithUser2only);
+    Assertions.assertEquals(3, countAllMatches);
+  }
+
+  @Test
+  void ensureFindAllMatchesOrFilteredByGameTokenAndUserTokenReturnsAllMatchesForNoFilter() {
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser1 = userRepository.saveUser(user(null));
+    Optional<User> savedUser2 = userRepository.saveUser(user(null));
+
+    var match1 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser1.get(), savedUser2.get()))).get();
+    var match2 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser2.get()))).get();
+
+    List<Match> foundMatches = matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(null, null, PageRequest.ofPage(1));
+
+
+    Assertions.assertEquals(2, foundMatches.size());
+    Assertions.assertTrue(foundMatches.containsAll(List.of(match1, match2)));
+  }
+
+  @Test
+  void ensureFindAllMatchesOrFilteredByGameTokenAndUserTokenReturnsFilteredMatchesForGameToken() {
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser1 = userRepository.saveUser(user(null));
+    Optional<User> savedUser2 = userRepository.saveUser(user(null));
+
+    var match1 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser1.get(), savedUser2.get()))).get();
+    var match2 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser2.get()))).get();
+
+    List<Match> foundMatches = matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(savedGame.get().getToken(),
+            null, PageRequest.ofPage(1));
+
+    Assertions.assertEquals(2, foundMatches.size());
+    Assertions.assertTrue(foundMatches.containsAll(List.of(match1, match2)));
+  }
+
+  @Test
+  void ensureFindAllMatchesOrFilteredByGameTokenAndUserTokenReturnsFilteredMatchesForUserToken() {
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser1 = userRepository.saveUser(user(null));
+    Optional<User> savedUser2 = userRepository.saveUser(user(null));
+
+    var match1 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser1.get(),
+            savedUser2.get()))).get();
+    var match2 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser2.get()))).get();
+
+    List<Match> foundMatches = matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(null,
+            savedUser1.get().getToken(), PageRequest.ofPage(1));
+
+    Assertions.assertEquals(1, foundMatches.size());
+    Assertions.assertTrue(foundMatches.contains(match1));
+  }
+
+  @Test
+  void ensureFindAllMatchesOrFilteredByGameTokenAndUserTokenReturnsFilteredMatchesForGameTokenAndUserToken() {
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser1 = userRepository.saveUser(user(null));
+    Optional<User> savedUser2 = userRepository.saveUser(user(null));
+
+    var match1 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser1.get(),
+            savedUser2.get()))).get();
+    var match2 = matchRepository.saveMatch(match(null, savedGame.get(), List.of(savedUser2.get()))).get();
+
+    List<Match> foundMatches = matchRepository.findAllMatchesOrFilteredByGameTokenAndUserToken(savedGame.get().getToken(),
+            savedUser1.get().getToken(), PageRequest.ofPage(1));
+
+    Assertions.assertEquals(1, foundMatches.size());
+    Assertions.assertTrue(foundMatches.contains(match1));
+  }
+
 }

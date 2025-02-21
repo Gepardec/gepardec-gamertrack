@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Match {
 
@@ -64,5 +65,17 @@ public class Match {
                 ", game=" + game +
                 ", users=" + users +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Match match = (Match) o;
+        return Objects.equals(id, match.id) && Objects.equals(token, match.token) && Objects.equals(game, match.game) && Objects.equals(users, match.users);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, token, game, users);
     }
 }
