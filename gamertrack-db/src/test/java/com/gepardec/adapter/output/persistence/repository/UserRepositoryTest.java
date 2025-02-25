@@ -1,8 +1,15 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
+import com.gepardec.adapter.output.persistence.entity.GameEntity;
+import com.gepardec.adapter.output.persistence.entity.MatchEntity;
+import com.gepardec.adapter.output.persistence.entity.UserEntity;
+import com.gepardec.core.repository.GameRepository;
+import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.TokenService;
+import com.gepardec.model.Game;
+import com.gepardec.model.Match;
 import com.gepardec.model.User;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -38,11 +45,17 @@ public class UserRepositoryTest extends GamertrackDbIT {
   UserRepository userRepository;
 
   @Inject
+  MatchRepository matchRepository;
+
+  @Inject
+  GameRepository gameRepository;
+
+  @Inject
   TokenService tokenService;
 
   @BeforeEach
-  public void before() {
-    userRepository.deleteAllUsers();
+  public void before() throws Exception {
+    removeTableData(MatchEntity.class, GameEntity.class, UserEntity.class);
     entityManager.clear();
   }
 
@@ -73,30 +86,13 @@ public class UserRepositoryTest extends GamertrackDbIT {
     User user = TestFixtures.user(1L);
     userRepository.saveUser(user);
 
-    int sizeBefore = userRepository.findAllUsers(true).size();
+    int sizeBefore = userRepository.findAllUsersSortedByMatchCount(true).size();
 
     userRepository.deleteUser(user);
 
     assertEquals(1, sizeBefore);
-    assertEquals(0, userRepository.findAllUsers(true).size());
+    assertEquals(0, userRepository.findAllUsersSortedByMatchCount(true).size());
     assertFalse(userRepository.findUserByToken(user.getToken()).isPresent());
-  }
-
-  @Test
-  void ensureDeleteAllUsersWorks() {
-    List<User> users = TestFixtures.users(4);
-    userRepository.saveUser(users.get(0));
-    userRepository.saveUser(users.get(1));
-    userRepository.saveUser(users.get(2));
-    userRepository.saveUser(users.get(3));
-
-    int sizeBefore = userRepository.findAllUsers(true).size();
-
-    userRepository.deleteAllUsers();
-
-    assertEquals(4, sizeBefore);
-    assertEquals(0, userRepository.findAllUsers(true).size());
-    assertFalse(userRepository.findUserByToken(users.get(1).getToken()).isPresent());
   }
 
   @Test
@@ -110,21 +106,21 @@ public class UserRepositoryTest extends GamertrackDbIT {
     userRepository.saveUser(user2);
     userRepository.saveUser(user3);
 
-    assertEquals(2, userRepository.findAllUsers(false).size());
+    assertEquals(2, userRepository.findAllUsersSortedByMatchCount(false).size());
   }
 
   @Test
   void ensureFindAllUsersIncludeDeleted() {
 
-    User user1 = TestFixtures.user(1L);
-    User user2 = TestFixtures.user(2L);
-    User user3 = new User(3L, "Test", "deleted", true,tokenService.generateToken());
+    User user1 = TestFixtures.user(10L);
+    User user2 = TestFixtures.user(20L);
+    User user3 = new User(30L, "Test", "deleted", true,tokenService.generateToken());
 
     userRepository.saveUser(user1);
     userRepository.saveUser(user2);
     userRepository.saveUser(user3);
 
-    assertEquals(3, userRepository.findAllUsers(true).size());
+    assertEquals(3, userRepository.findAllUsersSortedByMatchCount(true).size());
   }
 
   @Test
@@ -138,16 +134,16 @@ public class UserRepositoryTest extends GamertrackDbIT {
     userRepository.saveUser(user2);
     userRepository.saveUser(user3);
 
-    assertEquals(3, userRepository.findAllUsers(true).size());
+    assertEquals(3, userRepository.findAllUsersSortedByMatchCount(true).size());
     assertTrue(userRepository.findUserByToken(user1.getToken()).isPresent());
   }
 
   @Test
   void ensureFindUserByTokenWorksIncludedDeleted() {
 
-    User user1 = TestFixtures.user(1L);
-    User user2 = TestFixtures.user(2L);
-    User user3 = TestFixtures.user(3L);
+    User user1 = TestFixtures.user(10L);
+    User user2 = TestFixtures.user(20L);
+    User user3 = TestFixtures.user(30L);
     user3.setDeactivated(true);
 
     userRepository.saveUser(user1);
@@ -172,4 +168,24 @@ public class UserRepositoryTest extends GamertrackDbIT {
 
   }
 
+  @Test
+  void ensureFindAllUsersSortedByMatchCountWorks() {
+    List<Match> matches = TestFixtures.matches(5);
+    Game game = gameRepository.saveGame(TestFixtures.games(1).getFirst()).get();
+    List<User> users = TestFixtures.users(4);
+    User user1 = userRepository.saveUser(users.getFirst()).get();
+    User user2 = userRepository.saveUser(users.getLast()).get();
+    User user3 = userRepository.saveUser(users.get(2)).get();
+    List<Match> matches2 = TestFixtures.matches(10);
+    matches.forEach(match -> { match.setUsers(List.of(user1)); match.setGame(game);});
+    matches2.forEach(match -> { match.setUsers(List.of(user2)); match.setGame(game);});
+    matches.forEach(matchRepository::saveMatch);
+    matches2.forEach(matchRepository::saveMatch);
+
+    List<Match> matchList = matchRepository.findAllMatches();
+    var foundUsers = userRepository.findAllUsersSortedByMatchCount(false);
+
+    matchList.forEach(System.out::println);
+    foundUsers.forEach(System.out::println);
+  }
 }

@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService, Serializable {
 
     @Override
     public List<User> findAllUsers(boolean includeDeactivated) {
-        return userRepository.findAllUsers(includeDeactivated);
+        return userRepository.findAllUsersSortedByMatchCount(includeDeactivated);
     }
 
     @Override

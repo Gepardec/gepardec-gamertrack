@@ -123,7 +123,7 @@ public class UserServiceImplTest {
         User user3 = TestFixtures.user(3L);
         user3.setDeactivated(true);
 
-        when(userRepository.findAllUsers(false)).thenReturn(List.of(user1,user2));
+        when(userRepository.findAllUsersSortedByMatchCount(false)).thenReturn(List.of(user1,user2));
 
         assertEquals(2, userService.findAllUsers(false).size());
     }
@@ -134,7 +134,7 @@ public class UserServiceImplTest {
         User user3 = TestFixtures.user(3L);
         user3.setDeactivated(true);
 
-        when(userRepository.findAllUsers(true)).thenReturn(List.of(user1, user2, user3));
+        when(userRepository.findAllUsersSortedByMatchCount(true)).thenReturn(List.of(user1, user2, user3));
 
         assertEquals(3, userService.findAllUsers(true).size());
     }

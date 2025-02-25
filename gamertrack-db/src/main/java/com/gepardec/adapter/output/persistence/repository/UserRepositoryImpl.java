@@ -61,23 +61,18 @@ public class UserRepositoryImpl implements UserRepository, Serializable {
   }
 
   @Override
-  public void deleteAllUsers() {
-    entityManager.createQuery("DELETE FROM UserEntity ").executeUpdate();
-    log.info("Deleted all users. size: {}", findAllUsers(false).size());
-  }
-
-  @Override
-  public List<User> findAllUsers(boolean includeDeactivatedUsers) {
+  public List<User> findAllUsersSortedByMatchCount(boolean includeDeactivated) {
     List<UserEntity> resultList = entityManager.createQuery(
-            "SELECT u FROM UserEntity u " +
-                    "Where(:includeDeactivatedUsers = true OR u.deactivated = false) "
-                    , UserEntity.class)
-            .setParameter("includeDeactivatedUsers", includeDeactivatedUsers)
+                    "select u from UserEntity u " +
+                            "left join MatchEntity mu on u member of mu.users " +
+                            "where :includeDeactivated = true OR u.deactivated = false " +
+                            "group by u " +
+                            "order by count(u) desc", UserEntity.class)
+            .setParameter("includeDeactivated", includeDeactivated)
             .getResultList();
-    log.info("Find all users. Returned list of size:{}", resultList.size());
+    log.info("Find all users sorted by match count in game. Returned list of size:{}", resultList.size());
     return resultList.stream().map(userMapper::userEntityToUserModel)
         .collect(Collectors.toList());
-
   }
 
   @Override

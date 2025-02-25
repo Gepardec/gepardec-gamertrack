@@ -5,6 +5,7 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class TestFixtures {
     List<Game> games = new ArrayList<>();
 
     for (int i = 0; i < gameCount; i++) {
-      games.add(new Game(null, null, "TestGameTitle" + i, "TestGameRules" + i));
+      games.add(new Game(null, tokenService.generateToken(), "TestGameTitle" + i, "TestGameRules" + i));
     }
     return games;
   }

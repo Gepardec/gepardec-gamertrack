@@ -10,12 +10,7 @@ public interface UserRepository {
   Optional<User> saveUser(User user);
   Optional<User> updateUser(User user);
   void deleteUser(User user);
-  /**
-   * deleteAllUsers - Only for testing purposes
-   */
-  void deleteAllUsers();
-  List<User> findAllUsers(boolean includeDeactivatedUsers);
+  List<User> findAllUsersSortedByMatchCount(boolean includeDeactivatedUsers);
   Optional<User> findUserByToken(String token);
   Boolean existsByUserToken(List<String> userTokens);
-
 }
