@@ -2,6 +2,7 @@ package com.gepardec.rest.impl;
 
 import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
+import com.gepardec.rest.model.command.ValidateTokenCommand;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
@@ -94,5 +95,54 @@ public class AuthResourceImplIT {
                 .extract()
                 .path("token");
         usedUserTokens.add(token);
+    }
+
+    @Test
+    public void ensureValidateTokenForInvalidTokenReturnsUnauthorized() {
+        ValidateTokenCommand validateTokenCommand = new ValidateTokenCommand("aksldfjalsdfjalskdjfaksdl.asdfasddfasdf.asdfsadff");
+        with().when()
+                .contentType("application/json")
+                .body(validateTokenCommand)
+                .post("/auth/validate")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    public void ensureValidateTokenForNotProvidedOrNullTokenReturnsUnauthorized() {
+        ValidateTokenCommand validateTokenCommand = new ValidateTokenCommand(null);
+        with().when()
+                .contentType("application/json")
+                .body(validateTokenCommand)
+                .post("/auth/validate")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
+    public void ensureValidateTokenForValidTokenReturns200Ok() {
+        //Login to get valid token
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME, SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        var token = authHeader.replace("Bearer ", "");
+
+
+        //Validate token
+        ValidateTokenCommand validateTokenCommand = new ValidateTokenCommand(token);
+        with().when()
+                .contentType("application/json")
+                .body(validateTokenCommand)
+                .post("/auth/validate")
+                .then()
+                .statusCode(200);
     }
 }

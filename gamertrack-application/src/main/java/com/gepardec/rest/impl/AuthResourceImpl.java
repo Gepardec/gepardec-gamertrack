@@ -3,6 +3,7 @@ package com.gepardec.rest.impl;
 import com.gepardec.core.services.AuthService;
 import com.gepardec.rest.api.AuthResource;
 import com.gepardec.rest.model.command.AuthCredentialCommand;
+import com.gepardec.rest.model.command.ValidateTokenCommand;
 import com.gepardec.rest.model.mapper.AuthCredentialRestMapper;
 import com.gepardec.security.JwtUtil;
 import jakarta.enterprise.context.RequestScoped;
@@ -35,5 +36,12 @@ public class AuthResourceImpl implements AuthResource {
         } else {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
         }
+    }
+
+    @Override
+    public Response validateToken(ValidateTokenCommand tokenCmd) {
+        if (tokenCmd.token() != null && authService.isTokenValid(tokenCmd.token())) return Response.ok().build();
+
+        return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid token").build();
     }
 }

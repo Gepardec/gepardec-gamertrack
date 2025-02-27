@@ -24,6 +24,18 @@ e.g
 
 or any other wildfly location
 
+## secret.env
+
+The project/application needs a secret.env file with the following variables set in order for authentication and tests to work
+
+```
+SECRET_ADMIN_NAME
+SECRET_JWT_HASH
+SECRET_DEFAULT_PW
+```
+
+For convenience the [plugin](https://plugins.jetbrains.com/plugin/7861-envfile) is recommended for reading the secret.env when tests are executed via IntelliJ 
+
 ## Build Project and deploy application
 
 - *In order for all used relative paths to work  

@@ -6,6 +6,8 @@ import com.gepardec.core.services.TokenService;
 import com.gepardec.model.AuthCredential;
 import com.gepardec.security.JwtUtil;
 import io.github.cdimascio.dotenv.Dotenv;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -77,5 +79,17 @@ public class AuthServiceImpl implements AuthService {
             }
             return false; //user was not created
         }
+    }
+
+    @Override
+    public boolean isTokenValid(String token) {
+        boolean isValid = false;
+        try {
+            Jwts.parser().setSigningKey(jwtUtil.generateKey()).build().parseClaimsJws(token);
+            isValid = true;
+        } catch (JwtException e) {
+            log.error("Token validation failed {}", e.getMessage());
+        }
+        return isValid;
     }
 }

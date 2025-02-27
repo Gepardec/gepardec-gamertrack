@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +28,7 @@ public class AuthServiceImplTest {
     JwtUtil jwtUtil;
     @Mock
     TokenService tokenService;
+
 
     @Test
     void ensureCreateDefaultUserIfNotExistsCreatesDefaultUser() {
@@ -68,4 +69,22 @@ public class AuthServiceImplTest {
         assertEquals(authService.authenticate(new AuthCredential("admin", "CorrectPW")), true);
     }
 
+    @Test
+    void ensureIsTokenValidReturnsFalseIfTokenIsNull() {
+        assertFalse(authService.isTokenValid(null));
+    }
+
+    @Test
+    void ensureIsTokenValidReturnsFalseIfTokenIsInvalid() {
+        assertFalse(authService.isTokenValid("invalidToken.shouldNotWork.shouldBeFalse"));
+    }
+
+    @Test
+    void ensureIsTokenValidReturnsTrueIfTokenIsValid() {
+        when(jwtUtil.generateToken(any())).thenCallRealMethod();
+        when(jwtUtil.generateKey()).thenCallRealMethod();
+
+
+        assertTrue(authService.isTokenValid(jwtUtil.generateToken("AnyUser")));
+    }
 }
