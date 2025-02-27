@@ -64,7 +64,10 @@ jobs:
 
       - name: Get branch name
         id: branch
-        run: echo "branch_name=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+        run: | 
+          branch_name=$(git rev-parse --abbrev-ref HEAD)
+          branch_name=${branch_name//\//-}
+          echo "branch_name=${branch_name}" >> $GITHUB_ENV
 
       - name: Get commit hash
         id: commit
