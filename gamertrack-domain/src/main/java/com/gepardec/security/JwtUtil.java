@@ -54,7 +54,7 @@ public class JwtUtil {
     }
 
     private String hashAndSaltPassword(String clearTextPassword, ByteSource salt) {
-        return new Sha512Hash(clearTextPassword, salt, 2000000).toHex();
+        return new Sha512Hash(clearTextPassword, salt, 210000).toHex();
     }
 
     private ByteSource getSalt() {
