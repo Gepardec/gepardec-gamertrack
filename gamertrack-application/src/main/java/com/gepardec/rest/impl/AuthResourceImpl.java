@@ -27,7 +27,6 @@ public class AuthResourceImpl implements AuthResource {
 
     @Override
     public Response login(AuthCredentialCommand authCredentialCommand) {
-        authService.createDefaultUserIfNotExists();
         if (authService.authenticate(mapper.authCredentialCommandToAuthCredential(authCredentialCommand))) {
 
             String token = jwtUtil.generateToken(authCredentialCommand.username());
