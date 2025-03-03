@@ -45,10 +45,10 @@ public class MatchResourceImpl implements MatchResource {
 
     public Response createPaginatedResponse(long totalData, PageRequest pageRequest, List<Match> bodyData) {
         return Response.ok()
-                .header("X-Total-Count", totalData)
-                .header("X-Total-Pages", (int) ceil((double) totalData / pageRequest.size()))
-                .header("X-Page-Size", pageRequest.size())
-                .header("X-Current-Page", pageRequest.page())
+                .header("X-Total-Count".toLowerCase(), totalData)
+                .header("X-Total-Pages".toLowerCase(), (int) ceil((double) totalData / pageRequest.size()))
+                .header("X-Page-Size".toLowerCase(), pageRequest.size())
+                .header("X-Current-Page".toLowerCase(), pageRequest.page())
                 .entity(bodyData.stream()
                         .map(MatchRestDto::new)
                         .toList())

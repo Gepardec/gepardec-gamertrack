@@ -11,6 +11,12 @@ import java.io.IOException;
 @Provider
 public class CorsResponseFilter implements ContainerResponseFilter {
 
+    protected static final String ALLOWED_METHODS = "GET, POST, PUT, DELETE, HEAD";
+    protected static final String ALLOWED_HEADERS = "Content-Type, Authorization";
+    protected static final String ACCESS_CONTROL_ALLOW_CREDENTIALS_IS_ALLOWED = "true";
+    protected static final String ACCESS_CONTROL_EXPOSE_HEADERS =  "x-total-count, x-total-pages, x-page-size, x-current-page, Authorization";
+
+
     Dotenv dotenv = Dotenv
             .configure()
             .directory("../..")
@@ -25,9 +31,10 @@ public class CorsResponseFilter implements ContainerResponseFilter {
 
         if (origin != null && origin.matches(dotenv.get("ALLOWED_ORIGINS_AS_REGEX"))) {
             responseContext.getHeaders().add("Access-Control-Allow-Origin", origin);
-            responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD");
-            responseContext.getHeaders().add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            responseContext.getHeaders().add("Access-Control-Allow-Credentials", true);
+            responseContext.getHeaders().add("Access-Control-Allow-Methods", ALLOWED_METHODS);
+            responseContext.getHeaders().add("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+            responseContext.getHeaders().add("Access-Control-Allow-Credentials", ACCESS_CONTROL_ALLOW_CREDENTIALS_IS_ALLOWED);
+            responseContext.getHeaders().add("Access-Control-Expose-Headers", ACCESS_CONTROL_EXPOSE_HEADERS);
         }
     }
 }

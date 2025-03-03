@@ -14,8 +14,8 @@ public class XTotalCountResponseFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
         var body = responseContext.getEntity();
 
-        if (!responseContext.getHeaders().containsKey("X-Total-Count") && body instanceof Collection) {
-            responseContext.getHeaders().add("X-Total-Count", ((Collection<?>) body).size());
+        if (!responseContext.getHeaders().containsKey("x-total-count".toLowerCase()) && body instanceof Collection) {
+            responseContext.getHeaders().add("x-total-count".toLowerCase(), ((Collection<?>) body).size());
         }
 
     }
