@@ -27,10 +27,13 @@ public class AuthResourceImpl implements AuthResource {
 
     @Override
     public Response login(AuthCredentialCommand authCredentialCommand) {
+        long start = System.nanoTime();
         if (authService.authenticate(mapper.authCredentialCommandToAuthCredential(authCredentialCommand))) {
 
             String token = jwtUtil.generateToken(authCredentialCommand.username());
 
+            long end = System.nanoTime();
+            System.out.println("Time until response is started to be built: " + (end - start) / 1000000 + "ms");
             return Response.ok("{\"token\": \"" + token + "\"}").header(AUTHORIZATION, "Bearer " + token).build();
         } else {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
