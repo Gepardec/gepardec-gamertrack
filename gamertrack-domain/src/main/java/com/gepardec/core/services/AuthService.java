@@ -4,6 +4,6 @@ import com.gepardec.model.AuthCredential;
 
 public interface AuthService {
     boolean authenticate(AuthCredential credential);
-    boolean createDefaultUserIfNotExists();
+    void createDefaultUser();
     boolean isTokenValid(String token);
 }

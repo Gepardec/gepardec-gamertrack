@@ -10,8 +10,7 @@ import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(ArquillianExtension.class)
@@ -29,8 +28,32 @@ public class AuthRepositoryTest extends GamertrackDbIT {
     void ensureCreateDefaultUserWorks() {
         AuthCredential authCredential = new AuthCredential(tokenService.generateToken(), "admin",
                 "password", "salt");
-        assertTrue(authRepository.createDefaultUserIfNotExists(authCredential));
+
+        authRepository.createDefaultUser(authCredential);
+
+        assertTrue(authRepository.findByUsername(authCredential.getUsername()).isPresent());
+        assertEquals("admin", authRepository.findByUsername(authCredential.getUsername()).get().getUsername());
     }
+
+    @Test
+    void ensureCreateDefaultUserWorksIfUserAlreadyExists() {
+        //GIVEN
+        AuthCredential existingAuthCredential = new AuthCredential(tokenService.generateToken(), "oldAdmin",
+                "password", "salt");
+        authRepository.createDefaultUser(existingAuthCredential);
+
+
+        //WHEN
+        AuthCredential newAuthCredential = new AuthCredential(tokenService.generateToken(), "newAdmin",
+                "password", "salt");
+
+
+        //THEN
+
+        assertTrue(authRepository.findByUsername(existingAuthCredential.getUsername()).isPresent());
+        assertFalse(authRepository.findByUsername(newAuthCredential.getUsername()).isPresent());
+        }
+
 
     @Test
     void ensureFindByUsernameReturnsEmpty() {
@@ -44,7 +67,7 @@ public class AuthRepositoryTest extends GamertrackDbIT {
         AuthCredential authCredential = new AuthCredential(tokenService.generateToken(), "CorrectName",
                 "password", "salt");
 
-        authRepository.createDefaultUserIfNotExists(authCredential);
+        authRepository.createDefaultUser(authCredential);
 
         assertEquals("CorrectName", authRepository.findByUsername(authCredential.getUsername()).get().getUsername());
     }

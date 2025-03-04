@@ -40,16 +40,18 @@ public class AuthRepositoryImpl implements AuthRepository, Serializable {
     }
 
     @Override
-    public boolean createDefaultUserIfNotExists(AuthCredential authCredential){
+    public Optional<AuthCredential> createDefaultUser(AuthCredential authCredential){
         AuthCredentialEntity authCredentialEntity = authCredentialMapper.authCredentialModelToAuthCredentialEntity(authCredential);
         entityManager.persist(authCredentialEntity);
-        return true;
+
+        return entityManager.find(AuthCredentialEntity.class, authCredentialEntity.getId()) != null
+        ? Optional.of(authCredentialMapper.authCredentialEntityToAuthCredentialModel(authCredentialEntity))
+        : Optional.empty();
     }
 
+
     @Override
-    public void updateDefaultUserPassword(AuthCredential authCredential) {
-        AuthCredentialEntity authCredentialEntity = authCredentialMapper.authCredentialModeltoExistingauthCredentialEntity(
-                authCredential,entityManager.find(AuthCredentialEntity.class, findByUsername(authCredential.getUsername()).get().getId()));
-        entityManager.merge(authCredentialEntity);
+    public void deleteExistingAuthUsers() {
+        entityManager.createQuery("DELETE FROM AuthCredentialEntity").executeUpdate();
     }
 }

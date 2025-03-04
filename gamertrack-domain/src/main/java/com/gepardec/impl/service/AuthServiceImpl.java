@@ -57,28 +57,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean createDefaultUserIfNotExists() {
+    public void createDefaultUser() {
         Map<String, String> credMap = jwtUtil.calcHashedCredentialMap(SECRET_DEFAULT_PW);
 
         AuthCredential credential = new AuthCredential(tokenService.generateToken(),SECRET_ADMIN_NAME,
                 credMap.get("hashedPassword"), credMap.get("salt"));
 
-        Optional<AuthCredential> dbAuthCredentialEntity = authRepository.findByUsername(credential.getUsername());
+        authRepository.deleteExistingAuthUsers();
 
-        if (!dbAuthCredentialEntity.isPresent()) {
-            authRepository.createDefaultUserIfNotExists(credential);
-            credMap = null;
+        if (authRepository.createDefaultUser(credential).isPresent())
             log.info("Default user created");
-            return true; //user was created
-        }
-        else{
-            log.info("Default user exists");
-            if(!jwtUtil.passwordsMatches(dbAuthCredentialEntity.get().getPassword(), dbAuthCredentialEntity.get().getSalt(),SECRET_DEFAULT_PW)){
-                authRepository.updateDefaultUserPassword(credential);
-                log.info("Default user password was updated!");
-            }
-            return false; //user was not created
-        }
     }
 
     @Override

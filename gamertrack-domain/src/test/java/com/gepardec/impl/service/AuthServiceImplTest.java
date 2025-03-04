@@ -31,21 +31,6 @@ public class AuthServiceImplTest {
 
 
     @Test
-    void ensureCreateDefaultUserIfNotExistsCreatesDefaultUser() {
-        when(authRepository.findByUsername(any())).thenReturn(Optional.empty());
-        when(authRepository.createDefaultUserIfNotExists(any())).thenReturn(true);
-
-        assertEquals(authService.createDefaultUserIfNotExists(),true);
-    }
-
-    @Test
-    void ensureCreateDefaultUserIfNotExistsWorksReturnsFalse() {
-        when(authRepository.findByUsername(any())).thenReturn(Optional.of(new AuthCredential()));
-
-        assertEquals(authService.createDefaultUserIfNotExists(),false);
-    }
-
-    @Test
     void ensureAuthenticateReturnsFalseIfCredentialsAreBlank() {
         assertEquals(authService.authenticate(new AuthCredential("admin", "")), false);
     }
