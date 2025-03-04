@@ -54,6 +54,7 @@ public interface UserResource {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved"),
             @ApiResponse(responseCode = "204", description = "No Content - No users were found")
     })    @GET
+    @Secure
     public Response getUsers(@QueryParam("includeDeactivated") @DefaultValue(value = "true") Boolean includeDeactivated);
 
     @Operation(summary = "Get User by token", description = "Returns user by token")
@@ -62,6 +63,7 @@ public interface UserResource {
     })
     @Path("{token}")
     @GET
+    @Secure
     public Response getUser(@PathParam("token") String token);
 
 
