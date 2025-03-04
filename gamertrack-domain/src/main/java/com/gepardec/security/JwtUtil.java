@@ -21,25 +21,19 @@ public class JwtUtil {
     private static final String SECRET_KEY = dotenv.get("SECRET_JWT_HASH", System.getenv("SECRET_JWT_HASH"));
 
     public String generateToken(String username) {
-        long start = System.nanoTime();
         var jwt = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 720))
                 .signWith(SignatureAlgorithm.HS512, generateKey())
                 .compact();
 
-        long end = System.nanoTime();
-        System.out.println("Time to generate token: " + (end - start) / 1000000 + "ms");
         return jwt;
     }
 
     public boolean passwordsMatches(String dbHashedPassword, String saltText, String clearTextPassword) {
-        long start = System.nanoTime();
         ByteSource salt = ByteSource.Util.bytes(Hex.decode(saltText));
         String hashedPassword = hashAndSaltPassword(clearTextPassword, salt);
-        long end = System.nanoTime();
-        System.out.println("Time to hash and salt password: " + (end - start) / 1000000 + "ms");
         return hashedPassword.equals(dbHashedPassword);
     }
 
@@ -62,10 +56,6 @@ public class JwtUtil {
     }
 
     public Key generateKey() {
-        long start = System.nanoTime();
-        var temp = new SecretKeySpec(SECRET_KEY.getBytes(), 0, SECRET_KEY.getBytes().length, "HmacSHA512");
-        long end = System.nanoTime();
-        System.out.println("Time to generate key: " + (end - start) / 1000000 + "ms");
-        return temp;
+        return new SecretKeySpec(SECRET_KEY.getBytes(), 0, SECRET_KEY.getBytes().length, "HmacSHA512");
     }
 }

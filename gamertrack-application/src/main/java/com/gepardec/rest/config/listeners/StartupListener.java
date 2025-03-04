@@ -15,6 +15,8 @@ public class StartupListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         authService.createDefaultUserIfNotExists();
+
+
     }
 
     @Override

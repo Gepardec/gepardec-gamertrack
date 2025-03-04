@@ -16,6 +16,7 @@ public class AuthCredentialMapper {
     }
     public AuthCredentialEntity authCredentialModeltoExistingauthCredentialEntity(AuthCredential authCredential, AuthCredentialEntity authCredentialEntity) {
         authCredentialEntity.setPassword(authCredential.getPassword());
+        authCredentialEntity.setSalt(authCredential.getSalt());
         return authCredentialEntity;
     }
 }
