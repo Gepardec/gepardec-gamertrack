@@ -1,6 +1,8 @@
 package com.gepardec.adapter.output.persistence.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,7 +16,9 @@ public class AbstractEntity implements Serializable {
     @Version
     protected Long version;
 
+    @CreationTimestamp
     protected LocalDateTime createdOn;
+    @UpdateTimestamp
     protected LocalDateTime updatedOn;
 
     public Long getId() {
