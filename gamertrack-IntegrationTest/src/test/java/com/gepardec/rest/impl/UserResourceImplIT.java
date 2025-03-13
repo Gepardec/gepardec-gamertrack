@@ -126,6 +126,13 @@ public class UserResourceImplIT {
 
                 with()
                         .when()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .contentType("application/json")
                         .pathParam("token", token)
                         .request("GET", "/users/{token}")
@@ -212,6 +219,13 @@ public class UserResourceImplIT {
         @Test
         public void ensureGetUserReturnsOk() {
                 with().when()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .request("GET", "/users")
                         .then()
                         .statusCode(200);
@@ -241,6 +255,13 @@ public class UserResourceImplIT {
                 with()
                         .when()
                         .contentType("application/json")
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .pathParam("token", token)
                         .request("GET", "/users/{token}")
                         .then()
@@ -289,6 +310,13 @@ public class UserResourceImplIT {
                         .statusCode(200);
 
                 with().when()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .request("GET", "/users?includeDeactivated=false")
                         .then()
                         .body("token", not(hasItem(token)))
@@ -333,6 +361,13 @@ public class UserResourceImplIT {
                         .statusCode(200);
 
                 with().when()
+                        .headers(
+                                "Authorization",
+                                "Bearer " + bearerToken,
+                                "Content-Type",
+                                ContentType.JSON,
+                                "Accept",
+                                ContentType.JSON)
                         .request("GET", "/users?includeDeactivated=true")
                         .then()
                         .body("token", hasItem(token))
