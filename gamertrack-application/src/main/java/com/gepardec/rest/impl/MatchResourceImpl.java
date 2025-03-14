@@ -36,6 +36,13 @@ public class MatchResourceImpl implements MatchResource {
         PageRequest pageRequest = PageRequest.ofPage(pageNumber.orElse(1L), pageSize.orElse(Integer.MAX_VALUE), true);
 
         logger.info("Getting matches with filter gameToken: %s, userToken: %s".formatted(gameToken, userToken));
+
+        System.out.println(createPaginatedResponse(
+                matchService.countAllFilteredOrUnfilteredMatches(gameToken, userToken),
+                pageRequest,
+                matchService.findAllFilteredOrUnfilteredMatches(gameToken, userToken, pageRequest)
+        ).toString());
+
         return createPaginatedResponse(
                 matchService.countAllFilteredOrUnfilteredMatches(gameToken, userToken),
                 pageRequest,

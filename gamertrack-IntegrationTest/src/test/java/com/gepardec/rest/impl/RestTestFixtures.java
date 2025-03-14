@@ -42,7 +42,7 @@ public class RestTestFixtures {
 
   public static MatchRestDto matchRestDto(String token, GameRestDto gameRestDto,
       List<UserRestDto> userRestDtos) {
-    return new MatchRestDto(token, gameRestDto, userRestDtos);
+    return new MatchRestDto(token, "2025-01-01 12:12:12","2025-01-01 12:12:12", gameRestDto, userRestDtos);
   }
 
   public static Game game() {

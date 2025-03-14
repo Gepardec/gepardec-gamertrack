@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +30,14 @@ public class MatchMapper {
   }
 
   public Match matchEntityToMatchModel(MatchEntity matchEntity) {
+    System.out.println("createdOn is: "+matchEntity.getCreatedOn());
+    System.out.println("createdOn is: "+matchEntity.getCreatedOn().getClass());
+    System.out.println("UpdatedOn is: "+matchEntity.getUpdatedOn());
+    System.out.println("UpdatedOn is: "+matchEntity.getUpdatedOn().getClass());
+
     return new Match(matchEntity.getId(), matchEntity.getToken(),
-        gameMapper.gameEntityToGameModel(matchEntity.getGame()),
+            matchEntity.getCreatedOn(), matchEntity.getUpdatedOn(),
+            gameMapper.gameEntityToGameModel(matchEntity.getGame()),
         matchEntity.getUsers().stream().map(userMapper::userEntityToUserModel).toList());
   }
 
