@@ -26,8 +26,8 @@ public class MatchEntity extends AbstractEntity {
 
   @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
   @JoinTable(name = "matches_users", joinColumns =
-  @JoinColumn(nullable = false, name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")), inverseJoinColumns =
-  @JoinColumn(nullable = false, name = "fk_match", foreignKey = @ForeignKey(name = "fk_match")))
+  @JoinColumn(nullable = false, name = "fk_match", foreignKey = @ForeignKey(name = "fk_match")), inverseJoinColumns =
+  @JoinColumn(nullable = false, name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")))
   private List<UserEntity> users;
 
   public MatchEntity() {
