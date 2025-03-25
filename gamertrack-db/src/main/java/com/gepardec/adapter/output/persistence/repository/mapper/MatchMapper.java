@@ -30,10 +30,6 @@ public class MatchMapper {
   }
 
   public Match matchEntityToMatchModel(MatchEntity matchEntity) {
-    System.out.println("createdOn is: "+matchEntity.getCreatedOn());
-    System.out.println("createdOn is: "+matchEntity.getCreatedOn().getClass());
-    System.out.println("UpdatedOn is: "+matchEntity.getUpdatedOn());
-    System.out.println("UpdatedOn is: "+matchEntity.getUpdatedOn().getClass());
 
     return new Match(matchEntity.getId(), matchEntity.getToken(),
             matchEntity.getCreatedOn(), matchEntity.getUpdatedOn(),
