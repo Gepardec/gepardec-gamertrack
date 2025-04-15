@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.gepardec</groupId>
+    <artifactId>gepardec-gamertrack</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <packaging>war</packaging>
+  <artifactId>gamertrack-war</artifactId>
+  <properties>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <build>
+    <finalName>gepardec-gamertrack</finalName>
+
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.gepardec</groupId>
+      <artifactId>gamertrack-domain</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.gepardec</groupId>
+      <artifactId>gamertrack-db</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.gepardec</groupId>
+      <artifactId>gamertrack-application</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+
+</project>

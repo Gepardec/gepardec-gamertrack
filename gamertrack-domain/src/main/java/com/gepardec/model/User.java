@@ -1,61 +1,92 @@
 package com.gepardec.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+import java.util.Objects;
 
-import java.util.List;
+public class User {
 
-@Entity()
-@Table(name = "users")
-public class User extends AbstractEntity{
+  private Long id;
+  private String firstname;
+  private String lastname;
+  private boolean deactivated;
+  private String token;
 
-    @NotEmpty(message = "Firstname must be set")
-    public String firstname;
-    @NotEmpty(message = "Lastname must be set")
-    public String lastname;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
-    public List<Score> scores;
+  public User() {
+  }
 
-    public boolean deactivated;
+  public User(Long id, String firstname, String lastname, boolean deactivated, String token) {
+    this.id = id;
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.deactivated = deactivated;
+    this.token = token;
+  }
 
-    public User(String firstname, String lastname) {
-        this.firstname = firstname;
-        this.lastname = lastname;
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getFirstname() {
+    return firstname;
+  }
+
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
+
+  public String getLastname() {
+    return lastname;
+  }
+
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
+
+  public boolean isDeactivated() {
+    return deactivated;
+  }
+
+  public void setDeactivated(boolean deactivated) {
+    this.deactivated = deactivated;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    User user = (User) o;
+    return deactivated == user.deactivated && Objects.equals(id, user.id)
+        && Objects.equals(firstname, user.firstname) && Objects.equals(lastname,
+        user.lastname) && Objects.equals(token, user.token);
+  }
 
-    public User() {}
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, firstname, lastname, deactivated, token);
+  }
 
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    @OneToMany
-    public List<Score> getScores() {
-        return scores;
-    }
-
-    public void setScores(List<Score> scores) {
-        this.scores = scores;
-    }
-
-    public boolean isDeactivated() {
-        return deactivated;
-    }
-
-    public void setDeactivated(boolean deactivated) {
-        this.deactivated = deactivated;
-    }
+  @Override
+  public String toString() {
+    return "User{" +
+        "id=" + id +
+        ", firstname='" + firstname + '\'' +
+        ", lastname='" + lastname + '\'' +
+        ", deactivated=" + deactivated +
+        ", token='" + token + '\'' +
+        '}';
+  }
 }
+

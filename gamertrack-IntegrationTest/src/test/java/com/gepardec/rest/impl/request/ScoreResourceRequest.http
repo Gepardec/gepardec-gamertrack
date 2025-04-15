@@ -1,0 +1,52 @@
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user": {
+    "id": 1,
+    "firstname": "Max",
+    "lastname": "Mustermann"
+  },
+  "game": {
+    "id": 1,
+    "name": "Mensch Ärgere dich nicht",
+    "rules": "Nicht Schummeln"
+  },
+  "scorePoints": 40
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###
+POST http://localhost:8080/gepardec-gamertrack/api/v1/scores/
+Content-Type:application/json
+
+{
+  "user":{
+    "id": 1,
+    "firstname": "Max",
+    "lastname": "Mustermann"
+  },
+  "game":{
+    "id": 2,
+    "name": "Vier gewinnt",
+    "rules": "Diesmal wirklich nicht Schummeln"
+  },
+  "scorePoints": 80
+}
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 200");
+    });
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+%}
+###

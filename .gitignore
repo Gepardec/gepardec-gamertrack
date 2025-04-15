@@ -33,3 +33,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### WILDFLY PROVISIONED
+/wildfly
+
+secret.env

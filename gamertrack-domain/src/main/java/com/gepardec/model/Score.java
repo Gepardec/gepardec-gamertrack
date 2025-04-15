@@ -1,31 +1,32 @@
 package com.gepardec.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+public class Score{
+    private Long id;
+    private User user;
+    private Game game;
+    private double scorePoints;
+    private String token;
+    private boolean deletable;
 
-@Entity
-public class Score extends AbstractEntity{
+    public Score(Long id) {
+        this.id = id;
+    }
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    public User user;
-
-    @NotNull
-    @ManyToOne()
-    @JoinColumn(name = "fk_game_score", foreignKey = @ForeignKey(name = "fk_game_score"))
-    public Game game;
-
-    @NotNull
-    public double scorePoints;
-
-    public Score(User user, Game game, double scorePoints) {
+    public Score(Long id, User user, Game game, double scorePoints, String token, boolean deletable) {
+        this.id = id;
         this.user = user;
         this.game = game;
         this.scorePoints = scorePoints;
+        this.token = token;
+        this.deletable = deletable;
     }
 
-    public Score() {
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public User getUser() {
@@ -43,10 +44,26 @@ public class Score extends AbstractEntity{
     public void setGame(Game game) {
         this.game = game;
     }
+
     public double getScorePoints() {
         return scorePoints;
     }
+
     public void setScorePoints(double scorePoints) {
         this.scorePoints = scorePoints;
+    }
+
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public boolean isDeletable() {
+        return deletable;
+    }
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
     }
 }
