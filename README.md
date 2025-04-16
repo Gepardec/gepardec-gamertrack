@@ -15,34 +15,27 @@ The following technologies are used by Gepardec-Gamertrack
 
 ## application.properties
 
-The application needs the following variables set:
+The application needs the following variable set:
 
-jboss.Home
-
-e.g
-> jboss.home=\${basedir}\${file.separator}..\${file.separator}wildfly
-
-or any other wildfly location
+> ALLOWED_ORIGINS_AS_REGEX=^(http|https)://gamertrack-frontend.apps.cloudscale-lpg-2.appuio.cloud
 
 ## secret.env
 
-The project/application needs a secret.env file with the following variables set in order for authentication and tests to work
+The application needs a secret.env file located in the project root with the following variables set in order for 
+authentication and tests to work. 
 
 ```
-SECRET_ADMIN_NAME
-SECRET_JWT_HASH
-SECRET_DEFAULT_PW
+SECRET_ADMIN_NAME=
+SECRET_JWT_HASH=
+SECRET_DEFAULT_PW=
 ```
+`SECRET_JWT_HASH` must be at least 64 chars long.
 
 For convenience the [plugin](https://plugins.jetbrains.com/plugin/7861-envfile) is recommended for reading the secret.env when tests are executed via IntelliJ 
 
 ## Build Project and deploy application
-
-- *In order for all used relative paths to work  
-  they should be executed from the projects root directory*
-- *Use absolute path or relative path instead of $WILDFLY_HOME.*
-    - *Alternatively set the environment variable with export WILDFLY_HOME=PATH/TO/WILDFLY/DIRECTORY
-      for the current terminal session*
+**You can either use the built-in tools for Maven & WildFly in IntelliJ or use the following commands:**
+- *In order for all used relative paths to work they should be executed from the projects root directory*
 
 **Build**
 
@@ -53,13 +46,13 @@ For convenience the [plugin](https://plugins.jetbrains.com/plugin/7861-envfile) 
 **Start wildfly**
 
 ```zsh
-  $WILDFLY_HOME/bin//wildfly-34.0.0.Final/bin/standalone.sh
+  wildfly/bin/standalone.sh
 ```
 
 **Deploy application to wildfly**
 
 ```zsh
-  $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="deploy --force ./gamertrack-war/target/gepardec-gamertrack.war"
+  wildfly/bin/jboss-cli.sh --connect --command="deploy --force ./gamertrack-war/target/gepardec-gamertrack.war"
 ```
 
 **Undeploy and stop wildfly**
@@ -74,23 +67,6 @@ For convenience the [plugin](https://plugins.jetbrains.com/plugin/7861-envfile) 
   $WILDFLY_HOME/bin/jboss-cli.sh --connect --command="shutdown"
 ```
 
-## Docker
-
-When ```mvn clean install``` is executed an image with the application is generated and
-automatically added to the existing docker environment
-
-The docker image requires an already running postgres database which can be started with the
-following command:
-
-```bash
-  docker run -d -p5432:5432 --name gamertrack-database -e POSTGRES_PASSWORD=gepardec -e POSTGRES_USER=gamertrack -e POSTGRES_DB=gamertrack postgres
-```
-
-Afterward the container with wildfly and the deployed application can be started as follows:
-
-```bash
-  docker run -p8080:8080 -e POSTGRESQL_USER=gamertrack -e POSTGRESQL_PASSWORD=gepardec -e POSTGRESQL_URL=jdbc:postgresql://10.254.100.58:5432/gamertrack gamertrack-war
-```
 
 ## ER-diagram
 
@@ -98,22 +74,28 @@ Afterward the container with wildfly and the deployed application can be started
 classDiagram
     namespace BaseShapes {
         class User {
+            -String Token
             -String firstname
             -String lastname
-            -List<Score> gameScores
+            -boolean deactivated
         }
 
         class Game {
-            +String name
-            +String rules
+            -String Token
+            -String name
+            -String rules
         }
         class Match {
-            +Game game
-            +List<User> users
+            -String Token
+            -Game game
+            -List<User> users
         }
         class Score {
-            +Game game
-            +int gamescore
+            -String Token
+            -User user
+            -Game game
+            -int scorePoints
+            -boolean deletable
         }
     }
     Score "0..n" --* "1" User
@@ -132,12 +114,16 @@ Rest-Endpoints are available via
 
 ###
 
-| Endpoint   | Description       |
-|:-----------|:------------------|
-| `/users`   | CRUD - operations |
-| `/games`   | CRUD - operations |
-| `/matches` | CRUD - operations |
-| `/score`   | CRU - operations  |
+| Endpoint    | Description       |
+|:------------|:------------------|
+| `/auth`     | login & validate  |
+| `/health`   | App Health Status |
+| `/users`    | CRUD - operations |
+| `/games`    | CRUD - operations |
+| `/matches`  | CRUD - operations |
+| `/scores`   | CRU - operations  |
+| `/ranklist` | Top Scores        |
+
 
 For more specific information for each endpoint
 visit: [OpenApi Spec](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/Gepardec/gepardec-gamertrack/refs/heads/main/docs/openapi-spec.yaml)
