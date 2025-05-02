@@ -1,7 +1,6 @@
 # gepardec-gamertrack
 
-Lernprojekt für Juniors. Eine App für Tracking von Ergebnissen bei diversen sportlichen
-Auseinandersetzungen
+This is a learning project for Juniors. An app for tracking results of various sports competitions.
 
 ## Requirements
 
@@ -38,7 +37,7 @@ For convenience the [plugin](https://plugins.jetbrains.com/plugin/7861-envfile) 
 - *In order for all used relative paths to work they should be executed from the projects root directory*
 
 **Build**
-
+*(This will also download the correct WildFly version into the project root)*
 ```zsh 
   mvn clean install -am
 ```
@@ -74,28 +73,35 @@ For convenience the [plugin](https://plugins.jetbrains.com/plugin/7861-envfile) 
 classDiagram
     namespace BaseShapes {
         class User {
-            -String Token
+            -String token
             -String firstname
             -String lastname
             -boolean deactivated
         }
 
         class Game {
-            -String Token
+            -String token
             -String name
             -String rules
         }
         class Match {
-            -String Token
+            -String token
             -Game game
             -List<User> users
         }
         class Score {
-            -String Token
+            -String token
             -User user
             -Game game
             -int scorePoints
             -boolean deletable
+        }
+        class AuthCredential {
+            -String token
+            -String username
+            -String password
+            -String salt
+
         }
     }
     Score "0..n" --* "1" User
