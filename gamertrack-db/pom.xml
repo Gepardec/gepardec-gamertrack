@@ -51,12 +51,7 @@
       <version>5.1.0.Beta7</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>6.6.10.Final</version>
-      <scope>provided</scope>
-    </dependency>
+    <!-- Removed hibernate-core dependency -->
     <dependency>
       <groupId>jakarta.transaction</groupId>
       <artifactId>jakarta.transaction-api</artifactId>
@@ -129,6 +124,16 @@
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <version>4.1.0</version>
       <scope>provided</scope>
+    </dependency>
+    <!-- Added Quarkus Hibernate ORM dependency -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-orm</artifactId>
+    </dependency>
+    <!-- Added Quarkus JDBC H2 driver dependency -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-h2</artifactId>
     </dependency>
   </dependencies>
 
