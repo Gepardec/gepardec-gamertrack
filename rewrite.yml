@@ -1,0 +1,39 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.javaee.ReworkDbDependencies
+displayName: Rework DB Dependencies
+description: Remove and add new DB Dependencies
+applicability:
+  includes:
+    - "**/gamertrack-db/**"
+  excludes:
+    - "**/gamertrack-application/**"
+    - "**/gamertrack-domain/**"
+    - "**/gamertrack-IntegrationTest/**"
+    - "**/gamertrack-war/**"
+recipeList:
+
+  - org.openrewrite.maven.AddManagedDependency:
+      groupId: io.quarkus.platform
+      artifactId: quarkus-bom
+      version: 3.23.2
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.hibernate.orm
+      artifactId: hibernate-core
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.arquillian.container
+      artifactId: arquillian-container-test-api
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.arquillian.junit5
+      artifactId: arquillian-junit5-core
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.arquillian.core
+      artifactId: arquillian-core-api
+
+  - org.openrewrite.maven.AddPlugin:
+      groupId: io.quarkus
+      artifactId: quarkus-maven-plugin
+      version: 3.23.2
