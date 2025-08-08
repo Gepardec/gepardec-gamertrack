@@ -4,14 +4,14 @@ import com.gepardec.core.services.EloService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
-@Stateless
+@ApplicationScoped
 public class EloServiceImpl implements EloService {
 
     private static final int K = 32;
