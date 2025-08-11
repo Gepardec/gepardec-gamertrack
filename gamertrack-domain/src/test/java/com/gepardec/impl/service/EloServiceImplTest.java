@@ -4,7 +4,7 @@ import com.gepardec.TestFixtures;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import org.jboss.weld.junit5.auto.EnableAutoWeld;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,8 +14,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@EnableAutoWeld
-@ExtendWith(MockitoExtension.class)
+
+
 public class EloServiceImplTest {
 
     @InjectMocks

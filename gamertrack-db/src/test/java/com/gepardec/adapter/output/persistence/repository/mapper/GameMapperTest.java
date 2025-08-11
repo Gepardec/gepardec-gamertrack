@@ -13,7 +13,7 @@ import static com.gepardec.TestFixtures.game;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
+
 public class GameMapperTest {
 
     @Mock

@@ -6,7 +6,7 @@ import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Stateless
+@ApplicationScoped
 @Transactional
 public class GameServiceImpl implements GameService, Serializable {
 
