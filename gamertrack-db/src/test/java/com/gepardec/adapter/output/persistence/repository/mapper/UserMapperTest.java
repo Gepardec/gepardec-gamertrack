@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.gepardec.TestFixtures.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
+
 public class UserMapperTest {
 
   @InjectMocks

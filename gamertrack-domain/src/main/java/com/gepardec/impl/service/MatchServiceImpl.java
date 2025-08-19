@@ -12,7 +12,7 @@ import com.gepardec.model.Match;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
 import jakarta.data.page.PageRequest;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Stateless
+@ApplicationScoped
 @Transactional
 public class MatchServiceImpl implements MatchService {
 

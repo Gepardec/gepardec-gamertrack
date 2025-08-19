@@ -1,0 +1,344 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.javaee.ReworkDbDependencies
+displayName: Rework DB Dependencies
+description: Remove and add new DB Dependencies
+recipeList:
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.hibernate.orm
+      artifactId: hibernate-core
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.arquillian.container
+      artifactId: arquillian-container-test-api
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.wildfly.arquillian
+      artifactId: wildfly-arquillian-container-managed
+
+  - org.openrewrite.maven.AddPlugin:
+      groupId: io.quarkus
+      artifactId: quarkus-maven-plugin
+      version: 3.23.2
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.javaee.AddQuarkus2Dependencies
+displayName: Add Quarkus 2 dependencies
+description: Add Quarkus 2 dependencies to the project.
+recipeList:
+  # Add Basic Quarkus Extensions
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-arc
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-rest
+      version: 3.25.0
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5-mockito
+      scope: test
+      version: 3.25.0
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-jackson
+      version: 3.25.0
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-rest-jackson
+      version: 3.25.0
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-undertow
+      version: 3.25.0
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-hibernate-orm-panache
+      version: 3.25.0
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-hibernate-orm
+      version: 3.25.0
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-hibernate-orm-panache
+      version: 3.25.0
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-jdbc-h2
+      version: 3.25.0
+  - org.openrewrite.text.FindAndReplace:
+      find: <packaging>war</packaging>
+      replace: <packaging>jar</packaging>
+      filePattern: '**/*.xml'
+
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.testing.ReplaceArquillianWithQuarkusTest
+displayName: Replace Arquillian with QuarkusTest
+description: Remove Arquillian JUnit 5 integration and replace with @QuarkusTest.
+recipeList:
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.arquillian.junit5.ArquillianExtension;
+      replace:
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: "@ExtendWith(ArquillianExtension.class)"
+      replace: "@io.quarkus.test.junit.QuarkusTest"
+      filePattern: '**/*.java'
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: "**/arquillian.xml"
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: "**/wildfly/**"
+
+  - org.openrewrite.maven.RemovePlugin:
+      groupId: org.wildfly.plugins
+      artifactId: wildfly-maven-plugin
+
+  - org.openrewrite.maven.RemoveProperty:
+      propertyName: jboss.home
+
+  - org.openrewrite.maven.RemoveProperty:
+      propertyName: junit.version
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.arquillian.junit5
+      artifactId: arquillian-junit5-core
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-junit-jupiter
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-core
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-engine
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.shrinkwrap
+      artifactId: shrinkwrap-api
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.weld
+      artifactId: weld-junit5
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.arquillian.junit5
+      artifactId: arquillian-junit5-container
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.arquillian.core
+      artifactId: arquillian-core-api
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-api
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: jakarta.enterprise
+      artifactId: jakarta.enterprise.cdi-api
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: jakarta.transaction
+      artifactId: jakarta.transaction-api
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.slf4j
+      artifactId: slf4j-api
+
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.hamcrest
+      artifactId: hamcrest
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: jakarta.ejb
+      artifactId: jakarta.ejb-api
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5
+      version: 3.25.0
+      scope: test
+
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: io.smallrye.common
+      artifactId: smallrye-common-constraint
+      version: 2.13.8
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.weld.junit5.auto.EnableAutoWeld;
+      replace:
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: '@EnableAutoWeld'
+      replace:
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: '@ExtendWith(MockitoExtension.class)'
+      replace:
+      filePattern: '**/*.java'
+
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: io.rest-assured
+      artifactId: json-path
+  - org.openrewrite.maven.RemovePlugin:
+      groupId: org.apache.maven.plugins
+      artifactId: maven-surefire-plugin
+  - org.openrewrite.maven.RemovePlugin:
+      groupId: org.codehaus.mojo
+      artifactId: properties-maven-plugin
+  - org.openrewrite.maven.RemovePlugin:
+      groupId: org.apache.maven.plugins
+      artifactId: maven-war-plugin
+  - org.openrewrite.maven.RemovePlugin:
+      groupId: org.apache.maven.plugins
+      artifactId: maven-jar-plugin
+
+  - org.openrewrite.maven.RemoveManagedDependency:
+      groupId: io.quarkus.platform
+      artifactId: quarkus-bom
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.artifact-id
+      value: quarkus-bom
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.group-id
+      value: io.quarkus.platform
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.version
+      value: 3.23.2
+  - org.openrewrite.maven.AddProperty:
+      key: surefire-plugin.version
+      value: 3.0.0
+
+  - org.openrewrite.text.FindAndReplace:
+      find: '@Stateless'
+      replace: '@ApplicationScoped'
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import jakarta.ejb.Stateless;
+      replace: import jakarta.enterprise.context.ApplicationScoped;
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.arquillian.container.test.api.Deployment;
+      replace: ''
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.shrinkwrap.api.Archive;
+      replace: ''
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.shrinkwrap.api.ShrinkWrap;
+      replace: ''
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.shrinkwrap.api.spec.JavaArchive;
+      replace: ''
+      filePattern: '**/*.java'
+
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: "**/GamertrackDbIT.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: extends GamertrackDbIT
+      replace: ''
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: super.removeTableData(ScoreEntity.class);
+      replace: ''
+      filePattern: '**/*.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: super.removeTableData(GameEntity.class);
+      replace: ''
+      filePattern: '**/*.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: super.removeTableData(UserEntity.class);
+      replace: ''
+      filePattern: '**/*.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: removeTableData(MatchEntity.class, GameEntity.class, UserEntity.class);
+      replace: ''
+      filePattern: '**/*.java'
+  - org.openrewrite.maven.AddPlugin:
+      groupId: io.smallrye
+      artifactId: jandex-maven-plugin
+      version: 3.3.2
+      executions: <executions><execution><id>make-index</id><goals><goal>jandex</goal></goals></execution></executions>
+
+---
+
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.properties.AdaptApplicationPropertiesFile
+displayName: Adapt application.properties
+description: Adapt application.properties for quarkus
+preconditions:
+  - org.openrewrite.FindSourceFiles:
+      filePattern: application.properties
+
+recipeList:
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.http.cors
+      value: 'true'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.http.cors.origins
+      value: '^(http|https)://gamertrack-frontend\.apps\.cloudscale-lpg-2\.appuio\.cloud'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.http.cors.headers
+      value: 'Content-Type,Authorization,Origin,Accept'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.http.cors.methods
+      value: 'GET,POST,OPTIONS'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.http.cors.access-control-allow-credentials
+      value: 'true'
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.javaee.RemoveRestConfig
+displayName: Adapt application.properties
+description: Adapt application.properties for quarkus
+preconditions:
+  - org.openrewrite.text.Find:
+      find: extends Application
+      filePattern: '**/*.java'
+
+recipeList:
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: "**/*.java"
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.javaee.RemoveProducerClass
+displayName: Adapt application.properties
+description: Adapt application.properties for quarkus
+preconditions:
+  - org.openrewrite.text.Find:
+      find: jakarta.enterprise.inject.Produces;
+      filePattern: '**/*.java'
+
+recipeList:
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: "**/*.java"

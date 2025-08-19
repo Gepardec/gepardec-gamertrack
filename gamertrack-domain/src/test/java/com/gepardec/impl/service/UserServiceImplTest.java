@@ -7,7 +7,7 @@ import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
-import org.jboss.weld.junit5.auto.EnableAutoWeld;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +20,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@EnableAutoWeld
-@ExtendWith(MockitoExtension.class)
+
+
 public class UserServiceImplTest {
 
     @Mock

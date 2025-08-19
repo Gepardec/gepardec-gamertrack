@@ -14,7 +14,7 @@ import com.gepardec.model.User;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.jboss.arquillian.junit5.ArquillianExtension;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@ExtendWith(ArquillianExtension.class)
-public class UserRepositoryTest extends GamertrackDbIT {
+@io.quarkus.test.junit.QuarkusTest
+public class UserRepositoryTest  {
 
   /*
 
@@ -55,7 +55,7 @@ public class UserRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
   public void before() throws Exception {
-    removeTableData(MatchEntity.class, GameEntity.class, UserEntity.class);
+    
     entityManager.clear();
   }
 
