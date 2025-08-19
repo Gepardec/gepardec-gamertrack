@@ -1,13 +1,13 @@
 package com.gepardec.impl.service;
 
 import com.gepardec.core.services.TokenService;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.security.SecureRandom;
 
 @Transactional
-@Stateless
+@ApplicationScoped
 public class TokenServiceImpl implements TokenService {
     @Override
     public String generateToken() {

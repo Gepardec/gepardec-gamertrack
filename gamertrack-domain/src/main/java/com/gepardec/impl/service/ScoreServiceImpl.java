@@ -4,7 +4,7 @@ import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.services.ScoreService;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Score;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Transactional
-@Stateless
+@ApplicationScoped
 public class ScoreServiceImpl implements ScoreService, Serializable {
 
     private static final Logger log = LoggerFactory.getLogger(ScoreServiceImpl.class);
