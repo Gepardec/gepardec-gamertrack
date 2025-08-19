@@ -8,7 +8,7 @@
     <artifactId>gepardec-gamertrack</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <artifactId>gamertrack-war</artifactId>
   <properties>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -17,7 +17,12 @@
   </properties>
   <build>
     <finalName>gepardec-gamertrack</finalName>
-
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus.platform</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
   </build>
 
   <dependencies>
@@ -36,7 +41,9 @@
       <artifactId>gamertrack-application</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
+    </dependency>
   </dependencies>
-
-
 </project>

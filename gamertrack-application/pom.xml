@@ -21,6 +21,19 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>io.smallrye</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+        <version>3.3.2</version>
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-maven-plugin-jakarta</artifactId>
         <version>2.2.26</version>
@@ -137,6 +150,14 @@
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <version>4.1.0</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-jackson</artifactId>
     </dependency>
 
   </dependencies>
