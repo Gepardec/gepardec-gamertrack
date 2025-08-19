@@ -1,24 +1,18 @@
 package com.gepardec.rest.config.listeners;
 
 import com.gepardec.core.services.AuthService;
+import io.quarkus.runtime.StartupEvent;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
 
-@WebListener
-public class StartupListener implements ServletContextListener {
+@ApplicationScoped
+public class StartupListener {
 
     @Inject
-    private AuthService authService;
+    AuthService authService;
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    void onStartup(@Observes StartupEvent event) {
         authService.createDefaultUser();
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {
-        // Do something on shutdown
     }
 }
