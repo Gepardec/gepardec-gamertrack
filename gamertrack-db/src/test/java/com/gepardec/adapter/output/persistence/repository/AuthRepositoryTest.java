@@ -3,17 +3,16 @@ package com.gepardec.adapter.output.persistence.repository;
 import com.gepardec.core.repository.AuthRepository;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.AuthCredential;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@ExtendWith(ArquillianExtension.class)
+@QuarkusTest
 public class AuthRepositoryTest extends GamertrackDbIT {
     @PersistenceContext
     EntityManager entityManager;

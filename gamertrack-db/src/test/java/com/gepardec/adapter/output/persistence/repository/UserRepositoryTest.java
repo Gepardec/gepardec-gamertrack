@@ -1,9 +1,6 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.entity.GameEntity;
-import com.gepardec.adapter.output.persistence.entity.MatchEntity;
-import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
@@ -11,13 +8,12 @@ import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.jboss.arquillian.junit5.ArquillianExtension;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +22,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@ExtendWith(ArquillianExtension.class)
-public class UserRepositoryTest extends GamertrackDbIT {
+@QuarkusTest
+public class UserRepositoryTest {
 
   /*
 
@@ -38,7 +34,7 @@ public class UserRepositoryTest extends GamertrackDbIT {
 --------------------------------------------------------------------------------
 
    */
-  @PersistenceContext
+  @Inject
   EntityManager entityManager;
 
   @Inject
@@ -54,8 +50,14 @@ public class UserRepositoryTest extends GamertrackDbIT {
   TokenService tokenService;
 
   @BeforeEach
+  @Transactional
   public void before() throws Exception {
-    removeTableData(MatchEntity.class, GameEntity.class, UserEntity.class);
+    //removeTableData(MatchEntity.class, GameEntity.class, UserEntity.class);
+
+      entityManager.createQuery("DELETE FROM ScoreEntity").executeUpdate();
+      entityManager.createQuery("DELETE FROM MatchEntity").executeUpdate();
+      entityManager.createQuery("DELETE FROM GameEntity").executeUpdate();
+      entityManager.createQuery("DELETE FROM UserEntity").executeUpdate();
     entityManager.clear();
   }
 

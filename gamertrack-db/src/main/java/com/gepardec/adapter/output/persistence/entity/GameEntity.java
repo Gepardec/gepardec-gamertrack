@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -13,11 +14,12 @@ public class GameEntity extends AbstractEntity {
   @Column(name = "token", unique = true)
   private String token;
   @NotBlank
+  @Column(nullable = false)
   private String name;
   private String rules;
 
 
-  public GameEntity(Long id, String token, String name, String rules) {
+  public GameEntity(Long id, String token, @Valid String name, String rules) {
     this.id = id;
     this.name = name;
     this.rules = rules;

@@ -1,21 +1,21 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-import static com.gepardec.TestFixtures.game;
-
 import com.gepardec.TestFixtures;
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolationException;
-import java.util.List;
-import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.hibernate.PropertyValueException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(ArquillianExtension.class)
+import java.util.List;
+
+import static com.gepardec.TestFixtures.game;
+
+@QuarkusTest
 class GameRepositoryTest extends GamertrackDbIT {
 
   @BeforeEach
@@ -39,9 +39,9 @@ class GameRepositoryTest extends GamertrackDbIT {
 
   @Test
   void ensureSavingInvalidGameThrowsConstrainViolationException() {
-    Game invalidGame = new Game(null, null, "", "TestGame");
+    Game invalidGame = new Game(null, null, null, "TestGame");
 
-    Assertions.assertThrows(ConstraintViolationException.class,
+    Assertions.assertThrows(PropertyValueException.class,
         () -> repository.saveGame(invalidGame));
   }
 

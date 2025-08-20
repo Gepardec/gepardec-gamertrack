@@ -9,21 +9,20 @@ import com.gepardec.core.repository.UserRepository;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.User;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.data.page.PageRequest;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
-import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.gepardec.TestFixtures.*;
 
-@ExtendWith(ArquillianExtension.class)
+@QuarkusTest
 public class MatchRepositoryTest extends GamertrackDbIT {
 
   @Inject

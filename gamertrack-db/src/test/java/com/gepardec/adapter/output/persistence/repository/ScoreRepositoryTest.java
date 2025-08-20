@@ -12,21 +12,20 @@ import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
 import com.gepardec.model.User;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.UserTransaction;
-import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(ArquillianExtension.class)
+@QuarkusTest
 public class ScoreRepositoryTest extends GamertrackDbIT {
 
   @PersistenceContext

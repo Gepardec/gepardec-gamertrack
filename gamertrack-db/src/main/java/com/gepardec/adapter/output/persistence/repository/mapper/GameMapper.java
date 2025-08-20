@@ -3,13 +3,13 @@ package com.gepardec.adapter.output.persistence.repository.mapper;
 import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.model.Game;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class GameMapper {
 
-  @PersistenceContext()
+  @Inject
   protected EntityManager entityManager;
 
   public GameEntity gameModelToGameEntity(Game game) {
