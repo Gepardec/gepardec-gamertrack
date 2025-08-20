@@ -5,6 +5,7 @@ import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
 import io.github.cdimascio.dotenv.Dotenv;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -20,6 +21,7 @@ import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 
+@QuarkusTest
 public class ScoreResourceImplIT {
 
     private static String gameToken;

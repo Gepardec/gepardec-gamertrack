@@ -7,6 +7,7 @@ import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.dto.UserRestDto;
 import io.github.cdimascio.dotenv.Dotenv;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response.Status;
@@ -23,6 +24,7 @@ import static java.lang.Math.ceil;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@QuarkusTest
 public class MatchResourceImplIT {
 
     ArrayList<String> usesMatchTokens = new ArrayList<>();
