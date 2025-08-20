@@ -1,9 +1,6 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.entity.GameEntity;
-import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
-import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.ScoreMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.ScoreRepository;
@@ -16,6 +13,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import jakarta.transaction.UserTransaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +24,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
-public class ScoreRepositoryTest extends GamertrackDbIT {
+public class ScoreRepositoryTest  {
 
   @PersistenceContext
   EntityManager entityManager;
@@ -51,10 +49,11 @@ public class ScoreRepositoryTest extends GamertrackDbIT {
 
 
   @BeforeEach
+  @Transactional
   void beforeEach() throws Exception {
-    super.removeTableData(ScoreEntity.class);
-    super.removeTableData(GameEntity.class);
-    super.removeTableData(UserEntity.class);
+      entityManager.createQuery("DELETE FROM ScoreEntity").executeUpdate();
+      entityManager.createQuery("DELETE FROM GameEntity").executeUpdate();
+      entityManager.createQuery("DELETE FROM UserEntity").executeUpdate();
   }
 
   @Test

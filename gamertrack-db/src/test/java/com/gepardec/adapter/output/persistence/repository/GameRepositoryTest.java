@@ -1,11 +1,12 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.hibernate.PropertyValueException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +17,15 @@ import java.util.List;
 import static com.gepardec.TestFixtures.game;
 
 @QuarkusTest
-class GameRepositoryTest extends GamertrackDbIT {
+class GameRepositoryTest {
+
+    @Inject
+    EntityManager entityManager;
 
   @BeforeEach
+  @Transactional
   void beforeEach() throws Exception {
-    super.removeTableData(GameEntity.class);
+      entityManager.createQuery("DELETE FROM GameEntity").executeUpdate();
   }
 
   @Inject

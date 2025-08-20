@@ -52,12 +52,11 @@ public class UserRepositoryTest {
   @BeforeEach
   @Transactional
   public void before() throws Exception {
-    //removeTableData(MatchEntity.class, GameEntity.class, UserEntity.class);
+    entityManager.createQuery("DELETE FROM ScoreEntity").executeUpdate();
+    entityManager.createQuery("DELETE FROM MatchEntity").executeUpdate();
+    entityManager.createQuery("DELETE FROM GameEntity").executeUpdate();
+    entityManager.createQuery("DELETE FROM UserEntity").executeUpdate();
 
-      entityManager.createQuery("DELETE FROM ScoreEntity").executeUpdate();
-      entityManager.createQuery("DELETE FROM MatchEntity").executeUpdate();
-      entityManager.createQuery("DELETE FROM GameEntity").executeUpdate();
-      entityManager.createQuery("DELETE FROM UserEntity").executeUpdate();
     entityManager.clear();
   }
 
