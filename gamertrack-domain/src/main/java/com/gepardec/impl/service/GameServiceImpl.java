@@ -12,28 +12,27 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Transactional
-public class GameServiceImpl implements GameService, Serializable {
+public class GameServiceImpl implements GameService {
 
   private final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
 
   @Inject
-  private GameRepository gameRepository;
+  GameRepository gameRepository;
   @Inject
   TokenService tokenService;
   @Inject
-  private UserService userService;
+  UserService userService;
   @Inject
-  private ScoreService scoreService;
+  ScoreService scoreService;
 
   @Inject
-  private MatchService matchService;
+  MatchService matchService;
 
   @Override
   public Optional<Game> saveGame(Game game) {

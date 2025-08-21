@@ -4,11 +4,10 @@ import com.gepardec.core.services.ScoreService;
 import com.gepardec.rest.api.ScoreResource;
 import com.gepardec.rest.model.dto.ScoreRestDto;
 import com.gepardec.rest.model.mapper.ScoreRestMapper;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
-@RequestScoped
+
 public class ScoreResourceImpl implements ScoreResource {
 
   @Inject

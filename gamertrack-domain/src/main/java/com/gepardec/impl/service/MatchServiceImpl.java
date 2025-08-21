@@ -29,22 +29,22 @@ public class MatchServiceImpl implements MatchService {
     private final Logger logger = LoggerFactory.getLogger(MatchServiceImpl.class);
 
     @Inject
-    private MatchRepository matchRepository;
+    MatchRepository matchRepository;
 
     @Inject
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @Inject
-    private GameRepository gameRepository;
+    GameRepository gameRepository;
 
     @Inject
-    private TokenService tokenService;
+    TokenService tokenService;
 
     @Inject
-    private EloService eloService;
+    EloService eloService;
 
     @Inject
-    private ScoreService scoreService;
+    ScoreService scoreService;
 
 
     @Override

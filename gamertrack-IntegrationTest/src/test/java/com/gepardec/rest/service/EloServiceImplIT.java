@@ -7,12 +7,11 @@ import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.dto.ScoreRestDto;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,29 +32,18 @@ public class EloServiceImplIT {
     static List<String> usesUserTokens = new ArrayList<>();
 
     static String authHeader;
-    String bearerToken = authHeader.replace("Bearer ", "");
+    String bearerToken;
 
-    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
-    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
-    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
-
+    @ConfigProperty(name = "SECRET_DEFAULT_PW")
+    String SECRET_DEFAULT_PW;
+    @ConfigProperty(name = "SECRET_ADMIN_NAME")
+    String SECRET_ADMIN_NAME;
 
     @BeforeAll
     public static void setup() {
-        RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
-
-        authHeader = with().when()
-                .contentType("application/json")
-                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
-                .headers("Content-Type", ContentType.JSON,
-                        "Accept", ContentType.JSON)
-                .request("POST", "/auth/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .header("Authorization");
     }
+
     @AfterEach
     public void tearDown() {
         for (String token : usesGameTokens) {
@@ -70,7 +58,7 @@ public class EloServiceImplIT {
                     .when()
                     .contentType("application/json")
                     .pathParam("token", token)
-                    .request("DELETE", "/games/{token}")
+                    .request("DELETE", "api/v1/games/{token}")
             ;
         }
         for (String token : usesUserTokens) {
@@ -85,7 +73,7 @@ public class EloServiceImplIT {
                     .when()
                     .contentType("application/json")
                     .pathParam("token", token)
-                    .request("DELETE", "/users/{token}")
+                    .request("DELETE", "api/v1/users/{token}")
             ;
         }
     }
@@ -96,6 +84,19 @@ public class EloServiceImplIT {
 
         CreateUserCommand userCommand1 = new CreateUserCommand("Max","Muster");
         CreateUserCommand userCommand2 = new CreateUserCommand("Jakob","Mayer");
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
 
         String gameToken1 = with()
                 .contentType("application/json")
@@ -109,7 +110,7 @@ public class EloServiceImplIT {
                 .body(gameCommand)
                 .contentType("application/json")
                 .when()
-                .request("POST", "/games")
+                .request("POST", "api/v1/games")
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .body("token", notNullValue()).extract()
@@ -126,7 +127,7 @@ public class EloServiceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(userCommand1)
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .assertThat()
@@ -145,7 +146,7 @@ public class EloServiceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(userCommand2)
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .assertThat()
@@ -175,7 +176,7 @@ public class EloServiceImplIT {
                         ContentType.JSON)
                         .body(createMatchCommandUser1Wins)
                         .contentType("application/json")
-                        .request("POST", "/matches")
+                        .request("POST", "api/v1/matches")
                         .then()
                         .statusCode(Response.Status.CREATED.getStatusCode())
                         .body("token", notNullValue());
@@ -184,7 +185,7 @@ public class EloServiceImplIT {
 
         var foundScores = with()
                         .contentType("application/json")
-                        .request("GET", "/scores/?game=" + gameToken1)
+                        .request("GET", "api/v1/scores/?game=" + gameToken1)
                         .then()
                         .statusCode(Response.Status.OK.getStatusCode())
                         .extract()
@@ -209,13 +210,13 @@ public class EloServiceImplIT {
                         ContentType.JSON)
                         .body(createMatchCommandUser1Wins)
                         .contentType("application/json")
-                        .request("POST", "/matches")
+                        .request("POST", "api/v1/matches")
                         .then()
                         .body("token", notNullValue());
 
         var foundScores2 = with()
                 .contentType("application/json")
-                .request("GET", "/scores/?game=" + gameToken1)
+                .request("GET", "api/v1/scores/?game=" + gameToken1)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
@@ -241,13 +242,13 @@ public class EloServiceImplIT {
                         ContentType.JSON)
                         .body(createMatchCommandUser1Wins)
                         .contentType("application/json")
-                        .request("POST", "/matches")
+                        .request("POST", "api/v1/matches")
                         .then()
                         .body("token", notNullValue());
 
         var foundScores3 = with()
                 .contentType("application/json")
-                .request("GET", "/scores/?game=" + gameToken1)
+                .request("GET", "api/v1/scores/?game=" + gameToken1)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()
@@ -273,13 +274,13 @@ public class EloServiceImplIT {
                         ContentType.JSON)
                 .body(createMatchCommandUser2Wins)
                 .contentType("application/json")
-                .request("POST", "/matches")
+                .request("POST", "api/v1/matches")
                 .then()
                 .body("token", notNullValue());
 
         var foundScores4 = with()
                 .contentType("application/json")
-                .request("GET", "/scores/?game=" + gameToken1)
+                .request("GET", "api/v1/scores/?game=" + gameToken1)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract()

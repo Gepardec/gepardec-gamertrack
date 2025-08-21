@@ -27,11 +27,11 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     @Inject
-    private AuthRepository authRepository;
+    AuthRepository authRepository;
     @Inject
-    private JwtUtil jwtUtil;
+    JwtUtil jwtUtil;
     @Inject
-    private TokenService tokenService;
+    TokenService tokenService;
 
     @Override
     public boolean authenticate(AuthCredential credential) {

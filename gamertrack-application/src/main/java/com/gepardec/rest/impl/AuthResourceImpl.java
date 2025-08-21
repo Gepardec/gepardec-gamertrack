@@ -6,14 +6,12 @@ import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.ValidateTokenCommand;
 import com.gepardec.rest.model.mapper.AuthCredentialRestMapper;
 import com.gepardec.security.JwtUtil;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
-@RequestScoped
 @Transactional
 public class AuthResourceImpl implements AuthResource {
 

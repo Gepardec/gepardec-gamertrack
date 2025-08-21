@@ -10,19 +10,18 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 @Transactional
 @ApplicationScoped
-public class ScoreServiceImpl implements ScoreService, Serializable {
+public class ScoreServiceImpl implements ScoreService {
 
     private static final Logger log = LoggerFactory.getLogger(ScoreServiceImpl.class);
     @Inject
-    private ScoreRepository scoreRepository;
+    ScoreRepository scoreRepository;
     @Inject
-    private TokenService tokenService;
+    TokenService tokenService;
 
     @Override
     public Optional<Score> saveScore(Score score) {

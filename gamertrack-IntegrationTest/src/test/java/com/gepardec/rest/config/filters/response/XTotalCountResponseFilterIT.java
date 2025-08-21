@@ -3,12 +3,12 @@ package com.gepardec.rest.config.filters.response;
 import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,12 +21,12 @@ import static org.hamcrest.Matchers.nullValue;
 
 public class XTotalCountResponseFilterIT {
 
-    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
-    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
-    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
+    @ConfigProperty(name = "SECRET_DEFAULT_PW")
+    String SECRET_DEFAULT_PW;
+    @ConfigProperty(name = "SECRET_ADMIN_NAME")
+    String SECRET_ADMIN_NAME;
 
     private static RequestSpecification requestSpecification;
-
 
     @BeforeAll
     public static void setup() {
@@ -35,16 +35,28 @@ public class XTotalCountResponseFilterIT {
         basePath = "gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
 
-        //Login & get JWT Token
-        String jwtToken = given()
-                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME, SECRET_DEFAULT_PW))
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        reset();
+    }
+
+    @Test
+    void ensureXTotalCountHeaderEqualsReturnedObjectAmount() {
+
+        String authHeader = with().when()
                 .contentType("application/json")
-                .accept("application/json")
-                .when()
-                .post("/auth/login")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
                 .then()
+                .statusCode(200)
                 .extract()
-                .path("token");
+                .header("Authorization");
+
+        String jwtToken = authHeader.replace("Bearer ", "");
 
         RequestSpecBuilder builder = new RequestSpecBuilder();
 
@@ -56,15 +68,7 @@ public class XTotalCountResponseFilterIT {
         builder.addHeaders(headers);
         builder.setBasePath("gepardec-gamertrack/api/v1/games");
         requestSpecification = builder.build();
-    }
 
-    @AfterAll
-    public static void cleanup() {
-        reset();
-    }
-
-    @Test
-    void ensureXTotalCountHeaderEqualsReturnedObjectAmount() {
         var extractedResponse = given(requestSpecification)
                 .when()
                 .get()
@@ -85,6 +89,32 @@ public class XTotalCountResponseFilterIT {
 
     @Test
     void ensureXTotalCountHeaderIsNotPresentIfBodyIsEmpty() {
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        String jwtToken = authHeader.replace("Bearer ", "");
+
+        RequestSpecBuilder builder = new RequestSpecBuilder();
+
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + jwtToken);
+        headers.put("Content-Type", String.valueOf(ContentType.JSON));
+        headers.put("Accept", String.valueOf(ContentType.JSON));
+
+        builder.addHeaders(headers);
+        builder.setBasePath("gepardec-gamertrack/api/v1/games");
+        requestSpecification = builder.build();
+
+
         given(requestSpecification)
                 .when()
                 .get("/aksdjfalsskjd")
@@ -95,6 +125,32 @@ public class XTotalCountResponseFilterIT {
 
     @Test
     void ensureXTotalCountHeaderIsNotPresentForEndpointsThatReturnsNoList() {
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        String jwtToken = authHeader.replace("Bearer ", "");
+
+        RequestSpecBuilder builder = new RequestSpecBuilder();
+
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + jwtToken);
+        headers.put("Content-Type", String.valueOf(ContentType.JSON));
+        headers.put("Accept", String.valueOf(ContentType.JSON));
+
+        builder.addHeaders(headers);
+        builder.setBasePath("gepardec-gamertrack/api/v1/games");
+        requestSpecification = builder.build();
+
+
         //GIVEN
         GameRestDto existingGame =
                 given(requestSpecification)
@@ -103,7 +159,7 @@ public class XTotalCountResponseFilterIT {
                         .contentType("application/json")
                         .accept("application/json")
                         .when()
-                        .post()
+                        .post("api/v1")
                         .then()
                         .extract()
                         .as(GameRestDto.class);

@@ -14,24 +14,23 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 @Transactional
 @ApplicationScoped
-public class UserServiceImpl implements UserService, Serializable {
+public class UserServiceImpl implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     @Inject
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @Inject
-    private ScoreService scoreService;
+    ScoreService scoreService;
     @Inject
-    private TokenService tokenService;
+    TokenService tokenService;
     @Inject
-    private GameService gameService;
+    GameService gameService;
 
     @Override
     public Optional<User> saveUser(User user) {

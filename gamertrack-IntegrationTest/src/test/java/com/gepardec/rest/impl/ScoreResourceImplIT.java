@@ -4,14 +4,12 @@ import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterAll;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -29,47 +27,17 @@ public class ScoreResourceImplIT {
 
 
 
-    static String authHeader;
-    String bearerToken = authHeader.replace("Bearer ", "");
+    String bearerToken;
 
-    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
-    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
-    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
+    @ConfigProperty(name = "SECRET_DEFAULT_PW")
+    String SECRET_DEFAULT_PW;
+    @ConfigProperty(name = "SECRET_ADMIN_NAME")
+    String SECRET_ADMIN_NAME;
 
-
-
-    @BeforeAll
-    public static void setup() {
-        RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
+    @BeforeEach
+    public void setup() {
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
 
-        authHeader = with().when()
-                .contentType("application/json")
-                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
-                .headers("Content-Type", ContentType.JSON,
-                        "Accept", ContentType.JSON)
-                .request("POST", "/auth/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .header("Authorization");
-
-        gameToken = with()
-                .when()
-                .contentType("application/json")
-                .headers(
-                        "Authorization",
-                        "Bearer " + authHeader.replace("Bearer ", ""),
-                        "Content-Type",
-                        ContentType.JSON,
-                        "Accept",
-                        ContentType.JSON)
-                .body(new CreateGameCommand("Vier Gewinnt", "Nicht Schummeln"))
-                .request("POST", "/games")
-                .then()
-                .statusCode(201)
-                .extract()
-                .path("token");
     }
 
     @AfterEach
@@ -86,30 +54,43 @@ public class ScoreResourceImplIT {
                     .when()
                     .contentType("application/json")
                     .pathParam("token", token)
-                    .request("DELETE", "/users/{token}");
+                    .request("DELETE", "api/v1/users/{token}");
         }
         usesUserTokens.clear();
     }
 
-    @AfterAll
-    static public void tearDown() {
-            with()
-                    .headers(
-                            "Authorization",
-                            "Bearer " + authHeader.replace("Bearer ", ""),
-                            "Content-Type",
-                            ContentType.JSON,
-                            "Accept",
-                            ContentType.JSON)
-                    .when()
-                    .contentType("application/json")
-                    .pathParam("token", gameToken)
-                    .request("DELETE", "/games/{token}");
-
-    }
-
     @Test
     public void ensureCreateScoreWorks() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
+        gameToken = with()
+                .when()
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("Vier Gewinnt1", "Nicht Schummeln"))
+                .request("POST", "api/v1/games")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("token");
+
         String userToken = with()
                 .when()
                 .contentType("application/json")
@@ -121,7 +102,7 @@ public class ScoreResourceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -132,14 +113,14 @@ public class ScoreResourceImplIT {
                 .when()
                 .contentType("application/json")
                 .pathParam("token", gameToken)
-                .request("GET", "/games/{token}")
+                .request("GET", "api/v1/games/{token}")
                 .then()
                 .statusCode(200);
 
         with()
                 .when()
                 .contentType("application/json")
-                .request("GET", "/scores/")
+                .request("GET", "api/v1/scores/")
                 .then()
                 .statusCode(200)
                 .assertThat()
@@ -151,6 +132,36 @@ public class ScoreResourceImplIT {
 
     @Test
     public void ensureGetScoreByTokenWorks() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
+        gameToken = with()
+                .when()
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("Vier Gewinnt2", "Nicht Schummeln"))
+                .request("POST", "api/v1/games")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("token");
+
         String userToken = with()
                 .when()
                 .contentType("application/json")
@@ -162,7 +173,7 @@ public class ScoreResourceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -174,7 +185,7 @@ public class ScoreResourceImplIT {
         String scoreToken =  with()
                 .when()
                 .contentType("application/json")
-                .request("GET", "/scores/")
+                .request("GET", "api/v1/scores/")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -184,7 +195,7 @@ public class ScoreResourceImplIT {
                 .when()
                 .contentType("application/json")
                 .pathParam("token", scoreToken)
-                .request("GET", "/scores/{token}")
+                .request("GET", "api/v1/scores/{token}")
                 .then()
                 .statusCode(200)
                 .assertThat()
@@ -194,7 +205,7 @@ public class ScoreResourceImplIT {
                         "user.deactivated", equalTo(false),
                         "user.token", equalTo(userToken),
                         "game.token", equalTo(gameToken),
-                        "game.name", equalTo("Vier Gewinnt"),
+                        "game.name", equalTo("Vier Gewinnt2"),
                         "game.rules", equalTo("Nicht Schummeln"),
                         "score", equalTo(1500.0F)
                 );
@@ -202,6 +213,36 @@ public class ScoreResourceImplIT {
 
     @Test
     public void ensureGetScoreByUserDoesNotFindDeletedUserEmptyList() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
+        gameToken = with()
+                .when()
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("Vier Gewinnt3", "Nicht Schummeln"))
+                .request("POST", "api/v1/games")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("token");
+
         String userToken = with()
                 .when()
                 .contentType("application/json")
@@ -213,7 +254,7 @@ public class ScoreResourceImplIT {
                         ContentType.JSON,
                         "Accept",
                         ContentType.JSON)
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -232,14 +273,14 @@ public class ScoreResourceImplIT {
                         ContentType.JSON)
                 .body(new UpdateUserCommand("Jakob", "Muster", true))
                 .pathParam("userToken", userToken)
-                .request("PUT", "/users/{userToken}")
+                .request("PUT", "api/v1/users/{userToken}")
                 .then()
                 .statusCode(200);
 
         with()
                 .when()
                 .contentType("application/json")
-                .request("GET", "/scores/?user=" + userToken +"&includeDeactivated=false")
+                .request("GET", "api/v1/scores/?user=" + userToken +"&includeDeactivated=false")
                 .then()
                 .statusCode(200)
                 .assertThat()
@@ -248,6 +289,36 @@ public class ScoreResourceImplIT {
 
     @Test
     public void ensureGetScoreByScorePointsReturnsOk() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
+        gameToken = with()
+                .when()
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("Vier Gewinnt4", "Nicht Schummeln"))
+                .request("POST", "api/v1/games")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("token");
+
         String userToken = with()
                 .when()
                 .contentType("application/json")
@@ -259,7 +330,7 @@ public class ScoreResourceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -269,7 +340,7 @@ public class ScoreResourceImplIT {
         with()
                 .when()
                 .contentType("application/json")
-                .request("GET", "/scores/scorepoints/1500?includeDeactivated=false")
+                .request("GET", "api/v1/scores/scorepoints/1500?includeDeactivated=false")
                 .then()
                 .statusCode(200)
                 .assertThat()
@@ -281,6 +352,36 @@ public class ScoreResourceImplIT {
 
     @Test
     public void ensureGetScoreByMinMaxReturnsOk() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
+        gameToken = with()
+                .when()
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("Vier Gewinnt5", "Nicht Schummeln"))
+                .request("POST", "api/v1/games")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("token");
+
         String userToken = with()
                 .when()
                 .contentType("application/json")
@@ -292,7 +393,7 @@ public class ScoreResourceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -302,7 +403,7 @@ public class ScoreResourceImplIT {
         with()
                 .when()
                 .contentType("application/json")
-                .request("GET", "/scores/?min=700&max=1600&includeDeactivated=false")
+                .request("GET", "api/v1/scores/?min=700&max=1600&includeDeactivated=false")
                 .then()
                 .statusCode(200)
                 .assertThat()
@@ -314,6 +415,36 @@ public class ScoreResourceImplIT {
 
     @Test
     public void ensureGetScoreByUserAndGameReturnsOk() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
+        gameToken = with()
+                .when()
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("Vier Gewinnt6", "Nicht Schummeln"))
+                .request("POST", "api/v1/games")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("token");
+
         String userToken = with()
                 .when()
                 .contentType("application/json")
@@ -325,7 +456,7 @@ public class ScoreResourceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -335,7 +466,7 @@ public class ScoreResourceImplIT {
         with()
                 .when()
                 .contentType("application/json")
-                .request("GET", "/scores/?user=" + userToken + "&game=" + gameToken)
+                .request("GET", "api/v1/scores/?user=" + userToken + "&game=" + gameToken)
                 .then()
                 .statusCode(200)
                 .assertThat()
@@ -345,7 +476,7 @@ public class ScoreResourceImplIT {
                         "[0].user.deactivated", equalTo(false),
                         "[0].user.token", equalTo(userToken),
                         "[0].game.token", equalTo(gameToken),
-                        "[0].game.name", equalTo("Vier Gewinnt"),
+                        "[0].game.name", equalTo("Vier Gewinnt6"),
                         "[0].game.rules", equalTo("Nicht Schummeln"),
                         "[0].score", equalTo(1500.0f),
                         "size()", equalTo(1)
@@ -354,6 +485,36 @@ public class ScoreResourceImplIT {
 
     @Test
     public void ensureGetScoreByMinReturnsEmptyLists() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
+        gameToken = with()
+                .when()
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + authHeader.replace("Bearer ", ""),
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(new CreateGameCommand("Vier Gewinnt7", "Nicht Schummeln"))
+                .request("POST", "api/v1/games")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("token");
+
         String userToken = with()
                 .when()
                 .contentType("application/json")
@@ -365,7 +526,7 @@ public class ScoreResourceImplIT {
                         "Accept",
                         ContentType.JSON)
                 .body(new CreateUserCommand("Jakob", "Muster"))
-                .request("POST", "/users")
+                .request("POST", "api/v1/users")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -384,14 +545,14 @@ public class ScoreResourceImplIT {
                         ContentType.JSON)
                 .body(new UpdateUserCommand("Jakob", "Muster", true))
                 .pathParam("userToken", userToken)
-                .request("PUT", "/users/{userToken}")
+                .request("PUT", "api/v1/users/{userToken}")
                 .then()
                 .statusCode(200);
 
         with()
                 .when()
                 .contentType("application/json")
-                .request("GET", "/scores/?min=10200&includeDeactivated=false")
+                .request("GET", "api/v1/scores/?min=10200&includeDeactivated=false")
                 .then()
                 .statusCode(200)
                 .assertThat()

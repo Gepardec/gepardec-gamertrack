@@ -6,12 +6,10 @@ import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.UpdateGameCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.mapper.GameRestMapper;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@RequestScoped
 public class GameResourceImpl implements GameResource {
 
   @Inject

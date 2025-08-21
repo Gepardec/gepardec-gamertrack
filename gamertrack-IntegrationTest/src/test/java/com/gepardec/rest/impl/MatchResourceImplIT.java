@@ -6,11 +6,11 @@ import com.gepardec.rest.model.command.*;
 import com.gepardec.rest.model.dto.GameRestDto;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.dto.UserRestDto;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response.Status;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,37 +31,20 @@ public class MatchResourceImplIT {
     ArrayList<String> usesUserTokens = new ArrayList<>();
     ArrayList<String> usesGameTokens = new ArrayList<>();
 
-    static String authHeader;
-    String bearerToken = authHeader.replace("Bearer ", "");
+    String bearerToken;
 
-    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
-    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
-    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
+    @ConfigProperty(name = "SECRET_DEFAULT_PW")
+    String SECRET_DEFAULT_PW;
+    @ConfigProperty(name = "SECRET_ADMIN_NAME")
+    String SECRET_ADMIN_NAME;
 
-
-
-    final String USER_PATH = "/users";
-    final String GAME_PATH = "/games";
-    final String MATCH_PATH = "/matches";
+    final String USER_PATH = "api/v1/users";
+    final String GAME_PATH = "api/v1/games";
+    final String MATCH_PATH = "api/v1/matches";
 
     @BeforeAll
     public static void setup() {
-        reset();
-        port = 8080;
-        basePath = "gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
-
-        authHeader = with().when()
-                .contentType("application/json")
-                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
-                .headers("Content-Type", ContentType.JSON,
-                        "Accept", ContentType.JSON)
-                .request("POST", "/auth/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .header("Authorization");
-
     }
 
     @AfterEach
@@ -78,7 +61,7 @@ public class MatchResourceImplIT {
                     .when()
                     .contentType("application/json")
                     .pathParam("token", token)
-                    .request("DELETE", "/games/{token}");
+                    .request("DELETE", "api/v1/games/{token}");
         }
         usesGameTokens.clear();
         for (String token : usesUserTokens) {
@@ -93,7 +76,7 @@ public class MatchResourceImplIT {
                     .when()
                     .contentType("application/json")
                     .pathParam("token", token)
-                    .request("DELETE", "/users/{token}");
+                    .request("DELETE", "api/v1/users/{token}");
         }
         usesUserTokens.clear();
     }
@@ -106,6 +89,19 @@ public class MatchResourceImplIT {
     @Test
     void ensureGetMatchesReturnsForExistingMatches200OkWithMatchesList() {
         MatchRestDto createdMatch = createMatch();
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
 
         var foundMatches =
                 when()
@@ -122,6 +118,20 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureGetMatchesWithGameTokenAndWithoutUserTokenReturnsMatchReferencingTheSameGame() {
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         GameRestDto gameThatShouldntBeFound = with()
                 .body(new CreateGameCommand("gameThatShouldntBeFound", "no rules"))
                 .headers(
@@ -134,7 +144,7 @@ public class MatchResourceImplIT {
                 .contentType("application/json")
                 .accept("application/json")
                 .when()
-                .post("/games")
+                .post("api/v1/games")
                 .then()
                 .statusCode(Status.CREATED.getStatusCode())
                 .extract()
@@ -175,6 +185,19 @@ public class MatchResourceImplIT {
         MatchRestDto matchThatShouldBeFound1 = createMatch(createdUser,createUser(), createdGame);
         MatchRestDto matchThatShouldBeFound2 = createMatch(createdUser,createUser(), createdGame);
 
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         var foundMatches =
                 given()
                         .queryParam("userToken", createdUser.token())
@@ -199,6 +222,19 @@ public class MatchResourceImplIT {
     void ensureGetMatchesWithGameTokenAndUserTokenReturnsMatchReferencingTheSameGameAndUser() {
         UserRestDto createdUser = createUser();
         GameRestDto createdGame = createGame();
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
 
         GameRestDto gameThatShouldntBeFound = with()
                 .body(new CreateGameCommand("gameThatShouldntBeFound", "no rules"))
@@ -246,6 +282,20 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureGetMatchesWithPaginationReturnsPaginatedMatches() {
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         UserRestDto createdUser = createUser();
         GameRestDto createdGame = createGame();
         int existingMatchCount = Integer.parseInt(given()
@@ -281,6 +331,20 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureGetMatchByTokenForExistingMatchReturnsMatch() {
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         MatchRestDto existingMatch = createMatch();
 
         given()
@@ -295,6 +359,19 @@ public class MatchResourceImplIT {
     @Test
     void ensureGetMatchByTokenForNonExistingMatchReturnsNotFound() {
 
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         given()
                 .pathParam("token", "alkjsflaksjdf")
                 .get("%s/{token}".formatted(MATCH_PATH))
@@ -307,6 +384,19 @@ public class MatchResourceImplIT {
         GameRestDto gameRestDto = createGame();
         UserRestDto userRestDto1 = createUser();
         UserRestDto userRestDto2 = createUser();
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
 
 
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
@@ -344,6 +434,19 @@ public class MatchResourceImplIT {
     void ensureCreateMatchForInvalidMatchReturns400BadRequest() {
         UserRestDto userRestDto = createUser();
 
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
                 new Game(null, null, "anything", "should fail"),
                 List.of(new User(null, userRestDto.firstname(), userRestDto.lastname(),
@@ -380,6 +483,19 @@ public class MatchResourceImplIT {
                         new User(null, userRestDto.firstname(), userRestDto.lastname(),
                                 userRestDto.deactivated(), userRestDto.token())));
 
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         var updatedMatch =
                 given()
 
@@ -409,6 +525,19 @@ public class MatchResourceImplIT {
     void ensureUpdateMatchForNonExistingMatchReturns400BadRequest() {
         UpdateMatchCommand matchToUpdate = RestTestFixtures.updateMatchCommand();
 
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         given()
                 .pathParam("token", "12k31k2j3ksadj")
                 .contentType("application/json")
@@ -428,6 +557,19 @@ public class MatchResourceImplIT {
     @Test
     void ensureDeleteMatchForExistingMatchReturns200OkWithDeletedMatch() {
         MatchRestDto existingMatch = createMatch();
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
 
         MatchRestDto deletedMatch =
                 given()
@@ -450,6 +592,20 @@ public class MatchResourceImplIT {
 
     @Test
     void ensureDeleteMatchForNonExistingMatchReturns404NotFound() {
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         given()
                 .pathParam("token", "12k31k2j3ksadj")
                 .headers(
@@ -466,6 +622,19 @@ public class MatchResourceImplIT {
 
     //-------------------HELPER METHODS -------------------------//
     public UserRestDto createUser() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         UserRestDto userRestDto =
                 with()
                         .contentType("application/json")
@@ -488,6 +657,19 @@ public class MatchResourceImplIT {
         return userRestDto;
     }
     public GameRestDto createGame() {
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
+
         GameRestDto gameRestDto = with()
                 .headers(
                         "Authorization",
@@ -522,6 +704,19 @@ public class MatchResourceImplIT {
                                 userRestDto1.deactivated(), userRestDto1.token()),
                         new User(null, userRestDto2.firstname(), userRestDto2.lastname(),
                                 userRestDto2.deactivated(), userRestDto2.token())));
+
+        String authHeader = with().when()
+                .contentType("application/json")
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                .headers("Content-Type", ContentType.JSON,
+                        "Accept", ContentType.JSON)
+                .request("POST", "api/v1/auth/login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .header("Authorization");
+
+        bearerToken = authHeader.replace("Bearer ", "");
 
         MatchRestDto createdMatch =
                 with()

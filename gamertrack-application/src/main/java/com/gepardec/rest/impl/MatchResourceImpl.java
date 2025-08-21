@@ -8,7 +8,7 @@ import com.gepardec.rest.model.command.UpdateMatchCommand;
 import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.mapper.MatchRestMapper;
 import jakarta.data.page.PageRequest;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static java.lang.StrictMath.ceil;
 
-@RequestScoped
+@ApplicationScoped
 public class MatchResourceImpl implements MatchResource {
 
     private final Logger logger = LoggerFactory.getLogger(MatchResourceImpl.class);

@@ -23,10 +23,10 @@ public class GameRepositoryImpl implements GameRepository, Serializable {
   Logger logger = LoggerFactory.getLogger(GameRepositoryImpl.class);
 
   @Inject
-  private EntityManager em;
+  EntityManager em;
 
   @Inject
-  private GameMapper gameMapper;
+  GameMapper gameMapper;
 
   @Override
   public Optional<Game> saveGame(Game game) {

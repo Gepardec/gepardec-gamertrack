@@ -6,12 +6,11 @@ import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
 import com.gepardec.rest.model.dto.UserRestDto;
 import com.gepardec.rest.model.mapper.UserRestMapper;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@RequestScoped
+
 public class UserResourceImpl implements UserResource {
 
   @Inject

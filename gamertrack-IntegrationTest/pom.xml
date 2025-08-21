@@ -22,13 +22,16 @@
             <groupId>com.gepardec</groupId>
             <artifactId>gamertrack-domain</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.gepardec</groupId>
             <artifactId>gamertrack-application</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.gepardec</groupId>
+            <artifactId>gamertrack-db</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
