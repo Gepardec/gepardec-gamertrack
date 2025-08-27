@@ -10,6 +10,7 @@ recipeList:
   - com.gepardec.quarkus.migrate.AddDependenciesOfWarModule
   - com.gepardec.quarkus.migrate.AddRemoveOldDependenciesFromDB
   - com.gepardec.quarkus.migrate.AddDependenciesToDbModule
+  - com.gepardec.quarkus.migrate.AddDependenciesToIntegrationTestModule
 
 ---
 
@@ -213,3 +214,27 @@ recipeList:
       dependencyArtifactId: quarkus-junit5
       dependencyVersion: 3.23.2
       dependencyScope: test
+
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.AddDependenciesToIntegrationTestModule
+displayName: Add Dependencies to WarModule
+description: Add Dependencies to WarModule
+recipeList:
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-IntegrationTest
+      dependencyGroupId: com.gepardec
+      dependencyArtifactId: gamertrack-db
+      dependencyVersion: ${project.version}
+
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-IntegrationTest
+      dependencyGroupId: io.quarkus
+      dependencyArtifactId: quarkus-junit5
+      dependencyVersion: 3.23.2
+      dependencyScope: test
+
+
