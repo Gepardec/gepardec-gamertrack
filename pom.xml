@@ -65,6 +65,25 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>${quarkus.platform.group-id}</groupId>
+                    <artifactId>quarkus-maven-plugin</artifactId>
+                    <version>${quarkus.platform.version}</version>
+                    <extensions>true</extensions>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>build</goal>
+                                <goal>generate-code</goal>
+                                <goal>generate-code-tests</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
@@ -103,17 +122,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <skipTests>true</skipTests>
-                    <runOrder>alphabetical</runOrder>
-                    <systemPropertyVariables>
-                        <property>
-                            <runOrder>alphabetical</runOrder>
-                            <name>failsafe.cleanup</name>
-                            <value>true</value>
-                        </property>
-                    </systemPropertyVariables>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openrewrite.maven</groupId>

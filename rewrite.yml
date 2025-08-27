@@ -4,6 +4,7 @@ displayName: Migrate form JavaEE to Quarkus
 description: Migrate form JavaEE to Quarkus using recipes
 recipeList:
   - com.gepardec.quarkus.migrate.AddDependenciesToDomainModule
+  - com.gepardec.quarkus.migrate.AddPropertiesToParentModule
   - com.gepardec.quarkus.migrate.AddDependenciesToParentModule
 
 ---
@@ -33,6 +34,7 @@ recipeList:
       moduleArtifactId: gamertrack-domain
       dependencyGroupId: io.quarkus
       dependencyArtifactId: quarkus-junit5-mockito
+      dependencyVersion: 3.23.2
       dependencyScope: test
 
   - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
@@ -40,6 +42,7 @@ recipeList:
       moduleArtifactId: gamertrack-domain
       dependencyGroupId: io.quarkus
       dependencyArtifactId: quarkus-junit5
+      dependencyVersion: 3.23.2
       dependencyScope: test
 
   - org.openrewrite.java.dependencies.RemoveDependency:
@@ -49,9 +52,13 @@ recipeList:
 ---
 
 type: specs.openrewrite.org/v1beta/recipe
-name: com.gepardec.quarkus.migrate.AddDependenciesToParentModule
-displayName: Add dependencies to ParentModule
-description: Add dependencies to ParentModule
+name: com.gepardec.quarkus.migrate.AddPropertiesToParentModule
+displayName: Add properties to ParentModule
+description: Add properties to ParentModule
+preconditions:
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.FindModules:
+      commonGroupId: com.gepardec
+      artifactIds: gepardec-gamertrack
 recipeList:
   - org.openrewrite.maven.AddProperty:
       key: quarkus.platform.artifact-id
@@ -66,4 +73,44 @@ recipeList:
       key: surefire-plugin.version
       value: 3.0.0
 
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.AddDependenciesToParentModule
+displayName: Add dependencies to ParentModule
+description: Add dependencies to ParentModule
+recipeList:
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-api
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-gamertrack
+      dependencyGroupId: io.quarkus
+      dependencyArtifactId: quarkus-junit5
+      dependencyScope: test
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-gamertrack
+      dependencyGroupId: io.quarkus
+      dependencyArtifactId: quarkus-arc
+  - org.openrewrite.maven.RemovePlugin:
+      groupId: org.wildfly.plugins
+      artifactId: wildfly-maven-plugin
+  - org.openrewrite.maven.AddPlugin:
+      groupId: io.smallrye
+      artifactId: jandex-maven-plugin
+      version: 3.2.3
+      executions: <executions><execution><id>make-index</id><goals><goal>jandex</goal></goals></execution></executions>
+  - org.openrewrite.maven.AddPlugin:
+      groupId: org.apache.maven.plugins
+      artifactId: maven-surefire-plugin
+      version: 3.0.0
+      configuration: |
+        <configuration>
+          <systemPropertyVariables>
+              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+              <maven.home>${maven.home}</maven.home>
+          </systemPropertyVariables>
+        </configuration>
 ---
