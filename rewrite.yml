@@ -19,6 +19,7 @@ recipeList:
   - com.gepardec.quarkus.migrate.RemoveProducerClass
   - com.gepardec.quarkus.migrate.RemoveDbIT
   - com.gepardec.quarkus.migrate.ChangeStatelessToApplicationScoped
+  - com.gepardec.quarkus.migrate.AddDbApplicationPropeties
 
 ---
 
@@ -418,5 +419,35 @@ recipeList:
       replace: 'import jakarta.enterprise.context.ApplicationScoped;'
       filePattern: '**/*.java'
 
+---
 
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.AddDbApplicationPropeties
+displayName: Adapt application.properties
+description: Adapt application.properties for quarkus
+preconditions:
+  - org.openrewrite.FindSourceFiles:
+      filePattern: application.properties
+
+recipeList:
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.http.root-path
+      value: '/gepardec-gamertrack/'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.db-kind
+      value: 'h2'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.jdbc.url
+      value: 'jdbc:h2:mem:test;DB_CLOSE_DELAY=-1'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.username
+      value: 'sa'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.password
+      value: 'sa'
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.hibernate-orm.schema-management.strategy
+      value: 'drop-and-create'
+
+---
 
