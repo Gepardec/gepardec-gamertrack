@@ -98,7 +98,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-jackson</artifactId>
       <version>3.23.2</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.transaction</groupId>

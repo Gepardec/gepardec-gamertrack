@@ -20,6 +20,7 @@ recipeList:
   - com.gepardec.quarkus.migrate.RemoveDbIT
   - com.gepardec.quarkus.migrate.ChangeStatelessToApplicationScoped
   - com.gepardec.quarkus.migrate.AddDbApplicationPropeties
+  - com.gepardec.quarkus.migrate.AddPropertiesFileToApplicationModule
 
 ---
 
@@ -431,9 +432,6 @@ preconditions:
 
 recipeList:
   - org.openrewrite.properties.AddProperty:
-      property: quarkus.http.root-path
-      value: '/gepardec-gamertrack/'
-  - org.openrewrite.properties.AddProperty:
       property: quarkus.datasource.db-kind
       value: 'h2'
   - org.openrewrite.properties.AddProperty:
@@ -451,3 +449,13 @@ recipeList:
 
 ---
 
+
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.AddPropertiesFileToApplicationModule
+displayName: Adapt application.properties
+description: Adapt application.properties for quarkus
+recipeList:
+  - org.openrewrite.properties.CreatePropertiesFile:
+      relativeFileName: gamertrack-application/src/main/resources/application.properties
+      fileContents: 'quarkus.http.root-path=/gepardec-gamertrack/'
