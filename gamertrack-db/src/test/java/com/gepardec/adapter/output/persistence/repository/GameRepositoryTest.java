@@ -1,26 +1,30 @@
 package com.gepardec.adapter.output.persistence.repository;
 
-import static com.gepardec.TestFixtures.game;
-
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.entity.GameEntity;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.model.Game;
 import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolationException;
-import java.util.List;
-
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import org.hibernate.PropertyValueException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.List;
+
+import static com.gepardec.TestFixtures.game;
 
 @io.quarkus.test.junit.QuarkusTest
 class GameRepositoryTest  {
 
+    @Inject
+    EntityManager entityManager;
+
   @BeforeEach
+  @Transactional
   void beforeEach() throws Exception {
-    super.removeTableData(GameEntity.class);
+      entityManager.createQuery("DELETE FROM GameEntity").executeUpdate();
   }
 
   @Inject
@@ -39,9 +43,9 @@ class GameRepositoryTest  {
 
   @Test
   void ensureSavingInvalidGameThrowsConstrainViolationException() {
-    Game invalidGame = new Game(null, null, "", "TestGame");
+      Game invalidGame = new Game(null, null, null, "TestGame");
 
-    Assertions.assertThrows(ConstraintViolationException.class,
+      Assertions.assertThrows(PropertyValueException.class,
         () -> repository.saveGame(invalidGame));
   }
 

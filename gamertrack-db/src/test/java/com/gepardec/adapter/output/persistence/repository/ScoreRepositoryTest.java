@@ -1,9 +1,6 @@
 package com.gepardec.adapter.output.persistence.repository;
 
 import com.gepardec.TestFixtures;
-import com.gepardec.adapter.output.persistence.entity.GameEntity;
-import com.gepardec.adapter.output.persistence.entity.ScoreEntity;
-import com.gepardec.adapter.output.persistence.entity.UserEntity;
 import com.gepardec.adapter.output.persistence.repository.mapper.ScoreMapper;
 import com.gepardec.core.repository.GameRepository;
 import com.gepardec.core.repository.ScoreRepository;
@@ -15,11 +12,10 @@ import com.gepardec.model.User;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import jakarta.transaction.UserTransaction;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,10 +48,11 @@ public class ScoreRepositoryTest  {
 
 
   @BeforeEach
+  @Transactional
   void beforeEach() throws Exception {
-    super.removeTableData(ScoreEntity.class);
-    super.removeTableData(GameEntity.class);
-    super.removeTableData(UserEntity.class);
+      entityManager.createQuery("DELETE FROM ScoreEntity").executeUpdate();
+      entityManager.createQuery("DELETE FROM GameEntity").executeUpdate();
+      entityManager.createQuery("DELETE FROM UserEntity").executeUpdate();
   }
 
   @Test
