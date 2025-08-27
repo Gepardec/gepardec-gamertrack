@@ -17,6 +17,7 @@ recipeList:
   - com.gepardec.quarkus.migrate.RemoveOldTestImports
   - com.gepardec.quarkus.migrate.RemovePersistenceXML
   - com.gepardec.quarkus.migrate.RemoveProducerClass
+  - com.gepardec.quarkus.migrate.RemoveDbIT
 
 ---
 
@@ -253,6 +254,14 @@ recipeList:
       dependencyVersion: 3.23.2
       dependencyScope: test
 
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-db
+      dependencyGroupId: io.quarkus
+      dependencyArtifactId: quarkus-junit5-mockito
+      dependencyVersion: 3.23.2
+      dependencyScope: test
+
 ---
 
 type: specs.openrewrite.org/v1beta/recipe
@@ -365,3 +374,31 @@ description: Remove RemoveProducerClass
 recipeList:
   - org.openrewrite.DeleteSourceFiles:
       filePattern: '**/Producer.java'
+
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.RemoveDbIT
+displayName: Remove RemoveProducerClass
+description: Remove RemoveProducerClass
+recipeList:
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: '**/GamertrackDbIT.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: extends GamertrackDbIT
+      replace: ''
+      filePattern: '**/*.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.arquillian.container.test.api.Deployment;
+      replace: ''
+      filePattern: '**/*.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: "@ExtendWith(ArquillianExtension.class)"
+      replace: "@io.quarkus.test.junit.QuarkusTest"
+      filePattern: '**/*.java'
+  - org.openrewrite.text.FindAndReplace:
+      find: "import org.jboss.arquillian.junit5.ArquillianExtension;"
+      replace: ""
+      filePattern: '**/*.java'
+
+

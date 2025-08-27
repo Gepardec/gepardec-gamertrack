@@ -12,7 +12,7 @@ import com.gepardec.model.User;
 import jakarta.data.page.PageRequest;
 import jakarta.inject.Inject;
 import jakarta.persistence.PersistenceException;
-import org.jboss.arquillian.junit5.ArquillianExtension;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +23,8 @@ import java.util.Optional;
 
 import static com.gepardec.TestFixtures.*;
 
-@ExtendWith(ArquillianExtension.class)
-public class MatchRepositoryTest extends GamertrackDbIT {
+@io.quarkus.test.junit.QuarkusTest
+public class MatchRepositoryTest  {
 
   @Inject
   private MatchRepository matchRepository;

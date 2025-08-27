@@ -16,7 +16,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.UserTransaction;
-import org.jboss.arquillian.junit5.ArquillianExtension;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,8 +26,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(ArquillianExtension.class)
-public class ScoreRepositoryTest extends GamertrackDbIT {
+@io.quarkus.test.junit.QuarkusTest
+public class ScoreRepositoryTest  {
 
   @PersistenceContext
   EntityManager entityManager;

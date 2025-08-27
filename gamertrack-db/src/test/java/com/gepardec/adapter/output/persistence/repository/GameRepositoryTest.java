@@ -9,14 +9,14 @@ import com.gepardec.model.Game;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
-import org.jboss.arquillian.junit5.ArquillianExtension;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(ArquillianExtension.class)
-class GameRepositoryTest extends GamertrackDbIT {
+@io.quarkus.test.junit.QuarkusTest
+class GameRepositoryTest  {
 
   @BeforeEach
   void beforeEach() throws Exception {
