@@ -16,6 +16,7 @@ recipeList:
   - com.gepardec.quarkus.migrate.AddPluginsToApplicationModule
   - com.gepardec.quarkus.migrate.RemoveOldTestImports
   - com.gepardec.quarkus.migrate.RemovePersistenceXML
+  - com.gepardec.quarkus.migrate.RemoveProducerClass
 
 ---
 
@@ -349,8 +350,18 @@ recipeList:
 
 type: specs.openrewrite.org/v1beta/recipe
 name: com.gepardec.quarkus.migrate.RemovePersistenceXML
-displayName: Remove RemovePersistence
-description: Remove RemovePersistence
+displayName: Remove PersistenceXML
+description: Remove PersistenceXML
 recipeList:
   - org.openrewrite.DeleteSourceFiles:
       filePattern: '**/persistence.xml'
+
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.RemoveProducerClass
+displayName: Remove RemoveProducerClass
+description: Remove RemoveProducerClass
+recipeList:
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: '**/Producer.java'
