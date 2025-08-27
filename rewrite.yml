@@ -1,0 +1,69 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.MigrateJavaEEtoQuarkus
+displayName: Migrate form JavaEE to Quarkus
+description: Migrate form JavaEE to Quarkus using recipes
+recipeList:
+  - com.gepardec.quarkus.migrate.AddDependenciesToDomainModule
+  - com.gepardec.quarkus.migrate.AddDependenciesToParentModule
+
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.AddDependenciesToDomainModule
+displayName: Add dependencies to DomainModule
+description: Add dependencies to DomainModule
+recipeList:
+  - org.openrewrite.maven.RemoveProperty:
+      propertyName: junit.version
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-junit-jupiter
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-core
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-engine
+
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-domain
+      dependencyGroupId: io.quarkus
+      dependencyArtifactId: quarkus-junit5-mockito
+      dependencyScope: test
+
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-domain
+      dependencyGroupId: io.quarkus
+      dependencyArtifactId: quarkus-junit5
+      dependencyScope: test
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.jboss.weld
+      artifactId: weld-junit5
+
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.AddDependenciesToParentModule
+displayName: Add dependencies to ParentModule
+description: Add dependencies to ParentModule
+recipeList:
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.artifact-id
+      value: quarkus-bom
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.group-id
+      value: io.quarkus.platform
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.version
+      value: 3.23.2
+  - org.openrewrite.maven.AddProperty:
+      key: surefire-plugin.version
+      value: 3.0.0
+
+---
