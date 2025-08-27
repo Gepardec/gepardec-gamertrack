@@ -8,7 +8,7 @@ import com.gepardec.security.JwtUtil;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Transactional
-@Stateless
+@ApplicationScoped
 public class AuthServiceImpl implements AuthService {
 
     static Dotenv dotenv = Dotenv.configure().directory("../../").filename("secret.env").ignoreIfMissing().load();
