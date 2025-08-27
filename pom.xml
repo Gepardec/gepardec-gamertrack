@@ -9,6 +9,17 @@
     <version>1.0-SNAPSHOT</version>
     <name>gepardec-gamertrack</name>
     <packaging>pom</packaging>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkus.platform</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>3.23.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
     <profiles>
         <profile>
@@ -50,10 +61,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}}</maven.compiler.source>
-  <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-  <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-  <quarkus.platform.version>3.23.2</quarkus.platform.version>
-  <surefire-plugin.version>3.0.0</surefire-plugin.version>
+      <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+      <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+      <quarkus.platform.version>3.23.2</quarkus.platform.version>
+      <surefire-plugin.version>3.0.0</surefire-plugin.version>
     </properties>
 
     <build>

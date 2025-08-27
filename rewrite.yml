@@ -6,6 +6,7 @@ recipeList:
   - com.gepardec.quarkus.migrate.AddDependenciesToDomainModule
   - com.gepardec.quarkus.migrate.AddPropertiesToParentModule
   - com.gepardec.quarkus.migrate.AddDependenciesToParentModule
+  - com.gepardec.quarkus.migrate.AddManagedDependencyToParentModule
   - com.gepardec.quarkus.migrate.ChangePropertiesOfWarModule
   - com.gepardec.quarkus.migrate.AddDependenciesOfWarModule
   - com.gepardec.quarkus.migrate.AddRemoveOldDependenciesFromDB
@@ -13,6 +14,8 @@ recipeList:
   - com.gepardec.quarkus.migrate.AddDependenciesToIntegrationTestModule
   - com.gepardec.quarkus.migrate.AddDependenciesToApplicationModule
   - com.gepardec.quarkus.migrate.AddPluginsToApplicationModule
+  - com.gepardec.quarkus.migrate.RemoveOldTestImports
+  - com.gepardec.quarkus.migrate.RemovePersistenceXML
 
 ---
 
@@ -51,6 +54,18 @@ recipeList:
       dependencyArtifactId: quarkus-junit5
       dependencyVersion: 3.23.2
       dependencyScope: test
+
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: io.jsonwebtoken
+      artifactId: jjwt-jackson
+
+  - at.sozvers.oegk.devcom.common.recipes.maven.modules.AddDependencyToModule:
+      moduleGroupId: com.gepardec
+      moduleArtifactId: gamertrack-domain
+      dependencyGroupId: io.jsonwebtoken
+      dependencyArtifactId: jjwt-jackson
+      dependencyVersion: 0.12.6
+      dependencyScope: runtime
 
   - org.openrewrite.java.dependencies.RemoveDependency:
       groupId: org.jboss.weld
@@ -120,6 +135,26 @@ recipeList:
               <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
+
+
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.AddManagedDependencyToParentModule
+displayName: Add properties to WarModule
+description: Add properties to WarModule
+preconditions:
+  - org.openrewrite.text.Find:
+      find: <name>gepardec-gamertrack</name>
+
+recipeList:
+  - org.openrewrite.maven.AddManagedDependency:
+      groupId: ${quarkus.platform.group-id}
+      artifactId: ${quarkus.platform.artifact-id}
+      version: ${quarkus.platform.version}
+      scope: import
+      type: pom
+
 ---
 
 type: specs.openrewrite.org/v1beta/recipe
@@ -291,3 +326,31 @@ recipeList:
       dependencyArtifactId: quarkus-rest-jackson
       dependencyVersion: 3.23.2
       dependencyScope: test
+
+---
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.RemoveOldTestImports
+displayName: Remove WeldImports
+description: Add Plugins to ApplicationModule
+recipeList:
+  - org.openrewrite.text.FindAndReplace:
+      find: import org.jboss.weld.junit5.auto.EnableAutoWeld;
+      replace:
+      filePattern: '**/*.java'
+
+  - org.openrewrite.text.FindAndReplace:
+      find: '@EnableAutoWeld'
+      replace:
+      filePattern: '**/*.java'
+
+---
+
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate.RemovePersistenceXML
+displayName: Remove RemovePersistence
+description: Remove RemovePersistence
+recipeList:
+  - org.openrewrite.DeleteSourceFiles:
+      filePattern: '**/persistence.xml'
