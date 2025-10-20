@@ -1,0 +1,599 @@
+#-------------------------------------------------
+#-------------------------------------------------
+#--------------- APPLICATION-TESTS ---------------
+#-------------------------------------------------
+#-------------------------------------------------
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.ReplaceWithQuarkusTestStack
+displayName: Use Quarkus test stack instead of plain Mockito/JUnit
+description: >
+  Remove direct Mockito dependencies and switch to Quarkus JUnit5 + Quarkus Mockito extension.
+recipeList:
+  # Mockito rauswerfen
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-core
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-junit-jupiter
+
+  # Klassisches JUnit Engine rauswerfen, da quarkus-junit5 es mitbringt
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-engine
+
+  # Quarkus JUnit5 sicherstellen
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5
+      version: 3.27.X
+      scope: test
+      releasesOnly: true
+  # Quarkus Mockito sicherstellen
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5-mockito
+      version: 3.27.X
+      scope: test
+      releasesOnly: true
+      onlyIfUsing: org.mockito.*
+
+  # JUnit 5 Best Practices (Assertions, Annotations etc.)
+  - org.openrewrite.java.testing.junit5.JUnit5BestPractices
+  # Surefire upgraden für JUnit5
+  - org.openrewrite.java.testing.junit5.UpgradeSurefirePlugin
+  # JUnit4 Überreste (falls irgendwo in Tests) automatisch ersetzen
+  - org.openrewrite.java.testing.junit5.JUnit4to5Migration
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.UseQuarkusAnnotations
+displayName: Migrate Mockito/JUnit setup to Quarkus test annotations
+description: Remove MockitoExtension / @InjectMocks and use @QuarkusTest + @Inject instead.
+
+recipeList:
+  - org.openrewrite.java.RemoveAnnotation:
+      annotationPattern: "@org.junit.jupiter.api.extension.ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)"
+
+        # @InjectMocks -> @Inject
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: org.mockito.InjectMocks
+      newFullyQualifiedTypeName: jakarta.inject.Inject
+
+        # überflüssige Imports entfernen
+  - org.openrewrite.java.RemoveImport:
+      type: org.mockito.junit.jupiter.MockitoExtension
+  - org.openrewrite.java.RemoveImport:
+      type: org.mockito.InjectMocks
+
+  - org.openrewrite.java.AddOrUpdateAnnotationAttribute:
+      annotationType: "io.quarkus.test.junit.QuarkusTest"
+
+  - org.openrewrite.java.AddOrUpdateAnnotationAttribute:
+      annotationType: "jakarta.inject.Inject"
+
+
+
+---
+
+#-------------------------------------------------
+#-------------------------------------------------
+#--------------- INTEGRATION-TESTS ---------------
+#-------------------------------------------------
+#-------------------------------------------------
+
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.IntegrationTestStack
+displayName: Quarkus-style integration test dependencies
+description: >
+  Replace plain RestAssured/Hamcrest with Quarkus test stack for integration tests,
+  keep dotenv since it's used in test code.
+
+recipeList:
+  # --- Entfernen nicht-quarkus-typischer Test-Dependencies ---
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: io.rest-assured
+      artifactId: rest-assured
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: io.rest-assured
+      artifactId: json-path
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: org.hamcrest
+      artifactId: hamcrest
+  # falls im Test-POM nicht wirklich benötigt:
+  - org.openrewrite.java.dependencies.RemoveDependency:
+      groupId: jakarta.ws.rs
+      artifactId: jakarta.ws.rs-api
+
+  # --- Quarkus-Test-Stack hinzufügen ---
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5
+      version: 3.27.X
+      scope: test
+      releasesOnly: true
+
+  # Quarkus-Integration für RestAssured (bringt passende Konfiguration/Transitives mit)
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-rest-assured
+      version: 3.27.X
+      scope: test
+      releasesOnly: true
+
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5-mockito
+      version: 3.27.X
+      scope: test
+      releasesOnly: true
+      onlyIfUsing: org.mockito.*
+
+  # --- JUnit5 / Maven Test Infra ---
+  - org.openrewrite.java.testing.junit5.JUnit5BestPractices
+  - org.openrewrite.java.testing.junit5.UpgradeSurefirePlugin
+
+
+---
+
+#----------------------------------------------------------
+#----------------------------------------------------------
+#------------- ADD DATASOURCE FORM STANDALONE -------------
+#----------------------------------------------------------
+#----------------------------------------------------------
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.migrate-wildfly-datasource
+displayName: Migrates WildFly H2 datasource to Quarkus application.properties
+description: Reads the known WildFly ExampleDS (H2, in-memory) config and writes equivalent Quarkus datasource properties.
+
+recipeList:
+  # 1) application.properties anlegen, falls nicht vorhanden
+  - org.openrewrite.properties.CreatePropertiesFile:
+      relativeFileName: src/main/resources/application.properties
+      fileContents: |
+        # Created by OpenRewrite to migrate WildFly datasource to Quarkus
+
+  # 2) Quarkus Datasource Properties setzen
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.db-kind
+      value: h2
+      comment: Quarkus datasource kind derived from WildFly H2 driver
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.jdbc.url
+      value: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=REGULAR
+      comment: Migrated from WildFly <connection-url>
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.username
+      value: sa
+      comment: Migrated from WildFly <security user-name>
+  - org.openrewrite.properties.AddProperty:
+      property: quarkus.datasource.password
+      value: sa
+      comment: Migrated from WildFly <security password>
+
+
+---
+
+#----------------------------------------------------------
+#----------------------------------------------------------
+#------------- MIGRATE STARTUP LISTENER -------------------
+#----------------------------------------------------------
+#----------------------------------------------------------
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.quarkus.MigrateStartupListener
+displayName: Migrate ServletContextListener StartupListener to Quarkus observer bean
+description: |
+  Convert a jakarta.servlet.ServletContextListener-based listener into a Quarkus CDI bean
+  with startup/shutdown hooks.
+recipeList:
+  # @WebListener -> @ApplicationScoped
+  - org.openrewrite.java.ReplaceAnnotation:
+      annotationPatternToReplace: '@jakarta.servlet.annotation.WebListener'
+      annotationTemplateToInsert: '@jakarta.enterprise.context.ApplicationScoped'
+
+  # Entferne implements jakarta.servlet.ServletContextListener (+ @Override auf den Methoden)
+  - org.openrewrite.java.RemoveImplements:
+      interfaceType: 'jakarta.servlet.ServletContextListener'
+
+  # Methoden umbenennen
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: 'com.gepardec.rest.config.listeners.StartupListener contextInitialized(..)'
+      newMethodName: 'onStart'
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: 'com.gepardec.rest.config.listeners.StartupListener contextDestroyed(..)'
+      newMethodName: 'onStop'
+
+  # Parametertypen an Quarkus-Events anpassen
+  - org.openrewrite.java.spring.ChangeMethodParameter:
+      methodPattern: 'com.gepardec.rest.config.listeners.StartupListener onStart(..)'
+      parameterType: 'io.quarkus.runtime.StartupEvent'
+      parameterIndex: 0
+  - org.openrewrite.java.spring.ChangeMethodParameter:
+      methodPattern: 'com.gepardec.rest.config.listeners.StartupListener onStop(..)'
+      parameterType: 'io.quarkus.runtime.ShutdownEvent'
+      parameterIndex: 0
+
+  - org.openrewrite.text.FindAndReplace:
+      regex: true
+      filePattern: "**/StartupListener.java"
+      find: "(?s)(\\bonStart\\s*\\(\\s*)(final\\s+)?((?:[\\w\\.]+\\.)?StartupEvent)"
+      replace: "$1@jakarta.enterprise.event.Observes $2$3"
+
+
+  # Aufräumen
+  - org.openrewrite.java.RemoveUnusedImports
+  - org.openrewrite.java.OrderImports
+  #- org.openrewrite.java.format.AutoFormat
+
+---
+
+#----------------------------------------------------------
+#----------------------------------------------------------
+#------------- MIGRATE STARTUP LISTENER -------------------
+#----------------------------------------------------------
+#----------------------------------------------------------
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.gamertrack.MigrateApplicationPom
+displayName: Migriere gamertrack-application POM zu Quarkus-Setup
+description: Entfernt alte Test-Dependencies, ergänzt Quarkus-Test- und REST-Dependencies und fügt den Jandex-Plugin inkl. Execution hinzu.
+recipeList:
+  # Entferne alte Test-Dependencies
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-core
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-junit-jupiter
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-engine
+
+  # Füge Quarkus Test-Dependencies (scope=test) hinzu
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5
+      scope: test
+      version: 3.23.2
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5-mockito
+      scope: test
+      version: 3.23.2
+
+  # Füge Quarkus REST-Dependencies hinzu (version via BOM/DependencyManagement)
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-rest
+      version: 3.23.2
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-rest-jackson
+      version: 3.23.2
+
+  # Füge Jandex Maven Plugin hinzu
+  - org.openrewrite.maven.AddPlugin:
+      groupId: io.smallrye
+      artifactId: jandex-maven-plugin
+      version: 3.3.2
+      executions: <execution><id>make-index</id><goals><goal>jandex</goal></goals></execution>
+
+
+---
+
+#----------------------------------------------------------
+#----------------------------------------------------------
+#-------------------- MIGRATE DB POM ----------------------
+#----------------------------------------------------------
+#----------------------------------------------------------
+
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.gamertrack.MigrateDbPom
+displayName: Migriere gamertrack-db POM zu Quarkus-DB-Setup
+description: Entfernt Arquillian/Mokito/JUnit-Engine/Hibernate-Core, fügt Quarkus-DB-/Test-Dependencies hinzu, passt Surefire-Config an und entfernt die jboss.home-Property.
+recipeList:
+  # 1) Properties anpassen
+  - org.openrewrite.maven.RemoveProperty:
+      propertyName: jboss.home
+
+  # 2) Alte/ersetzte Dependencies entfernen
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.hibernate.orm
+      artifactId: hibernate-core
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.jboss.arquillian.core
+      artifactId: arquillian-core-api
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.jboss.arquillian.junit5
+      artifactId: arquillian-junit5-container
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.wildfly.arquillian
+      artifactId: wildfly-arquillian-container-managed
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.jboss.shrinkwrap
+      artifactId: shrinkwrap-api
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.jboss.arquillian.container
+      artifactId: arquillian-container-test-api
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.jboss.arquillian.junit5
+      artifactId: arquillian-junit5-core
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-junit-jupiter
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.mockito
+      artifactId: mockito-core
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-engine
+
+  # 3) Quarkus-Dependencies hinzufügen (Version erforderlich -> wird gleich entfernt, falls durch BOM gemanagt)
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-hibernate-orm
+      version: "3.x"
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-hibernate-orm-panache
+      version: "3.x"
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-jdbc-h2
+      version: "3.x"
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5
+      version: "3.x"
+      scope: test
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5-mockito
+      version: "3.x"
+      scope: test
+
+  # 4) Redundante Versionsangaben entfernen (wenn via Parent/BOM gemanagt)
+  - org.openrewrite.maven.RemoveRedundantDependencyVersions
+
+  # 5) Surefire-Plugin-Konfiguration überschreiben (argLine entfernen, Rest beibehalten)
+  - org.openrewrite.maven.ChangePluginConfiguration:
+      groupId: org.apache.maven.plugins
+      artifactId: maven-surefire-plugin
+      configuration: '<excludedGroups>gamertrack-db</excludedGroups><environmentVariables><SECRET_JWT_HASH>${SECRET_JWT_HASH}</SECRET_JWT_HASH></environmentVariables>'
+
+---
+
+#----------------------------------------------------------
+#----------------------------------------------------------
+#---------------------- WAR POM ---------------------------
+#----------------------------------------------------------
+#----------------------------------------------------------
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.gamertrack.MigrateWarToQuarkusJar
+displayName: gamertrack-war WAR → JAR + Quarkus Plugin
+description: Setzt die Packaging-Art von war auf jar und fügt den quarkus-maven-plugin ohne Versionsangabe hinzu.
+recipeList:
+  # 1) Packaging von WAR → JAR ändern
+  - org.openrewrite.maven.ChangePackaging:
+      groupId: com.gepardec
+      artifactId: gamertrack-war
+      packaging: jar
+      oldPackaging: war
+
+  # 2) Quarkus Maven Plugin hinzufügen (ohne Version, wie im Ziel-POM)
+  - org.openrewrite.maven.AddPlugin:
+      groupId: io.quarkus.platform
+      artifactId: quarkus-maven-plugin
+
+---
+
+#----------------------------------------------------------
+#----------------------------------------------------------
+#--------------------- ROOT POM ---------------------------
+#----------------------------------------------------------
+#----------------------------------------------------------
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.migrate.rootpom.to.quarkus
+displayName: Migrate root POM to Quarkus-style parent
+description: Entfernt WildFly-Plugin & IT-Profil, fügt Quarkus BOM/Properties/Plugins hinzu, ersetzt Test-Dep, ergänzt Jandex & Surefire.
+recipeList:
+  # 1) Profile 'run-integrationtests' entfernen
+  - org.openrewrite.xml.RemoveXmlTag:
+      xPath: "/project/profiles/profile[id='run-integrationtests']"
+
+  # 2) WildFly-Plugin entfernen
+  - org.openrewrite.maven.RemovePlugin:
+      groupId: org.wildfly.plugins
+      artifactId: wildfly-maven-plugin
+
+  # 3) Failsafe-Konfiguration entfernen (Executions bleiben erhalten)
+  - org.openrewrite.maven.ChangePluginConfiguration:
+      groupId: org.apache.maven.plugins
+      artifactId: maven-failsafe-plugin
+      configuration: null
+
+  # 4) Quarkus- & Surefire-Properties hinzufügen
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.group-id
+      value: io.quarkus.platform
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.artifact-id
+      value: quarkus-bom
+  - org.openrewrite.maven.AddProperty:
+      key: quarkus.platform.version
+      value: 3.23.2
+  - org.openrewrite.maven.AddProperty:
+      key: surefire-plugin.version
+      value: 3.0.0
+
+  # 5) Quarkus BOM in <dependencyManagement> importieren
+  - org.openrewrite.maven.AddManagedDependency:
+      groupId: "${quarkus.platform.group-id}"
+      artifactId: "${quarkus.platform.artifact-id}"
+      version: "${quarkus.platform.version}"
+      type: pom
+      scope: import
+
+  # 6) Test-Dependency von JUnit auf Quarkus JUnit 5 umstellen
+  - org.openrewrite.maven.RemoveDependency:
+      groupId: org.junit.jupiter
+      artifactId: junit-jupiter-api
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-junit5
+      version: 3.23.X
+      scope: test
+
+  # 7) Quarkus Arc API hinzufügen (vom BOM verwaltet)
+  - org.openrewrite.maven.AddDependency:
+      groupId: io.quarkus
+      artifactId: quarkus-arc
+      version: 3.23.X
+
+  # 8) Jandex-Plugin hinzufügen (wie in pom2)
+  - org.openrewrite.maven.AddPlugin:
+      groupId: io.smallrye
+      artifactId: jandex-maven-plugin
+      version: 3.2.3
+      executions: |
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+          </execution>
+        </executions>
+
+  # 9) Surefire-Plugin mit property-basierter Version & Konfiguration hinzufügen
+  - org.openrewrite.maven.AddPlugin:
+      groupId: org.apache.maven.plugins
+      artifactId: maven-surefire-plugin
+      version: "${surefire-plugin.version}"
+      configuration: |
+        <configuration>
+          <systemPropertyVariables>
+            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <maven.home>${maven.home}</maven.home>
+          </systemPropertyVariables>
+        </configuration>
+
+  # 10) <pluginManagement> mit Quarkus-Maven-Plugin (extensions + executions) hinzufügen
+  - org.openrewrite.xml.AddOrUpdateChildTag:
+      parentXPath: /project/build
+      newChildTag: |
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>${quarkus.platform.group-id}</groupId>
+              <artifactId>quarkus-maven-plugin</artifactId>
+              <version>${quarkus.platform.version}</version>
+              <extensions>true</extensions>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>build</goal>
+                    <goal>generate-code</goal>
+                    <goal>generate-code-tests</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
+---
+
+
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.it.env.DotenvToConfigProperty
+displayName: IT-Tests Dotenv → @ConfigProperty (Quarkus Best Practice)
+description: Ersetzt Dotenv-Zugriffe durch @ConfigProperty-Injektion in @QuarkusTest-Klassen und bereinigt Importe. Wirkt nur auf **/*IT.java.
+preconditions:
+  - org.openrewrite.FindSourceFiles:
+      filePattern: "**/*IT.java"
+
+recipeList:
+  - org.openrewrite.java.RemoveImport:
+      type: io.github.cdimascio.dotenv.Dotenv
+
+  - org.openrewrite.text.FindAndReplace:
+      filePattern: "**/*IT.java"
+      regex: true
+      find: "(?m)^\\s*static\\s+Dotenv\\s+dotenv\\s*=.*;\\s*\\r?\\n?"
+      replace: ""
+
+  - org.openrewrite.text.FindAndReplace:
+      filePattern: "**/*IT.java"
+      regex: true
+      find: "(?m)^(\\s*)(public\\s+class\\s+\\w+IT\\b)"
+      replace: "$1@io.quarkus.test.junit.QuarkusTest\n$1$2"
+
+  - org.openrewrite.text.FindAndReplace:
+      filePattern: "**/*IT.java"
+      regex: true
+      find: "(?m)^\\s*private\\s+static\\s+final\\s+String\\s+SECRET_DEFAULT_PW\\s*=\\s*dotenv\\.get\\(\"SECRET_DEFAULT_PW\"\\s*,\\s*System\\.getenv\\(\"SECRET_DEFAULT_PW\"\\)\\);\\s*$"
+      replace: "@jakarta.inject.Inject\n@org.eclipse.microprofile.config.inject.ConfigProperty(name = \"SECRET_DEFAULT_PW\")\nString SECRET_DEFAULT_PW;"
+
+  - org.openrewrite.text.FindAndReplace:
+      filePattern: "**/*IT.java"
+      regex: true
+      find: "(?m)^\\s*private\\s+static\\s+final\\s+String\\s+SECRET_ADMIN_NAME\\s*=\\s*dotenv\\.get\\(\"SECRET_ADMIN_NAME\"\\s*,\\s*System\\.getenv\\(\"SECRET_ADMIN_NAME\"\\)\\);\\s*$"
+      replace: "@jakarta.inject.Inject\n@org.eclipse.microprofile.config.inject.ConfigProperty(name = \"SECRET_ADMIN_NAME\")\nString SECRET_ADMIN_NAME;"
+
+  - org.openrewrite.java.AddImport:
+      type: org.eclipse.microprofile.config.inject.ConfigProperty
+      onlyIfReferenced: true
+  - org.openrewrite.java.AddImport:
+      type: jakarta.inject.Inject
+      onlyIfReferenced: true
+  - org.openrewrite.java.AddImport:
+      type: io.quarkus.test.junit.QuarkusTest
+      onlyIfReferenced: true
+
+  - org.openrewrite.java.RemoveUnusedImports
+  - org.openrewrite.java.format.AutoFormat
+
+
+
+---
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.gepardec.eap8.fullMigration
+displayName: "EAP 7 → EAP 8 Migration (Jakarta EE 10): Code + POM"
+description: >
+  Migriert javax→jakarta in EJB/JMS/Servlet/Inject/Annotation und
+  aktualisiert optional das POM auf Jakarta EE 10.
+
+recipeList:
+  - org.openrewrite.java.migrate.jakarta.JavaxEjbToJakartaEjb
+  - org.openrewrite.java.migrate.jakarta.JavaxJmsToJakartaJms
+  - org.openrewrite.java.migrate.jakarta.JavaxServletToJakartaServlet
+  - org.openrewrite.java.migrate.jakarta.JavaxInjectMigrationToJakartaInject
+  - org.openrewrite.java.migrate.jakarta.JavaxAnnotationMigrationToJakartaAnnotation
+
+  - org.openrewrite.java.migrate.jakarta.UpdateAnnotationAttributeJavaxToJakarta:
+      signature: "@javax.ejb..*"        # vor der Paketmigration greifen
+  - org.openrewrite.java.migrate.jakarta.UpdateAnnotationAttributeJavaxToJakarta:
+      signature: "@jakarta.ejb..*"      # nach der Paketmigration sicherheitshalber auch prüfen
+
+  - org.openrewrite.maven.RemoveManagedDependency:
+      groupId: org.jboss.spec
+      artifactId: jboss-javaee-7.0
+
+  - org.openrewrite.maven.AddManagedDependency:
+      groupId: jakarta.platform
+      artifactId: jakarta.jakartaee-bom
+      version: 10.0.0
+      scope: import
+      type: pom
+  - org.openrewrite.maven.RemoveRepository:
+      id: jboss-enterprise-maven-repository
+      url: https://maven.repository.redhat.com/ga/

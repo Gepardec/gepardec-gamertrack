@@ -4,85 +4,95 @@ import com.gepardec.rest.config.Secure;
 import com.gepardec.rest.model.command.CreateMatchCommand;
 import com.gepardec.rest.model.command.UpdateMatchCommand;
 import com.gepardec.rest.model.dto.GameRestDto;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
+import io.swagger.annotations.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import jakarta.validation.Valid;
 import java.util.Optional;
 
 @Path("matches")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(value = "Matches", tags = {"matches"}) // Swagger 2 Klassengruppierung
 public interface MatchResource {
 
+    @GET
+    @ApiOperation(
+            value = "Gets all existing matches",
+            notes = "Optional filters by gameToken or userToken; supports pagination via pageNumber/pageSize"
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK")
+    })
+    Response getMatches(
+            @ApiParam(value = "Filter by game token") @QueryParam("gameToken") Optional<String> gameToken,
+            @ApiParam(value = "Filter by user token") @QueryParam("userToken") Optional<String> userToken,
+            @ApiParam(value = "Page number (0-based)") @QueryParam("pageNumber") Optional<Long> pageNumber,
+            @ApiParam(value = "Page size") @QueryParam("pageSize") Optional<Integer> pageSize
+    );
 
-  @Operation(summary = "Gets all existing matches from the database, or all Matches filtered either by gameToken or userToken")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ok")})
+    @GET
+    @Path("{token}")
+    @ApiOperation(
+            value = "Gets match by token",
+            notes = "Match must exist",
+            response = GameRestDto.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 204, message = "Match not found")
+    })
+    Response getMatchByToken(
+            @ApiParam(value = "Match token", required = true) @PathParam("token") String token
+    );
 
-  @GET
-  Response getMatches(@QueryParam("gameToken") Optional<String> gameToken,
-      @QueryParam("userToken") Optional<String> userToken, @QueryParam("pageNumber") Optional<Long> pageNumber, @QueryParam("pageSize") Optional<Integer> pageSize);
+    @POST
+    @Secure
+    @ApiOperation(
+            value = "Creates a match",
+            notes = "Match must be valid",
+            response = GameRestDto.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "Created"),
+            @ApiResponse(code = 400, message = "Could not create match / Entity not valid")
+    })
+    Response createMatch(
+            @ApiParam(value = "CreateMatch payload", required = true) @Valid CreateMatchCommand matchCmd
+    );
 
+    @PUT
+    @Path("{token}")
+    @Secure
+    @ApiOperation(
+            value = "Updates a match",
+            notes = "Match must be valid and exist; referenced user/game ids must exist",
+            response = GameRestDto.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Match has been updated"),
+            @ApiResponse(code = 400, message = "Bad Request")
+    })
+    Response updateMatch(
+            @ApiParam(value = "Match token", required = true) @PathParam("token") String token,
+            @ApiParam(value = "UpdateMatch payload", required = true) @Valid UpdateMatchCommand matchCommand
+    );
 
-  @Operation(summary = "Gets match by token", description = "Match must exist")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ok", content = {
-          @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameRestDto.class))}),
-      @ApiResponse(responseCode = "204", description = "Match not found")})
-
-  @GET
-  @Path("{token}")
-  Response getMatchByToken(@PathParam("token") String token);
-
-
-  @Operation(summary = "Creates a match", description = "Match must be valid")
-  @RequestBody(content = @Content(schema = @Schema(implementation = CreateMatchCommand.class)))
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "Created", content = {
-          @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameRestDto.class))}),
-      @ApiResponse(responseCode = "400", description = "Could not create match/Entity was not valid")
-  })
-
-  @POST
-  @Secure
-  Response createMatch(CreateMatchCommand matchCmd);
-
-
-  @Operation(summary = "Updates a match", description = "Match must be valid and exist, specified user and game ids that make up the match have to exist")
-  @RequestBody(content = @Content(schema = @Schema(implementation = UpdateMatchCommand.class)))
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Match has been updated", content = {
-          @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameRestDto.class))}),
-      @ApiResponse(responseCode = "400", description = "Bad Request")
-  })
-
-  @PUT
-  @Path("{token}")
-  @Secure
-  Response updateMatch(@PathParam("token") String token,
-      @Valid UpdateMatchCommand matchCommand);
-
-
-  @Operation(summary = "Deletes a match", description = "Match must exist")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Match has been deleted", content = {
-          @Content(mediaType = MediaType.APPLICATION_JSON, schema =
-          @Schema(implementation = GameRestDto.class))}),
-      @ApiResponse(responseCode = "404", description = "Match not found")})
-
-  @DELETE
-  @Path("{token}")
-  @Secure
-  Response deleteMatch(@PathParam("token") String token);
+    @DELETE
+    @Path("{token}")
+    @Secure
+    @ApiOperation(
+            value = "Deletes a match",
+            notes = "Match must exist",
+            response = GameRestDto.class
+    )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Match has been deleted"),
+            @ApiResponse(code = 404, message = "Match not found")
+    })
+    Response deleteMatch(
+            @ApiParam(value = "Match token", required = true) @PathParam("token") String token
+    );
 }
