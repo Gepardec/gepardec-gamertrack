@@ -2,9 +2,13 @@ package com.gepardec.rest.api;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -20,7 +24,8 @@ public interface HealthResource {
 
     @Operation(summary = "Get the App health status", description = "Returns App Health")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "App is running!"),
+            @ApiResponse(responseCode = "200", description = "App is running!", content = @Content(mediaType = MediaType.APPLICATION_JSON)),
+            @ApiResponse(responseCode = "503", description = "App is starting or dependencies are unavailable", content = @Content(mediaType = MediaType.APPLICATION_JSON))
     })
     @GET
     public Response healthCheck();
