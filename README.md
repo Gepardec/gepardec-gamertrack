@@ -2,7 +2,39 @@
 
 This is a learning project for Juniors. An app for tracking results of various sports competitions.
 
-## Requirements
+
+
+## Getting Started – Quarkus Application
+
+The Quarkus implementation of the application is available on the following branch `feature/OpenRewriteUsingRecipes`
+
+
+## Required Environment Variables
+The application requires several environment variables. These can be found in the shared folder named `Gamertrack` in Keeper.
+
+## Starting the Application
+
+### Backend (Quarkus)
+```console
+mvn clean install  
+mvn quarkus:dev
+```
+
+### Frontend
+The frontend is located at the following path `https://github.com/Gepardec/gepardec-gamertrack-frontend`
+
+Please check out the `main` branch 
+
+Then run the following commands to start the frontend:
+
+```console
+npm install  
+ng serve -o
+```
+
+
+
+## Old Widlfly Requirements
 
 The following technologies are used by Gepardec-Gamertrack
 
