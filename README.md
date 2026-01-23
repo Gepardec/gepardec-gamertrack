@@ -9,10 +9,23 @@ This is a learning project for Juniors. An app for tracking results of various s
 The Quarkus implementation of the application is available on the following branch `feature/OpenRewriteUsingRecipes`
 
 
-## Required Environment Variables
-The application requires several environment variables. These can be found in the shared folder named `Gamertrack` in Keeper.
+## Required Environment Variables for Backend
+The application requires several environment variables. The values for the demo-deployment can be found in the shared folder named `Gamertrack` in Keeper.
+For a local deployment you may use these example values
 
-## Starting the Application
+```
+# Admin user and password for login
+SECRET_ADMIN_NAME=admin
+SECRET_DEFAULT_PW=admin@gamertrack
+# Seed for hashing must be at least 64 chars long.
+SECRET_JWT_HASH=1b6f8c8c2a3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0123456789abcdef0123456789ab
+# CORS properties
+ALLOWED_ORIGINS_AS_REGEX='^(http|https)://localhost'
+export SECRET_ADMIN_NAME SECRET_DEFAULT_PW SECRET_JWT_HASH ALLOWED_ORIGINS_AS_REGEX
+```
+
+
+## Building and Starting the Application
 
 ### Backend (Quarkus)
 ```console
@@ -29,9 +42,13 @@ Then run the following commands to start the frontend:
 
 ```console
 npm install  
-ng serve -o
+npm start
 ```
-
+Then connect to http://localhost:4200/ and
+   * Login with admin user and password
+   * Create at least two users
+   * Create a game (e.g. Darts)
+   * Create the results for a match by selecting a game, winner and looser
 
 
 ## Old Widlfly Requirements
