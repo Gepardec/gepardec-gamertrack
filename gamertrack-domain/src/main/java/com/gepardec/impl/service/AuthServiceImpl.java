@@ -21,9 +21,9 @@ import java.util.Optional;
 @ApplicationScoped
 public class AuthServiceImpl implements AuthService {
 
-    @ConfigProperty(name = "SECRET_DEFAULT_PW")
+    @ConfigProperty(name = "secret.default.pw")
     String SECRET_DEFAULT_PW;
-    @ConfigProperty(name = "SECRET_ADMIN_NAME")
+    @ConfigProperty(name = "secret.admin.name")
     String SECRET_ADMIN_NAME;
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);

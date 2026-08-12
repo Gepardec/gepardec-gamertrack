@@ -17,7 +17,7 @@ import java.util.Map;
 
 @ApplicationScoped
 public class JwtUtil {
-    @ConfigProperty(name = "SECRET_JWT_HASH")
+    @ConfigProperty(name = "secret.jwt.hash")
     String SECRET_KEY;
 
     public String generateToken(String username) {

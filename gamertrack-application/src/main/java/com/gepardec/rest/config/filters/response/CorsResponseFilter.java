@@ -17,7 +17,7 @@ public class CorsResponseFilter implements ContainerResponseFilter {
     protected static final String ACCESS_CONTROL_EXPOSE_HEADERS =  "x-total-count, x-total-pages, x-page-size, x-current-page, Authorization";
 
 
-    @ConfigProperty(name = "ALLOWED_ORIGINS_AS_REGEX")
+    @ConfigProperty(name = "allowed.origins.as.regex")
     String matchingRegex;
 
     @Override
