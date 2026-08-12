@@ -1,10 +1,10 @@
 package com.gepardec.rest.config.filters.response;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 
@@ -17,19 +17,15 @@ public class CorsResponseFilter implements ContainerResponseFilter {
     protected static final String ACCESS_CONTROL_EXPOSE_HEADERS =  "x-total-count, x-total-pages, x-page-size, x-current-page, Authorization";
 
 
-    Dotenv dotenv = Dotenv
-            .configure()
-            .directory("../..")
-            .filename("application.properties")
-            .ignoreIfMissing()
-            .load();
+    @ConfigProperty(name = "ALLOWED_ORIGINS_AS_REGEX")
+    String matchingRegex;
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
 
         String origin = requestContext.getHeaders().getFirst("Origin");
 
-        if (origin != null && origin.matches(dotenv.get("ALLOWED_ORIGINS_AS_REGEX"))) {
+        if (origin != null && origin.matches(matchingRegex)) {
             responseContext.getHeaders().add("Access-Control-Allow-Origin", origin);
             responseContext.getHeaders().add("Access-Control-Allow-Methods", ALLOWED_METHODS);
             responseContext.getHeaders().add("Access-Control-Allow-Headers", ALLOWED_HEADERS);

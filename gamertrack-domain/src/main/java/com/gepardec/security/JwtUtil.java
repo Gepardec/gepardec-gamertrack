@@ -1,6 +1,5 @@
 package com.gepardec.security;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -8,6 +7,7 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha512Hash;
 import org.apache.shiro.lang.codec.Hex;
 import org.apache.shiro.lang.util.ByteSource;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
@@ -17,8 +17,8 @@ import java.util.Map;
 
 @ApplicationScoped
 public class JwtUtil {
-    static Dotenv dotenv = Dotenv.configure().directory("../../").filename("secret.env").ignoreIfMissing().load();
-    private static final String SECRET_KEY = dotenv.get("SECRET_JWT_HASH", System.getenv("SECRET_JWT_HASH"));
+    @ConfigProperty(name = "SECRET_JWT_HASH")
+    String SECRET_KEY;
 
     public String generateToken(String username) {
         var jwt = Jwts.builder()

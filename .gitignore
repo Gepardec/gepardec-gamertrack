@@ -38,3 +38,4 @@ build/
 /wildfly
 
 secret.env
+.env
