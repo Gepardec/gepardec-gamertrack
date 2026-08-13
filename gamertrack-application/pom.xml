@@ -145,6 +145,11 @@
       <version>3.1.0</version>
     </dependency>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-validator</artifactId>
+      <version>3.23.2</version>
+    </dependency>
+    <dependency>
       <groupId>jakarta.data</groupId>
       <artifactId>jakarta.data-api</artifactId>
       <version>1.0.0</version>
