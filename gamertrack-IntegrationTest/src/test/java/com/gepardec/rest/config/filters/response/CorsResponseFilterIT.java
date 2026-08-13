@@ -1,8 +1,9 @@
 package com.gepardec.rest.config.filters.response;
 
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.filter.log.LogDetail;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.gepardec.rest.config.filters.response.CorsResponseFilter.*;
@@ -10,6 +11,7 @@ import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.nullValue;
 
+@QuarkusTest
 public class CorsResponseFilterIT {
 
     private final String VALID_ORIGIN = "http://gamertrack-frontend.apps.cloudscale-lpg-2.appuio.cloud";
@@ -17,15 +19,12 @@ public class CorsResponseFilterIT {
 
     @BeforeAll
     public static void setup() {
-        reset();
-        port = 8080;
-        basePath = "gepardec-gamertrack/api/v1/games";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
     }
 
-    @AfterAll
-    public static void cleanup() {
-        reset();
+    @BeforeEach
+    public void setBasePath() {
+        basePath = "/gepardec-gamertrack/api/v1/games";
     }
 
     @Test

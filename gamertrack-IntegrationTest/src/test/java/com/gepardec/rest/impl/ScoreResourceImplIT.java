@@ -4,13 +4,15 @@ import com.gepardec.rest.model.command.AuthCredentialCommand;
 import com.gepardec.rest.model.command.CreateGameCommand;
 import com.gepardec.rest.model.command.CreateUserCommand;
 import com.gepardec.rest.model.command.UpdateUserCommand;
-import io.github.cdimascio.dotenv.Dotenv;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 
+@QuarkusTest
 public class ScoreResourceImplIT {
 
     private static String gameToken;
@@ -28,46 +31,57 @@ public class ScoreResourceImplIT {
 
 
     static String authHeader;
-    String bearerToken = authHeader.replace("Bearer ", "");
+    String bearerToken;
+    static int testPort;
 
-    static Dotenv dotenv = Dotenv.configure().directory("../").filename("secret.env").ignoreIfMissing().load();
-    private static final String SECRET_DEFAULT_PW = dotenv.get("SECRET_DEFAULT_PW", System.getenv("SECRET_DEFAULT_PW"));
-    private static final String SECRET_ADMIN_NAME = dotenv.get("SECRET_ADMIN_NAME", System.getenv("SECRET_ADMIN_NAME"));
+    @ConfigProperty(name = "secret.default.pw")
+    String SECRET_DEFAULT_PW;
+    @ConfigProperty(name = "secret.admin.name")
+    String SECRET_ADMIN_NAME;
 
 
 
     @BeforeAll
     public static void setup() {
-        RestAssured.baseURI = "http://localhost:8080/gepardec-gamertrack/api/v1";
         enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
+    }
 
-        authHeader = with().when()
-                .contentType("application/json")
-                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
-                .headers("Content-Type", ContentType.JSON,
-                        "Accept", ContentType.JSON)
-                .request("POST", "/auth/login")
-                .then()
-                .statusCode(200)
-                .extract()
-                .header("Authorization");
+    @BeforeEach
+    public void login() {
+        RestAssured.basePath = "/gepardec-gamertrack/api/v1";
+        testPort = RestAssured.port;
+        if (authHeader == null) {
+            authHeader = with().when()
+                    .contentType("application/json")
+                    .body(new AuthCredentialCommand(SECRET_ADMIN_NAME,SECRET_DEFAULT_PW))
+                    .headers("Content-Type", ContentType.JSON,
+                            "Accept", ContentType.JSON)
+                    .request("POST", "/auth/login")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .header("Authorization");
+        }
+        bearerToken = authHeader.replace("Bearer ", "");
 
-        gameToken = with()
-                .when()
-                .contentType("application/json")
-                .headers(
-                        "Authorization",
-                        "Bearer " + authHeader.replace("Bearer ", ""),
-                        "Content-Type",
-                        ContentType.JSON,
-                        "Accept",
-                        ContentType.JSON)
-                .body(new CreateGameCommand("Vier Gewinnt", "Nicht Schummeln"))
-                .request("POST", "/games")
-                .then()
-                .statusCode(201)
-                .extract()
-                .path("token");
+        if (gameToken == null) {
+            gameToken = with()
+                    .when()
+                    .contentType("application/json")
+                    .headers(
+                            "Authorization",
+                            "Bearer " + bearerToken,
+                            "Content-Type",
+                            ContentType.JSON,
+                            "Accept",
+                            ContentType.JSON)
+                    .body(new CreateGameCommand("Vier Gewinnt", "Nicht Schummeln"))
+                    .request("POST", "/games")
+                    .then()
+                    .statusCode(201)
+                    .extract()
+                    .path("token");
+        }
     }
 
     @AfterEach
@@ -91,6 +105,8 @@ public class ScoreResourceImplIT {
 
     @AfterAll
     static public void tearDown() {
+            RestAssured.port = testPort;
+            RestAssured.basePath = "/gepardec-gamertrack/api/v1";
             with()
                     .headers(
                             "Authorization",
