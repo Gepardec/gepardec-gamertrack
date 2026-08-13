@@ -11,7 +11,7 @@ The Quarkus implementation of the application is available on the following bran
 
 ## Required Environment Variables for Backend
 The application requires several environment variables. The values for the demo-deployment can be found in the shared folder named `Gamertrack` in Keeper.
-For a local deployment you may use these example values
+For a local deployment create a `.env` file in the project root with these example values
 
 ```
 # Admin user and password for login
@@ -20,17 +20,24 @@ SECRET_DEFAULT_PW=admin@gamertrack
 # Seed for hashing must be at least 64 chars long.
 SECRET_JWT_HASH=1b6f8c8c2a3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0123456789abcdef0123456789ab
 # CORS properties
-ALLOWED_ORIGINS_AS_REGEX='^(http|https)://localhost'
-export SECRET_ADMIN_NAME SECRET_DEFAULT_PW SECRET_JWT_HASH ALLOWED_ORIGINS_AS_REGEX
+ALLOWED_ORIGINS_AS_REGEX=^(http|https)://localhost
 ```
 
+Quarkus reads the `.env` file from the working directory of the application:
+* **Packaged app** (`java -jar ...`): the directory you start the app from (e.g. the project root).
+* **Dev mode** (`mvn quarkus:dev`): the `gamertrack-war` module directory. Symlink the root `.env` once so both work:
+  ```console
+  ln -s ../.env gamertrack-war/.env
+  ```
+
+Alternatively, export the variables as regular environment variables in your shell.
 
 ## Building and Starting the Application
 
 ### Backend (Quarkus)
 ```console
 mvn clean install  
-mvn quarkus:dev
+mvn quarkus:dev -pl gamertrack-war
 ```
 
 ### Frontend
