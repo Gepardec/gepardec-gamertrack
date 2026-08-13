@@ -40,6 +40,17 @@ mvn clean install
 mvn quarkus:dev -pl gamertrack-war
 ```
 
+### Integration Tests
+The integration tests are `@QuarkusTest`s: they start the application themselves,
+no running server, `.env` or `secret.env` file is required. Test values for the
+secrets are provided in `gamertrack-IntegrationTest/src/test/resources/application.properties`
+and can be overridden via environment variables.
+
+```console
+mvn clean install
+mvn verify -Prun-integrationtests
+```
+
 ### Frontend
 The frontend is located at the following path `https://github.com/Gepardec/gepardec-gamertrack-frontend`
 
