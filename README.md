@@ -17,20 +17,18 @@ For a local deployment create a `.env` file in the project root with these examp
 # Admin user and password for login
 SECRET_ADMIN_NAME=admin
 SECRET_DEFAULT_PW=admin@gamertrack
-# Seed for hashing must be at least 64 chars long.
-SECRET_JWT_HASH=1b6f8c8c2a3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0123456789abcdef0123456789ab
+# Seed for hashing must be at least 64 chars long,
+# generate your own, e.g. with: openssl rand -hex 48
+SECRET_JWT_HASH=<generated-hex-string-of-at-least-64-chars>
 # CORS properties
 ALLOWED_ORIGINS_AS_REGEX=^(http|https)://localhost
 ```
 
-Quarkus reads the `.env` file from the working directory of the application:
-* **Packaged app** (`java -jar ...`): the directory you start the app from (e.g. the project root).
-* **Dev mode** (`mvn quarkus:dev`): the `gamertrack-war` module directory. Symlink the root `.env` once so both work:
-  ```console
-  ln -s ../.env gamertrack-war/.env
-  ```
+The `.env` file in the project root is picked up automatically:
+* **Packaged app** (`java -jar ...`): Quarkus reads `.env` from the directory you start the app from (e.g. the project root).
+* **Dev mode** (`mvn quarkus:dev`) and the **integration tests**: the Maven plugins are configured to run with the project root as working directory, so the root `.env` is found without further setup.
 
-Alternatively, export the variables as regular environment variables in your shell.
+Alternatively, export the variables as regular environment variables in your shell — they always take precedence over the `.env` file.
 
 ## Building and Starting the Application
 
@@ -42,9 +40,10 @@ mvn quarkus:dev -pl gamertrack-war
 
 ### Integration Tests
 The integration tests are `@QuarkusTest`s: they start the application themselves,
-no running server, `.env` or `secret.env` file is required. Test values for the
-secrets are provided in `gamertrack-IntegrationTest/src/test/resources/application.properties`
-and can be overridden via environment variables.
+no running server is required. Harmless test values are provided in
+`gamertrack-IntegrationTest/src/test/resources/application.properties`; the
+`SECRET_JWT_HASH` is read from the root `.env` file or the environment variable
+of the same name. All values can be overridden via environment variables.
 
 ```console
 mvn clean install

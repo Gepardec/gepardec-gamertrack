@@ -21,6 +21,11 @@
           <plugin>
               <groupId>io.quarkus.platform</groupId>
               <artifactId>quarkus-maven-plugin</artifactId>
+              <configuration>
+                  <!-- Run dev mode from the project root so Quarkus picks up
+                       the .env file located there -->
+                  <workingDir>${maven.multiModuleProjectDirectory}</workingDir>
+              </configuration>
           </plugin>
       </plugins>
   </build>
