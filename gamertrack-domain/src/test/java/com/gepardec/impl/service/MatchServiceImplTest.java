@@ -6,11 +6,17 @@ import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.ScoreRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.EloService;
+import com.gepardec.core.services.ScoreHistoryService;
 import com.gepardec.core.services.TokenService;
+import com.gepardec.model.Game;
 import com.gepardec.model.Match;
+import com.gepardec.model.Score;
+import com.gepardec.model.ScoreHistory;
+import com.gepardec.model.User;
 import jakarta.data.page.PageRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +57,8 @@ class MatchServiceImplTest {
     ScoreRepository scoreRepository;
     @Mock
     EloService eloService;
+    @Mock
+    ScoreHistoryService scoreHistoryService;
 
 
     @Test
@@ -68,6 +79,76 @@ class MatchServiceImplTest {
 
         assertEquals(matchService.saveMatch(match).get().getId(),
                 match().getId());
+    }
+
+    @Test
+    void ensureSavingValidMatchPersistsOneScoreHistoryEntryPerParticipant() {
+        //Given
+        Game game = TestFixtures.game();
+        List<User> users = List.of(TestFixtures.user(1L), TestFixtures.user(2L));
+        Match match = TestFixtures.match(1L, game, users);
+
+        when(tokenService.generateToken()).thenReturn(match.getToken());
+        when(gameRepository.findGameByToken(anyString())).thenReturn(Optional.of(game));
+        when(userRepository.findUserByToken(anyString())).thenAnswer(
+                invocation -> users.stream()
+                        .filter(user -> user.getToken().equals(invocation.getArgument(0)))
+                        .findFirst());
+        when(matchRepository.saveMatch(any())).thenReturn(Optional.of(match));
+
+        Score oldScoreUser1 = new Score(1L, users.get(0), game, 1500, "scoreToken1", false);
+        Score oldScoreUser2 = new Score(2L, users.get(1), game, 1500, "scoreToken2", false);
+        when(scoreService.filterScores(null, null, users.get(0).getToken(), game.getToken(), true))
+                .thenReturn(List.of(oldScoreUser1));
+        when(scoreService.filterScores(null, null, users.get(1).getToken(), game.getToken(), true))
+                .thenReturn(List.of(oldScoreUser2));
+
+        Score newScoreUser1 = new Score(1L, users.get(0), game, 1516, "scoreToken1", false);
+        Score newScoreUser2 = new Score(2L, users.get(1), game, 1484, "scoreToken2", false);
+        when(eloService.updateElo(any(), any(), any()))
+                .thenReturn(List.of(newScoreUser1, newScoreUser2));
+
+        //When
+        var savedMatch = matchService.saveMatch(match);
+
+        //Then
+        assertTrue(savedMatch.isPresent());
+
+        ArgumentCaptor<ScoreHistory> scoreHistoryCaptor = ArgumentCaptor.forClass(
+                ScoreHistory.class);
+        verify(scoreHistoryService, times(2)).saveScoreHistory(scoreHistoryCaptor.capture());
+
+        List<ScoreHistory> savedScoreHistories = scoreHistoryCaptor.getAllValues();
+
+        ScoreHistory scoreHistoryUser1 = savedScoreHistories.get(0);
+        assertEquals(users.get(0).getToken(), scoreHistoryUser1.getUser().getToken());
+        assertEquals(game.getToken(), scoreHistoryUser1.getGame().getToken());
+        assertEquals(match.getToken(), scoreHistoryUser1.getMatchToken());
+        assertEquals(1500, scoreHistoryUser1.getPreviousScorePoints());
+        assertEquals(1516, scoreHistoryUser1.getNewScorePoints());
+        assertEquals(16, scoreHistoryUser1.getScoreChange());
+
+        ScoreHistory scoreHistoryUser2 = savedScoreHistories.get(1);
+        assertEquals(users.get(1).getToken(), scoreHistoryUser2.getUser().getToken());
+        assertEquals(game.getToken(), scoreHistoryUser2.getGame().getToken());
+        assertEquals(match.getToken(), scoreHistoryUser2.getMatchToken());
+        assertEquals(1500, scoreHistoryUser2.getPreviousScorePoints());
+        assertEquals(1484, scoreHistoryUser2.getNewScorePoints());
+        assertEquals(-16, scoreHistoryUser2.getScoreChange());
+    }
+
+    @Test
+    void ensureSavingInvalidMatchPersistsNoScoreHistoryEntry() {
+        //Given
+        Match match = match();
+        match.setUsers(TestFixtures.users(10));
+
+        //When
+        var savedMatch = matchService.saveMatch(match);
+
+        //Then
+        assertEquals(Optional.empty(), savedMatch);
+        verify(scoreHistoryService, never()).saveScoreHistory(any());
     }
 
     @Test

@@ -5,11 +5,13 @@ import com.gepardec.core.repository.MatchRepository;
 import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.EloService;
 import com.gepardec.core.services.MatchService;
+import com.gepardec.core.services.ScoreHistoryService;
 import com.gepardec.core.services.ScoreService;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
+import com.gepardec.model.ScoreHistory;
 import com.gepardec.model.User;
 import jakarta.data.page.PageRequest;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -45,6 +47,9 @@ public class MatchServiceImpl implements MatchService {
 
     @Inject
     private ScoreService scoreService;
+
+    @Inject
+    private ScoreHistoryService scoreHistoryService;
 
 
     @Override
@@ -101,8 +106,16 @@ public class MatchServiceImpl implements MatchService {
                 }
 
                 List<Score> updatedScores = eloService.updateElo(match.getGame(), scoreList, match.getUsers());
-                for (Score score : updatedScores) {
-                    scoreService.updateScore(score);
+                for (int i = 0; i < updatedScores.size(); i++) {
+                    Score updatedScore = updatedScores.get(i);
+                    scoreService.updateScore(updatedScore);
+
+                    double previousScorePoints = scoreList.get(i).getScorePoints();
+                    scoreHistoryService.saveScoreHistory(
+                            new ScoreHistory(null, null, updatedScore.getUser(), match.getGame(),
+                                    match.getToken(), previousScorePoints,
+                                    updatedScore.getScorePoints(),
+                                    updatedScore.getScorePoints() - previousScorePoints));
                 }
                 return savedMatch;
             }
