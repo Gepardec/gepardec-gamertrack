@@ -4,6 +4,7 @@ import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
+import com.gepardec.model.ScoreHistory;
 import com.gepardec.model.User;
 
 import java.util.ArrayList;
@@ -97,6 +98,19 @@ public class TestFixtures {
       scores.add(score((long) i, (long) i, 1L));
     }
     return scores;
+  }
+
+  public static ScoreHistory scoreHistory(Long scoreHistoryId, Long userId, Long gameId) {
+    return new ScoreHistory(scoreHistoryId, tokenService.generateToken(), user(userId),
+        game(gameId), tokenService.generateToken(), 1500, 1516, 16);
+  }
+
+  public static List<ScoreHistory> scoreHistories(int scoreHistoryCount) {
+    List<ScoreHistory> scoreHistories = new ArrayList<>();
+    for (int i = 0; i < scoreHistoryCount; i++) {
+      scoreHistories.add(scoreHistory((long) i, (long) i, 1L));
+    }
+    return scoreHistories;
   }
 
 
