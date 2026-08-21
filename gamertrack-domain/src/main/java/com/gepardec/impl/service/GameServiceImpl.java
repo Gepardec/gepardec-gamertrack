@@ -35,6 +35,9 @@ public class GameServiceImpl implements GameService, Serializable {
   @Inject
   private MatchService matchService;
 
+  @Inject
+  private ScoreHistoryService scoreHistoryService;
+
   @Override
   public Optional<Game> saveGame(Game game) {
     logger.info("Saving game: %s".formatted(game));
@@ -76,6 +79,8 @@ public class GameServiceImpl implements GameService, Serializable {
     for (Score score : scoresByGame) {
       scoreService.deleteScore(score.getToken());
     }
+
+    scoreHistoryService.deleteScoreHistoryByGame(token);
 
     gameRepository.deleteGame(game.get().getId());
 

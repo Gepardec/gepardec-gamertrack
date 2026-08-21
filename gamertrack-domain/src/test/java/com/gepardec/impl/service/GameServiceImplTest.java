@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +35,8 @@ class GameServiceImplTest {
     ScoreServiceImpl scoreService;
     @Mock
     MatchServiceImpl matchService;
+    @Mock
+    ScoreHistoryServiceImpl scoreHistoryService;
 
 
     @Test
@@ -77,6 +80,17 @@ class GameServiceImplTest {
 
         assertEquals(gameService.deleteGame(game.getToken()).get(), game);
 
+    }
+
+    @Test
+    void ensureDeletingExistingGameDeletesReferencingScoreHistory() {
+        Game game = TestFixtures.game();
+
+        when(gameRepository.findGameByToken(anyString())).thenReturn(Optional.of(game));
+
+        gameService.deleteGame(game.getToken());
+
+        verify(scoreHistoryService).deleteScoreHistoryByGame(game.getToken());
     }
 
     @Test
