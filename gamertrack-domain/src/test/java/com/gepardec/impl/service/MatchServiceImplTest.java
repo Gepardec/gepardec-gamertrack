@@ -8,6 +8,7 @@ import com.gepardec.core.repository.UserRepository;
 import com.gepardec.core.services.EloService;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.Match;
+import com.gepardec.model.Score;
 import jakarta.data.page.PageRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,10 +68,40 @@ class MatchServiceImplTest {
                 invocation -> match.getUsers().stream()
                         .filter(user -> user.getToken().equals(invocation.getArgument(0)))
                         .findFirst());
+        when(scoreService.filterScores(any(), any(), anyString(), anyString(), any())).thenAnswer(
+                invocation -> match.getUsers().stream()
+                        .filter(user -> user.getToken().equals(invocation.getArgument(2)))
+                        .map(user -> new Score(user.getId(), user, match.getGame(), 1500L, user.getToken(), true))
+                        .toList());
 
 
         assertEquals(matchService.saveMatch(match).get().getId(),
                 match().getId());
+        verify(scoreService, times(match.getUsers().size())).filterScores(any(), any(), anyString(), anyString(), any());
+    }
+
+    @Test
+    void ensureSavingMatchWithUserMissingScoreReturnsEmptyOptionalWithoutPersistingMatch() {
+        //Given
+        Match match = match();
+
+        when(tokenService.generateToken()).thenReturn(match.getToken());
+        when(gameRepository.findGameByToken(anyString())).thenReturn(
+                Optional.of(match.getGame()));
+        when(userRepository.findUserByToken(anyString())).thenAnswer(
+                invocation -> match.getUsers().stream()
+                        .filter(user -> user.getToken().equals(invocation.getArgument(0)))
+                        .findFirst());
+        when(scoreService.filterScores(any(), any(), anyString(), anyString(), any())).thenReturn(List.of());
+
+        //When
+        var savedMatch = matchService.saveMatch(match);
+
+        //Then
+        assertEquals(Optional.empty(), savedMatch);
+        verify(matchRepository, never()).saveMatch(any());
+        verify(eloService, never()).updateElo(any(), any(), any());
+        verify(scoreService, never()).updateScore(any());
     }
 
     @Test
