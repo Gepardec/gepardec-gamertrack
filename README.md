@@ -30,6 +30,17 @@ The `.env` file in the project root is picked up automatically:
 
 Alternatively, export the variables as regular environment variables in your shell — they always take precedence over the `.env` file.
 
+## Contributing: Never Log Secrets
+
+Tokens, passwords and secrets never go into log statements. This includes
+Authorization header values, JWTs (even expired or malformed ones — they are
+often valid or reusable credentials), user passwords and any value configured
+via the `SECRET_*` environment variables. Log the fact and the shape of a
+failure instead (e.g. "expired", "invalid signature", "missing header"); for
+correlation use at most a short non-reversible fingerprint via
+`com.gepardec.security.TokenLogUtil.fingerprint(...)`. The integration test
+`AuthFilterLoggingIT` sweeps the application log for token material.
+
 ## Building and Starting the Application
 
 ### Backend (Quarkus)
