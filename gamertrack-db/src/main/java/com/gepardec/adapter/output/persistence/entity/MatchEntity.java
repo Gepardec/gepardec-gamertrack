@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import java.util.List;
 
@@ -24,10 +25,15 @@ public class MatchEntity extends AbstractEntity {
   @JoinColumn(name = "fk_game_match", foreignKey = @ForeignKey(name = "fk_game_match"))
   private GameEntity game;
 
+  // The list order is semantically meaningful (index 0 = winner, then 2nd, 3rd, ...):
+  // the Elo calculation and the frontend placement display rely on it, so the
+  // position of every user is persisted explicitly. When attaching a database that
+  // predates the user_order column, it must be backfilled (NOT NULL) before startup.
   @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
   @JoinTable(name = "matches_users", joinColumns =
   @JoinColumn(nullable = false, name = "fk_match", foreignKey = @ForeignKey(name = "fk_match")), inverseJoinColumns =
   @JoinColumn(nullable = false, name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")))
+  @OrderColumn(name = "user_order", nullable = false)
   private List<UserEntity> users;
 
   public MatchEntity() {

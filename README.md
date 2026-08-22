@@ -176,6 +176,22 @@ classDiagram
     Game "1" *-- "0..n" Score
 ```
 
+### Match user order
+
+The order of the users of a match carries meaning: index 0 is the winner,
+followed by 2nd, 3rd, ... place. It drives the Elo calculation and the
+placement display in the frontend. The position is therefore stored
+explicitly in the `user_order` column of the `matches_users` join table, so
+reading a match always returns exactly the order it was created with.
+
+Migration note: the application currently recreates the schema on every
+startup (`quarkus.hibernate-orm.schema-management.strategy=drop-and-create`
+on an in-memory H2 database), so no rows without a `user_order` value can
+exist. If the application is ever pointed at a persistent database that
+predates this column, `user_order` (NOT NULL) must be backfilled for
+existing `matches_users` rows before startup — e.g. numbering each match's
+rows 0..n-1 in a deliberate, stable order such as by `fk_user`.
+
 ## HTTPS-ENDPOINTS
 
 Rest-Endpoints are available via
