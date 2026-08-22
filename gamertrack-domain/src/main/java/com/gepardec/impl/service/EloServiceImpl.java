@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Transactional
 @ApplicationScoped
@@ -31,9 +32,9 @@ public class EloServiceImpl implements EloService {
 
         int numPlayers = playerOrder.size();
         List<Score> results = new ArrayList<>();
-        List<Score> UpdatedScoreList = new ArrayList<>();
+        List<Score> updatedScoreList = new ArrayList<>();
         for( Score score : scoreList ) {
-            UpdatedScoreList.add(new Score(score.getId(),score.getUser(),score.getGame(),score.getScorePoints(),score.getToken(),false));
+            updatedScoreList.add(new Score(score.getId(),score.getUser(),score.getGame(),score.getScorePoints(),score.getToken(),false));
         }
 
         for (int i = 0; i < numPlayers; i++) {
@@ -44,26 +45,35 @@ public class EloServiceImpl implements EloService {
 
         for (int i = 0; i < numPlayers; i++) {
             User user = playerOrder.get(i);
-            double playerRating = scoreList.stream().filter(x -> x.getUser().getToken() == user.getToken()).toList().getFirst().getScorePoints();
+            double playerRating = findScoreByUserToken(scoreList, user).getScorePoints();
 
             double totalExpectedProbability = 0.0;
             for (int j = 0; j < numPlayers; j++) {
                 if (i != j) {
                     User opponent = playerOrder.get(j);
-                    double opponentRating = scoreList.stream().filter(x -> x.getUser().getToken() == opponent.getToken()).toList().getFirst().getScorePoints();
+                    double opponentRating = findScoreByUserToken(scoreList, opponent).getScorePoints();
                     totalExpectedProbability += expectedProbability(playerRating, opponentRating);
 
                 }
             }
 
-            double result = results.stream().filter(x -> x.getUser().getToken() == user.getToken()).toList().getFirst().getScorePoints();
+            double result = findScoreByUserToken(results, user).getScorePoints();
             double expectedResult = totalExpectedProbability / (numPlayers - 1);
 
             double newRating = calculateNewScore(playerRating, expectedResult, result);
 
-            UpdatedScoreList.get(i).setScorePoints(newRating);
-            UpdatedScoreList.get(i).setDeletable(false);
+            Score updatedScore = findScoreByUserToken(updatedScoreList, user);
+            updatedScore.setScorePoints(newRating);
+            updatedScore.setDeletable(false);
         }
-        return UpdatedScoreList;
+        return updatedScoreList;
+    }
+
+    private Score findScoreByUserToken(List<Score> scores, User user) {
+        return scores.stream()
+                .filter(score -> Objects.equals(score.getUser().getToken(), user.getToken()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No score found for user with token '%s'".formatted(user.getToken())));
     }
 }
