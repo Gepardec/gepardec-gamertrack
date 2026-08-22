@@ -2,6 +2,7 @@ package com.gepardec.rest.config.filters.request;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,9 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
                 .forEach((k, v) ->
                 {
                     v.forEach(value -> tmp.set(tmp + value));
-                    sb.append("\t\t%s:\t%s\n".formatted(k, tmp.get()));
+                    // Never log credential material (LAKWYC-9)
+                    sb.append("\t\t%s:\t%s\n".formatted(k,
+                            HttpHeaders.AUTHORIZATION.equalsIgnoreCase(k) ? "[redacted]" : tmp.get()));
                     tmp.set("");
                 });
 
