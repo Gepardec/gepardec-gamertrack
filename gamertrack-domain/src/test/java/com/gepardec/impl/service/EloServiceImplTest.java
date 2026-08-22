@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -97,6 +99,79 @@ public class EloServiceImplTest {
         assertEquals(1484, updatedScoresList.get(4).getScorePoints());
 
 
+    }
+
+    @Test
+    void ensureUpdatingEloWorksWithDistinctUserInstancesCarryingEqualTokens() {
+        Game game = TestFixtures.game();
+
+        User winner = new User(1L, "Max", "Muster", false, "elo-user-token-1");
+        User loser = new User(2L, "Jakob", "Mayer", false, "elo-user-token-2");
+
+        // score users are distinct instances whose tokens are equal but not identical,
+        // so a reference comparison on the token can never match
+        Score winnerScore = new Score(1L, new User(1L, "Max", "Muster", false, new String("elo-user-token-1")), game, 1500, "", true);
+        Score loserScore = new Score(2L, new User(2L, "Jakob", "Mayer", false, new String("elo-user-token-2")), game, 1500, "", true);
+
+        List<Score> updatedScoresList = eloService.updateElo(game, List.of(winnerScore, loserScore), List.of(winner, loser));
+
+        assertEquals(1516, scorePointsOf(updatedScoresList, winner));
+        assertEquals(1484, scorePointsOf(updatedScoresList, loser));
+    }
+
+    @Test
+    void ensureUpdatingEloAssignsRatingsByUserWhenScoreListOrderDiffersFromPlayerOrder() {
+        Game game = TestFixtures.game();
+
+        User winner = TestFixtures.user(1L);
+        User loser = TestFixtures.user(2L);
+
+        Score winnerScore = new Score(1L, winner, game, 1500, "", true);
+        Score loserScore = new Score(2L, loser, game, 1500, "", true);
+
+        List<Score> updatedScoresList = eloService.updateElo(game, List.of(loserScore, winnerScore), List.of(winner, loser));
+
+        assertEquals(1516, scorePointsOf(updatedScoresList, winner));
+        assertEquals(1484, scorePointsOf(updatedScoresList, loser));
+    }
+
+    @Test
+    void ensureUpdatingEloWithTwoEquallyRatedPlayersGrantsAndDeductsSameAmount() {
+        Game game = TestFixtures.game();
+
+        User winner = TestFixtures.user(1L);
+        User loser = TestFixtures.user(2L);
+
+        Score winnerScore = new Score(1L, winner, game, 1500, "", true);
+        Score loserScore = new Score(2L, loser, game, 1500, "", true);
+
+        List<Score> updatedScoresList = eloService.updateElo(game, List.of(winnerScore, loserScore), List.of(winner, loser));
+
+        assertEquals(1516, scorePointsOf(updatedScoresList, winner));
+        assertEquals(1484, scorePointsOf(updatedScoresList, loser));
+    }
+
+    @Test
+    void ensureUpdatingEloFailsWithDescriptiveErrorWhenScoreForPlayerIsMissing() {
+        Game game = TestFixtures.game();
+
+        User user1 = TestFixtures.user(1L);
+        User user2 = TestFixtures.user(2L);
+
+        Score score1 = new Score(1L, user1, game, 1500, "", true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> eloService.updateElo(game, List.of(score1), List.of(user1, user2)));
+
+        assertTrue(exception.getMessage().contains(user2.getToken()));
+    }
+
+    private static double scorePointsOf(List<Score> scores, User user) {
+        return scores.stream()
+                .filter(score -> user.getToken().equals(score.getUser().getToken()))
+                .findFirst()
+                .orElseThrow()
+                .getScorePoints();
     }
 
 }
