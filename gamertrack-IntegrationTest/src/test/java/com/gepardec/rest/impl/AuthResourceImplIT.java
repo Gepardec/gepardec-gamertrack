@@ -19,6 +19,7 @@ import java.util.List;
 import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
 import static io.restassured.RestAssured.with;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 public class AuthResourceImplIT {
@@ -103,6 +104,58 @@ public class AuthResourceImplIT {
                 .extract()
                 .path("token");
         usedUserTokens.add(token);
+    }
+
+    @Test
+    public void ensureRepeatedFailedLoginsAreThrottledUniformlyAndRecoverAfterLockout() throws InterruptedException {
+        // TEST-NET source address so the lockout does not affect the other tests,
+        // which are throttled by their real remote address
+        String throttledSource = "203.0.113.7";
+
+        // login.throttle.max-failures=3 (see src/test/resources/application.properties)
+        for (int i = 0; i < 3; i++) {
+            with().when()
+                    .contentType("application/json")
+                    .header("X-Forwarded-For", throttledSource)
+                    .body(new AuthCredentialCommand(SECRET_ADMIN_NAME, "definitely-wrong-password"))
+                    .request("POST", "/auth/login")
+                    .then()
+                    .statusCode(401);
+        }
+
+        // While blocked, wrong and correct credentials get the identical response
+        String throttledBodyWrongPw = with().when()
+                .contentType("application/json")
+                .header("X-Forwarded-For", throttledSource)
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME, "definitely-wrong-password"))
+                .request("POST", "/auth/login")
+                .then()
+                .statusCode(429)
+                .extract()
+                .asString();
+
+        String throttledBodyCorrectPw = with().when()
+                .contentType("application/json")
+                .header("X-Forwarded-For", throttledSource)
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME, SECRET_DEFAULT_PW))
+                .request("POST", "/auth/login")
+                .then()
+                .statusCode(429)
+                .extract()
+                .asString();
+
+        assertEquals(throttledBodyWrongPw, throttledBodyCorrectPw);
+
+        // After the lockout window (login.throttle.lockout-seconds=3) a correct login succeeds again
+        Thread.sleep(3500);
+
+        with().when()
+                .contentType("application/json")
+                .header("X-Forwarded-For", throttledSource)
+                .body(new AuthCredentialCommand(SECRET_ADMIN_NAME, SECRET_DEFAULT_PW))
+                .request("POST", "/auth/login")
+                .then()
+                .statusCode(200);
     }
 
     @Test
