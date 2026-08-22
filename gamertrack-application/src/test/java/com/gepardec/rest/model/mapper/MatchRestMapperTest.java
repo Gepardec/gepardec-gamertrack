@@ -34,6 +34,9 @@ public class MatchRestMapperTest {
     assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
         .containsAll(
             RestTestFixtures.createMatchCommand().users().stream().map(User::getId).toList()));
+    assertEquals(mappedMatch.getUsers().size(), mappedMatch.getOutcome().size());
+    assertTrue(mappedMatch.getUsers().stream()
+        .allMatch(user -> mappedMatch.getOutcome().containsKey(user.getToken())));
   }
 
   @Test
@@ -49,5 +52,8 @@ public class MatchRestMapperTest {
     assertTrue(mappedMatch.getUsers().stream().map(User::getId).toList()
         .containsAll(
             updateMatchCommand().users().stream().map(User::getId).toList()));
+    assertEquals(mappedMatch.getUsers().size(), mappedMatch.getOutcome().size());
+    assertTrue(mappedMatch.getUsers().stream()
+        .allMatch(user -> mappedMatch.getOutcome().containsKey(user.getToken())));
   }
 }

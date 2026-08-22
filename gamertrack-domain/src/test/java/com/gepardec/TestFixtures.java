@@ -7,7 +7,9 @@ import com.gepardec.model.Score;
 import com.gepardec.model.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TestFixtures {
 
@@ -37,7 +39,16 @@ public class TestFixtures {
 
 
   public static Match match(Long id, Game game, List<User> users) {
-    return new Match(id, tokenService.generateToken(), game, users.stream().toList());
+    return new Match(id, tokenService.generateToken(), game, users.stream().toList(),
+        outcome(users));
+  }
+
+  public static Map<String, Integer> outcome(List<User> users) {
+    Map<String, Integer> outcome = new HashMap<>();
+    for (int i = 0; i < users.size(); i++) {
+      outcome.put(users.get(i).getToken(), i + 1);
+    }
+    return outcome;
   }
 
   public static List<User> users(int userCount) {
