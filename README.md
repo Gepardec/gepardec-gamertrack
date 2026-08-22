@@ -30,6 +30,26 @@ The `.env` file in the project root is picked up automatically:
 
 Alternatively, export the variables as regular environment variables in your shell — they always take precedence over the `.env` file.
 
+## Login Throttling and Token Lifetime
+
+There is a single, predictable admin account, and the login endpoint is reachable from the
+public internet, so failed logins are throttled per source address: after
+`login.throttle.max-failures` (default 5) failed attempts within
+`login.throttle.window-seconds` (default 900) the source is blocked for
+`login.throttle.lockout-seconds` (default 900). The source is taken from the rightmost
+`X-Forwarded-For` entry (appended by the OpenShift router) or the remote address.
+While blocked, every login attempt is rejected with a generic HTTP 429 **before** any
+password hashing happens — the response does not reveal whether the credentials were
+correct, and a burst of garbage logins cannot burn CPU on the expensive hash.
+Failed and throttled attempts are logged at WARN level with the source address and the
+full `X-Forwarded-For` header, so monitoring can alert on them.
+
+**Token lifetime decision:** JWTs were valid for 12 hours; since there is no revocation
+mechanism, a leaked token would have stayed usable for half a day. The lifetime is
+therefore reduced to **60 minutes** (configurable via `jwt.expiration.minutes`). That is
+short enough to bound the damage of a leaked token and long enough for a normal admin
+session; users simply have to log in again afterwards.
+
 ## Building and Starting the Application
 
 ### Backend (Quarkus)

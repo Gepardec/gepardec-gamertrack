@@ -20,11 +20,14 @@ public class JwtUtil {
     @ConfigProperty(name = "secret.jwt.hash")
     String SECRET_KEY;
 
+    @ConfigProperty(name = "jwt.expiration.minutes", defaultValue = "60")
+    long JWT_EXPIRATION_MINUTES;
+
     public String generateToken(String username) {
         var jwt = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 720))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * JWT_EXPIRATION_MINUTES))
                 .signWith(SignatureAlgorithm.HS512, generateKey())
                 .compact();
 
