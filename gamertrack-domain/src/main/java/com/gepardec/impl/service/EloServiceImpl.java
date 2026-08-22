@@ -3,12 +3,14 @@ package com.gepardec.impl.service;
 import com.gepardec.core.services.EloService;
 import com.gepardec.model.Game;
 import com.gepardec.model.Score;
-import com.gepardec.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Transactional
 @ApplicationScoped
@@ -27,36 +29,32 @@ public class EloServiceImpl implements EloService {
         return (int) Math.round(oldScore + K * (result - expectedProbability));
     }
 
-    public List<Score> updateElo(Game game, final List<Score> scoreList, List<User> playerOrder) {
+    public List<Score> updateElo(Game game, final List<Score> scoreList, Map<String, Integer> placements) {
 
-        int numPlayers = playerOrder.size();
-        List<Score> results = new ArrayList<>();
+        int numPlayers = scoreList.size();
         List<Score> UpdatedScoreList = new ArrayList<>();
         for( Score score : scoreList ) {
             UpdatedScoreList.add(new Score(score.getId(),score.getUser(),score.getGame(),score.getScorePoints(),score.getToken(),false));
         }
 
-        for (int i = 0; i < numPlayers; i++) {
-            User user = playerOrder.get(i);
-            double score = 1.0 - (i / (double) (numPlayers - 1));
-            results.add(new Score(0L,user, game, score,"",false));
-        }
+        Map<Integer, Long> tiedPlayersPerPlacement = placements.values().stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
         for (int i = 0; i < numPlayers; i++) {
-            User user = playerOrder.get(i);
-            double playerRating = scoreList.stream().filter(x -> x.getUser().getToken() == user.getToken()).toList().getFirst().getScorePoints();
+            Score playerScore = scoreList.get(i);
+            double playerRating = playerScore.getScorePoints();
 
             double totalExpectedProbability = 0.0;
             for (int j = 0; j < numPlayers; j++) {
                 if (i != j) {
-                    User opponent = playerOrder.get(j);
-                    double opponentRating = scoreList.stream().filter(x -> x.getUser().getToken() == opponent.getToken()).toList().getFirst().getScorePoints();
-                    totalExpectedProbability += expectedProbability(playerRating, opponentRating);
-
+                    totalExpectedProbability += expectedProbability(playerRating, scoreList.get(j).getScorePoints());
                 }
             }
 
-            double result = results.stream().filter(x -> x.getUser().getToken() == user.getToken()).toList().getFirst().getScorePoints();
+            //tied players share the result of the positions they occupy together (average of those positions' results)
+            int placement = placements.get(playerScore.getUser().getToken());
+            long tiedPlayers = tiedPlayersPerPlacement.get(placement);
+            double result = 1.0 - (placement - 1 + (tiedPlayers - 1) / 2.0) / (numPlayers - 1);
             double expectedResult = totalExpectedProbability / (numPlayers - 1);
 
             double newRating = calculateNewScore(playerRating, expectedResult, result);

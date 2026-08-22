@@ -9,7 +9,11 @@ import com.gepardec.rest.model.dto.MatchRestDto;
 import com.gepardec.rest.model.dto.UserRestDto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.gepardec.TestFixtures;
 
 import static com.gepardec.TestFixtures.user;
 
@@ -34,11 +38,13 @@ public class RestTestFixtures {
   }
 
   public static UpdateMatchCommand updateMatchCommand() {
-    return new UpdateMatchCommand(game(), users(5));
+    List<User> users = users(5);
+    return new UpdateMatchCommand(game(), users, TestFixtures.outcome(users));
   }
 
   public static CreateMatchCommand createMatchCommand() {
-    return new CreateMatchCommand(game(), users(5));
+    List<User> users = users(5);
+    return new CreateMatchCommand(game(), users, TestFixtures.outcome(users));
   }
 
   public static CreateGameCommand createGameCommand() {
@@ -47,7 +53,11 @@ public class RestTestFixtures {
 
 
   public static MatchRestDto matchRestDto(String token, GameRestDto gameRestDto, List<UserRestDto> userRestDtos) {
-      return new MatchRestDto(token, "2025-01-01 12:12:12","2025-01-01 12:12:12", gameRestDto, userRestDtos);
+      Map<String, Integer> outcome = new HashMap<>();
+      for (int i = 0; i < userRestDtos.size(); i++) {
+          outcome.put(userRestDtos.get(i).token(), i + 1);
+      }
+      return new MatchRestDto(token, "2025-01-01 12:12:12","2025-01-01 12:12:12", gameRestDto, userRestDtos, outcome);
   }
 
   public static Game game() {

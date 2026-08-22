@@ -20,7 +20,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Transactional
@@ -83,6 +88,11 @@ public class MatchServiceImpl implements MatchService {
                     && foundUsers.size() == match.getUsers().size()
                     && foundGame.isPresent()) {
 
+                if (!hasValidOutcome(foundUsers, match.getOutcome())) {
+                    logger.error("Match outcome is invalid: %s".formatted(match.getOutcome()));
+                    return Optional.empty();
+                }
+
                 match.setToken(tokenService.generateToken());
                 match.setGame(foundGame.get());
                 match.setUsers(foundUsers);
@@ -100,7 +110,7 @@ public class MatchServiceImpl implements MatchService {
                     scoreList.add(filteredScores.isEmpty() ? null : filteredScores.getFirst());
                 }
 
-                List<Score> updatedScores = eloService.updateElo(match.getGame(), scoreList, match.getUsers());
+                List<Score> updatedScores = eloService.updateElo(match.getGame(), scoreList, match.getOutcome());
                 for (Score score : updatedScores) {
                     scoreService.updateScore(score);
                 }
@@ -160,6 +170,11 @@ public class MatchServiceImpl implements MatchService {
                 && foundGame.isPresent()
                 && foundMatch.isPresent()) {
 
+            if (!hasValidOutcome(foundUsers, match.getOutcome())) {
+                logger.error("Match outcome is invalid: %s".formatted(match.getOutcome()));
+                return Optional.empty();
+            }
+
             match.setGame(foundGame.get());
             match.setUsers(foundUsers);
             match.setId(matchRepository.findMatchByToken(match.getToken()).get().getId());
@@ -175,6 +190,35 @@ public class MatchServiceImpl implements MatchService {
                 "Saving updated match with ID: %s aborted due to provided ID not existing".formatted(
                         match.getId()));
         return Optional.empty();
+    }
+
+    /**
+     * A valid outcome assigns every participating user exactly one placement following
+     * standard competition ranking: placements start at 1, tied users share a placement and
+     * each placement is followed by the placement skipping the tied users (e.g. 1,1,3 - not 1,1,2).
+     */
+    private boolean hasValidOutcome(List<User> users, Map<String, Integer> outcome) {
+        Set<String> userTokens = users.stream().map(User::getToken).collect(Collectors.toSet());
+
+        if (outcome == null || outcome.isEmpty() || !outcome.keySet().equals(userTokens)) {
+            return false;
+        }
+
+        if (outcome.values().stream().anyMatch(placement -> placement == null || placement < 1)) {
+            return false;
+        }
+
+        Map<Integer, Long> usersPerPlacement = outcome.values().stream()
+                .collect(Collectors.groupingBy(Function.identity(), TreeMap::new, Collectors.counting()));
+
+        int expectedPlacement = 1;
+        for (Map.Entry<Integer, Long> placement : usersPerPlacement.entrySet()) {
+            if (placement.getKey() != expectedPlacement) {
+                return false;
+            }
+            expectedPlacement += placement.getValue();
+        }
+        return true;
     }
 
     @Override

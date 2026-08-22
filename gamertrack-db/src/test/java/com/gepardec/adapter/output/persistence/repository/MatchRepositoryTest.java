@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.gepardec.TestFixtures.*;
@@ -58,6 +59,41 @@ public class MatchRepositoryTest  {
     Assertions.assertEquals(match.getGame().getName(), savedAndReadMatch.get().getGame().getName());
     Assertions.assertEquals(match.getUsers().getFirst().getFirstname(),
         savedAndReadMatch.get().getUsers().getFirst().getFirstname());
+  }
+
+  @Test
+  public void ensureSaveAndReadMatchPersistsOutcomeIndependentOfUserOrder() {
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    List<User> users = users(1);
+    Optional<User> savedUser1 = userRepository.saveUser(users.getFirst());
+    Optional<User> savedUser2 = userRepository.saveUser(users.getLast());
+    Match match = match(null);
+    match.setGame(savedGame.get());
+    match.setUsers(List.of(savedUser1.get(), savedUser2.get()));
+    match.setOutcome(Map.of(
+        savedUser1.get().getToken(), 2,
+        savedUser2.get().getToken(), 1));
+
+    var savedAndReadMatch = matchRepository.saveMatch(match);
+
+    Assertions.assertTrue(savedAndReadMatch.isPresent());
+    Assertions.assertEquals(match.getOutcome(), savedAndReadMatch.get().getOutcome());
+  }
+
+  @Test
+  public void ensureReadingMatchWithoutOutcomeReturnsEmptyOutcome() {
+    //matches created before outcomes existed have no placements and must stay readable
+    Optional<Game> savedGame = gameRepository.saveGame(game(null));
+    Optional<User> savedUser = userRepository.saveUser(users(1).getFirst());
+    Match match = match(null);
+    match.setGame(savedGame.get());
+    match.setUsers(List.of(savedUser.get()));
+    match.setOutcome(Map.of());
+
+    var savedAndReadMatch = matchRepository.saveMatch(match);
+
+    Assertions.assertTrue(savedAndReadMatch.isPresent());
+    Assertions.assertTrue(savedAndReadMatch.get().getOutcome().isEmpty());
   }
 
   @Test

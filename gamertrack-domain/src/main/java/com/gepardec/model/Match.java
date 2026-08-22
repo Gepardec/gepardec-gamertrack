@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Match {
@@ -15,6 +17,8 @@ public class Match {
     private Game game;
     @NotEmpty(message = "User List must not be null or Empty")
     private List<User> users;
+    //maps the token of a participating user to its placement (1-based, tied users share a placement)
+    private Map<String, Integer> outcome = new HashMap<>();
     private LocalDateTime createdOn;
     private LocalDateTime updatedOn;
 
@@ -35,6 +39,14 @@ public class Match {
         this.token = token;
         this.game = game;
         this.users = users;
+    }
+
+    public Match(Long id, String token, Game game, List<User> users, Map<String, Integer> outcome) {
+        this.id = id;
+        this.token = token;
+        this.game = game;
+        this.users = users;
+        this.outcome = outcome == null ? new HashMap<>() : outcome;
     }
 
     public Long getId() {
@@ -59,6 +71,14 @@ public class Match {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public Map<String, Integer> getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(Map<String, Integer> outcome) {
+        this.outcome = outcome == null ? new HashMap<>() : outcome;
     }
 
     public String getToken() {
@@ -92,6 +112,7 @@ public class Match {
                 ", key='" + token + '\'' +
                 ", game=" + game +
                 ", users=" + users +
+                ", outcome=" + outcome +
                 '}';
     }
 
@@ -99,11 +120,11 @@ public class Match {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Match match = (Match) o;
-        return Objects.equals(id, match.id) && Objects.equals(token, match.token) && Objects.equals(game, match.game) && Objects.equals(users, match.users);
+        return Objects.equals(id, match.id) && Objects.equals(token, match.token) && Objects.equals(game, match.game) && Objects.equals(users, match.users) && Objects.equals(outcome, match.outcome);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, token, game, users);
+        return Objects.hash(id, token, game, users, outcome);
     }
 }

@@ -2,9 +2,15 @@ package com.gepardec.rest.model.command;
 
 import com.gepardec.model.Game;
 import com.gepardec.model.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 
-public record CreateMatchCommand(@NotNull Game game, @NotNull List<User> users) {
+public record CreateMatchCommand(@NotNull Game game, @NotNull List<User> users,
+                                 @NotNull
+                                 @Schema(description = "Placement per participating user token (1-based). Tied users share a placement, the following placement skips the tied users (e.g. 1,1,3).",
+                                     example = "{\"userToken1\": 1, \"userToken2\": 2}")
+                                 Map<String, Integer> outcome) {
 
 }
