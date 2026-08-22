@@ -240,6 +240,78 @@ public class MatchRepositoryTest  {
   }
 
   @Test
+  public void ensureMatchUsersAreReturnedInCreationOrder() {
+    Game game = gameRepository.saveGame(game(null)).orElseThrow();
+    List<User> savedUsers = users(2).stream()
+        .map(u -> userRepository.saveUser(u).orElseThrow())
+        .toList();
+    User userC = savedUsers.get(0);
+    User userA = savedUsers.get(1);
+    User userB = savedUsers.get(2);
+
+    Match savedMatch = matchRepository.saveMatch(
+        match(null, game, List.of(userC, userA, userB))).orElseThrow();
+
+    List<String> expectedTokenOrder = List.of(
+        userC.getToken(), userA.getToken(), userB.getToken());
+
+    Assertions.assertEquals(expectedTokenOrder,
+        savedMatch.getUsers().stream().map(User::getToken).toList());
+
+    // re-read in a fresh transaction, twice, to ensure the order is stable
+    for (int i = 0; i < 2; i++) {
+      Match rereadMatch = matchRepository.findMatchById(savedMatch.getId()).orElseThrow();
+      Assertions.assertEquals(expectedTokenOrder,
+          rereadMatch.getUsers().stream().map(User::getToken).toList());
+    }
+  }
+
+  @Test
+  public void ensureInterleavedMatchesEachKeepTheirOwnUserOrder() {
+    Game game = gameRepository.saveGame(game(null)).orElseThrow();
+    List<User> savedUsers = users(3).stream()
+        .map(u -> userRepository.saveUser(u).orElseThrow())
+        .toList();
+
+    List<User> orderMatch1 = List.of(
+        savedUsers.get(3), savedUsers.get(1), savedUsers.get(0), savedUsers.get(2));
+    List<User> orderMatch2 = List.of(
+        savedUsers.get(0), savedUsers.get(2), savedUsers.get(3), savedUsers.get(1));
+
+    Match savedMatch1 = matchRepository.saveMatch(match(null, game, orderMatch1)).orElseThrow();
+    Match savedMatch2 = matchRepository.saveMatch(match(null, game, orderMatch2)).orElseThrow();
+
+    for (int i = 0; i < 2; i++) {
+      Assertions.assertEquals(orderMatch1.stream().map(User::getToken).toList(),
+          matchRepository.findMatchById(savedMatch1.getId()).orElseThrow()
+              .getUsers().stream().map(User::getToken).toList());
+      Assertions.assertEquals(orderMatch2.stream().map(User::getToken).toList(),
+          matchRepository.findMatchById(savedMatch2.getId()).orElseThrow()
+              .getUsers().stream().map(User::getToken).toList());
+    }
+  }
+
+  @Test
+  public void ensureUpdatingAnInvolvedUserKeepsTheMatchUserOrder() {
+    Game game = gameRepository.saveGame(game(null)).orElseThrow();
+    List<User> savedUsers = users(2).stream()
+        .map(u -> userRepository.saveUser(u).orElseThrow())
+        .toList();
+
+    List<User> creationOrder = List.of(savedUsers.get(2), savedUsers.get(0), savedUsers.get(1));
+    Match savedMatch = matchRepository.saveMatch(match(null, game, creationOrder)).orElseThrow();
+
+    User userToRename = savedUsers.get(0);
+    userToRename.setFirstname("Renamed");
+    userRepository.updateUser(userToRename);
+
+    Match rereadMatch = matchRepository.findMatchById(savedMatch.getId()).orElseThrow();
+
+    Assertions.assertEquals(creationOrder.stream().map(User::getToken).toList(),
+        rereadMatch.getUsers().stream().map(User::getToken).toList());
+  }
+
+  @Test
   void ensureFindAllMatchesOrFilteredByGameTokenAndUserTokenReturnsFilteredMatchesForGameTokenAndUserToken() {
     Optional<Game> savedGame = gameRepository.saveGame(game(null));
     Optional<User> savedUser1 = userRepository.saveUser(user(null));
