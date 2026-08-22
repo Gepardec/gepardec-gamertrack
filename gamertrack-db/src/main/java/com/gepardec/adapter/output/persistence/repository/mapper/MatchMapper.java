@@ -11,6 +11,7 @@ import jakarta.persistence.PersistenceContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -31,10 +32,14 @@ public class MatchMapper {
 
   public Match matchEntityToMatchModel(MatchEntity matchEntity) {
 
-    return new Match(matchEntity.getId(), matchEntity.getToken(),
+    Match match = new Match(matchEntity.getId(), matchEntity.getToken(),
             matchEntity.getCreatedOn(), matchEntity.getUpdatedOn(),
             gameMapper.gameEntityToGameModel(matchEntity.getGame()),
         matchEntity.getUsers().stream().map(userMapper::userEntityToUserModel).toList());
+    match.setOutcome(matchEntity.getPlacements().entrySet().stream()
+        .collect(Collectors.toMap(placement -> placement.getKey().getToken(),
+            Map.Entry::getValue)));
+    return match;
   }
 
   public MatchEntity matchModelToMatchEntity(Match match) {
@@ -43,8 +48,13 @@ public class MatchMapper {
         new UserEntity(user.getId(), user.getFirstname(), user.getLastname(),
             user.isDeactivated(), user.getToken())));
 
-    return new MatchEntity(match.getId(), match.getToken(),
+    MatchEntity matchEntity = new MatchEntity(match.getId(), match.getToken(),
         gameMapper.gameModelToGameEntity(match.getGame()), users);
+    matchEntity.setPlacements(users.stream()
+        .filter(user -> match.getOutcome().containsKey(user.getToken()))
+        .collect(Collectors.toMap(user -> user,
+            user -> match.getOutcome().get(user.getToken()))));
+    return matchEntity;
   }
 
   public MatchEntity matchModelToMatchEntityWithReference(Match match, MatchEntity matchEntity) {
@@ -55,6 +65,12 @@ public class MatchMapper {
         match.getUsers().stream()
             .map(u -> entityManager.getReference(UserEntity.class, u.getId()))
             .collect(Collectors.toList()));
+    matchEntity.getPlacements().clear();
+    match.getUsers().stream()
+        .filter(u -> match.getOutcome().containsKey(u.getToken()))
+        .forEach(u -> matchEntity.getPlacements().put(
+            entityManager.getReference(UserEntity.class, u.getId()),
+            match.getOutcome().get(u.getToken())));
     matchEntity.setToken(match.getToken());
     return matchEntity;
   }
