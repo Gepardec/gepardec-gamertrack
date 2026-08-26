@@ -13,9 +13,9 @@ The Jira issue is the source of truth for the functional requirements.
 
 ## Jira configuration
 
-This repository belongs to the Gepardec Jira environment.
+This repository belongs to the `Gepardec` Jira environment.
 
-When using the configured Atlassian MCP server, ALWAYS use the following
+When using the configured MCP server `Gepardec`, ALWAYS use the following
 Jira cloudId:
 
 `edf56f73-7260-4bb3-ae3a-1450c0895e6a`
@@ -65,7 +65,7 @@ Do not guess or construct a Jira issue key.
 For every identified Jira issue:
 
 1. Use the configured Atlassian MCP server.
-2. Use the Gepardec cloudId defined above.
+2. Use the `Gepardec` cloudId defined above.
 3. Retrieve the issue using `getJiraIssue`.
 4. Verify that the returned issue key starts with `LAKWYC-`.
 
@@ -103,7 +103,7 @@ Never execute an unrestricted Jira search.
 
 Never search another Jira project.
 
-Always use the Gepardec cloudId defined above when executing Jira searches.
+Always use the `Gepardec` cloudId defined above when executing Jira searches.
 
 ---
 
@@ -255,7 +255,7 @@ review findings.
 
 ## Safety constraints
 
-Never use an Atlassian cloudId other than the configured Gepardec cloudId.
+Never use an Atlassian cloudId other than the configured `Gepardec` cloudId.
 
 Never access Jira projects other than `LAKWYC`.
 
