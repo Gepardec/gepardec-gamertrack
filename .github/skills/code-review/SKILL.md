@@ -67,6 +67,18 @@ If no matching issue key is found, report:
 ---
 
 # Retrieve Jira requirements
+If a LAKWYC Jira issue key is present, Jira requirement verification is mandatory.
+
+Before performing requirement verification, call `getJiraIssue`
+from MCP server `atlassian-rovo-mcp`.
+
+If `atlassian-rovo-mcp` or `getJiraIssue` is not available to the review agent,
+do not silently skip Jira verification.
+
+Report exactly:
+
+Jira requirement verification could not be completed because the configured
+Atlassian MCP server or getJiraIssue tool was unavailable to Copilot Code Review.
 
 For every relevant Jira issue:
 
@@ -150,7 +162,7 @@ Expected configuration:
 - remote endpoint: `https://mcp.atlassian.com/v1/mcp`
 - authentication: HTTP Basic
 - runtime credential variable: `ATLASSIAN_API_KEY`
-- GitHub Agents secret: `COPILOT_MCP_ATLASSIAN_AUTH`
+- GitHub Agents secret: `COPILOT_MCP_ATLASSIAN_API_KEY`
 
 Never expose either credential value.
 
@@ -267,7 +279,7 @@ Never expose:
 - Basic Auth value
 - API token
 - `ATLASSIAN_API_KEY`
-- `COPILOT_MCP_ATLASSIAN_AUTH`
+- `COPILOT_MCP_ATLASSIAN_API_KEY`
 
 ---
 
