@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Perform pull request code reviews with Jira requirement verification through the configured Gepardec Atlassian Rovo MCP server. Use this skill for PR reviews that reference Jira issues matching LAKWYC-[0-9]+. Retrieve the Jira issue, compare acceptance criteria against the PR changes and tests, and report MCP/Jira diagnostics when retrieval fails.
+description: Perform pull request code reviews with Jira requirement verification through the configured Atlassian Rovo MCP server. Use for PR reviews referencing LAKWYC Jira issues.
 ---
 
 # Code Review with Jira Requirement Verification
@@ -21,7 +21,7 @@ The Jira issue is the source of truth for functional requirements.
 
 Use only the configured MCP server:
 
-`Gepardec`
+`atlassian-rovo-mcp`
 
 Use only this Jira cloudId:
 
@@ -70,7 +70,7 @@ If no matching issue key is found, report:
 
 For every relevant Jira issue:
 
-1. Use `getJiraIssue` from MCP server `Gepardec`.
+1. Use `getJiraIssue` from MCP server `atlassian-rovo-mcp`.
 2. Use cloudId `edf56f73-7260-4bb3-ae3a-1450c0895e6a`.
 3. Retrieve the identified `LAKWYC-*` issue.
 4. Verify that the returned issue belongs to project `LAKWYC`.
@@ -123,7 +123,7 @@ The configured integration is expected to be:
 GitHub Copilot Code Review
         |
         v
-MCP server: Gepardec
+MCP server: atlassian-rovo-mcp
         |
         v
 local MCP process
@@ -143,7 +143,7 @@ Jira project LAKWYC
 
 Expected configuration:
 
-- MCP server: `Gepardec`
+- MCP server: `atlassian-rovo-mcp`
 - type: `local`
 - command: `npx`
 - bridge: `mcp-remote@latest`
@@ -160,11 +160,11 @@ Never expose either credential value.
 
 ### Stage 1 - MCP server
 
-Record whether `Gepardec` is available.
+Record whether `atlassian-rovo-mcp` is available.
 
 ```text
 [MCP-DIAG] Stage: MCP_SERVER
-[MCP-DIAG] Server: Gepardec
+[MCP-DIAG] Server: atlassian-rovo-mcp
 [MCP-DIAG] Available: YES | NO | UNKNOWN
 ```
 
@@ -315,7 +315,7 @@ Example:
 
 ```text
 [MCP-DIAG] Stage: MCP_TOOL_CALL
-[MCP-DIAG] Server: Gepardec
+[MCP-DIAG] Server: atlassian-rovo-mcp
 [MCP-DIAG] Tool: getJiraIssue
 [MCP-DIAG] cloudId: edf56f73-7260-4bb3-ae3a-1450c0895e6a
 [MCP-DIAG] Jira issue: LAKWYC-201
@@ -326,7 +326,7 @@ For JQL:
 
 ```text
 [MCP-DIAG] Stage: MCP_TOOL_CALL
-[MCP-DIAG] Server: Gepardec
+[MCP-DIAG] Server: atlassian-rovo-mcp
 [MCP-DIAG] Tool: searchJiraIssuesUsingJql
 [MCP-DIAG] cloudId: edf56f73-7260-4bb3-ae3a-1450c0895e6a
 [MCP-DIAG] JQL: project = LAKWYC ...
