@@ -518,7 +518,7 @@ Example:
 
 | Check | Result |
 |---|---|
-| MCP server | `Gepardec` |
+| MCP server | `atlassian-rovo-mcp` |
 | MCP server available | YES |
 | Local MCP process | NOT OBSERVABLE |
 | `mcp-remote` | NOT OBSERVABLE |
