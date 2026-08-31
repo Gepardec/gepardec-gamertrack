@@ -150,7 +150,7 @@ Expected configuration:
 - remote endpoint: `https://mcp.atlassian.com/v1/mcp`
 - authentication: HTTP Basic
 - runtime credential variable: `ATLASSIAN_API_KEY`
-- GitHub Agents secret: `COPILOT_MCP_ATLASSIAN_API_KEY`
+- GitHub Agents secret: `COPILOT_MCP_ATLASSIAN_AUTH`
 
 Never expose either credential value.
 
@@ -267,7 +267,7 @@ Never expose:
 - Basic Auth value
 - API token
 - `ATLASSIAN_API_KEY`
-- `COPILOT_MCP_ATLASSIAN_API_KEY`
+- `COPILOT_MCP_ATLASSIAN_AUTH`
 
 ---
 
