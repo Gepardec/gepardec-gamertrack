@@ -189,6 +189,7 @@ Focus on actionable findings.
 Avoid purely stylistic comments unless they violate established project conventions.
 
 ---
+
 # Required review output
 
 Always include:

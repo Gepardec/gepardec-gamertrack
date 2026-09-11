@@ -19,5 +19,3 @@ When reviewing pull requests:
 
 For detailed Jira retrieval and requirement verification, use the
 `code-review` agent skill.
-
-ab
