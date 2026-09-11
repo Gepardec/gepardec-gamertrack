@@ -15,7 +15,6 @@ When reviewing pull requests:
    cookies, or MCP session IDs.
 10. Always include:
    - `Jira requirement verification`
-   - `MCP / Jira diagnostics`
    - normal technical review findings
 
 For detailed Jira retrieval and requirement verification, use the
