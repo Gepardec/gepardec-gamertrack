@@ -18,11 +18,11 @@ When reviewing pull requests:
    - normal technical review findings
 
 For detailed Jira retrieval, requirement verification, review summary generation,
-and pull request body publishing behavior, use the `code-review` agent skill.
+and review publishing behavior, use the `code-review` agent skill.
 
 The consolidated review summary produced by the `code-review` agent skill
-must be persisted to the GitHub pull request description/body when the
-required GitHub write capability is available.
+must be published as a top-level pull request comment using the available
+comment publishing capability.
 
 Showing the consolidated review summary only in the Copilot Code Review
-session, review view, logs, or internal output is not sufficient.
+session, automatic review summary, logs, or internal output is not sufficient.

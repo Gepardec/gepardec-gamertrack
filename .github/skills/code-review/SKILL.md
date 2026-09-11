@@ -273,130 +273,56 @@ review comments.
 
 ---
 
-# Publish review summary
+# Publish consolidated review summary
 
-After generating the consolidated review summary, persist it in the
-GitHub pull request description/body.
+After generating the consolidated review summary, publish it as one
+top-level pull request comment using the available comment publishing
+capability.
 
-The GitHub pull request body is the canonical location for the consolidated
-review summary.
+The consolidated review comment MUST contain:
 
-Showing the summary only in:
+- `## PR Overview`
+- `### Technical review findings`
+- `### Reviewed Changes`
+- `## Jira requirement verification`
+
+The Jira requirement verification table MUST be included in this comment.
+
+Do not consider the review complete merely because the consolidated summary
+was generated in:
 
 - the Copilot Code Review session
-- the review view
+- the automatic review summary
 - logs
 - internal agent output
 
-is not sufficient.
+The automatically generated `Changes recommended` or `Commented` review
+summary is NOT a substitute for the consolidated review comment required by
+this skill.
 
-Preserve all existing author-written pull request description content.
+Publish exactly one consolidated summary comment per review run.
 
-Copilot may only manage the section between:
-
-```text
-<!-- copilot-review-summary:start -->
-
-<!-- copilot-review-summary:end -->
-```
-
-If the markers do not exist:
-
-1. Read the existing pull request body.
-2. Preserve the complete existing content.
-3. Append the generated review summary.
-4. Wrap the generated summary between the markers.
-
-Example:
-
-```md
-<!-- copilot-review-summary:start -->
-
-## PR Overview
-
-...
-
-### Technical review findings
-
-...
-
-### Reviewed Changes
-
-...
-
-## Jira requirement verification
-
-...
-
-<!-- copilot-review-summary:end -->
-```
-
-If the markers already exist:
-
-1. Preserve all content outside the markers.
-2. Replace only the content between the markers.
-3. Do not add another review-summary section.
-4. Do not duplicate previous generated summaries.
-
-Never remove or overwrite unrelated author-written pull request content.
-
-The generated section may be replaced on every subsequent Copilot review.
-
----
-
-# GitHub pull request update capability
-
-To publish the consolidated review summary, use the available GitHub
-capability for updating the pull request description/body.
-
-Do not consider the task complete merely because the summary was generated.
-
-Do not treat generated review-session output as equivalent to updating the
-pull request body.
-
-Do not claim that the pull request body was updated unless the GitHub
-update operation actually succeeded.
-
-If no GitHub pull request update capability is available to Copilot Code Review,
-report exactly:
-
-```text
-PR body update unavailable: the current Copilot Code Review environment does not expose a GitHub pull request update capability.
-```
-
-If the update operation fails, report exactly:
-
-```text
-PR body update failed.
-```
-
-Do not silently fall back to keeping the consolidated summary only in the
-Copilot review session.
-
-A failure to update the pull request body must not prevent the normal
-technical review or Jira requirement verification from being completed.
-
----
+If inline review findings are generated, publish them separately as normal
+review comments.
 
 # Review comments
 
-Inline review comments and the consolidated pull request summary serve
+Inline review comments and the consolidated pull request review comment serve
 different purposes.
 
 Use inline comments for actionable findings tied to concrete code locations.
 
-Use the consolidated pull request summary for:
+Use the consolidated review comment for:
 
 - the overall pull request overview
 - the summarized technical review findings
 - the changed-file overview
 - the Jira requirement verification
 
-Writing the consolidated summary into the pull request body does not
-replace inline review findings.
+The consolidated review comment does not replace inline review findings.
 
 Actionable technical or Jira-related issues should still be published as
-normal review comments when appropriate.
+normal inline review comments when appropriate.
 
 # Security constraints
 
