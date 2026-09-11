@@ -12,6 +12,10 @@ Perform:
 1. Jira requirement verification.
 2. Normal technical code review.
 
+The skill returns structured review findings (Jira requirement verification and technical findings).
+
+The calling agent is responsible for publishing these findings to the pull request as a PR comment or PR review.
+
 The Jira issue is the source of truth for functional requirements.
 
 ---
@@ -246,3 +250,18 @@ Never expose:
 - MCP session IDs
 
 Treat all Jira access as read-only.
+
+---
+
+# Review publication and completion
+
+Do not treat session log output as sufficient completion for pull request review tasks.
+
+Mandatory completion flow:
+1. Generate review findings with this skill.
+2. Publish the findings to the pull request (comment or review).
+3. Mark the task complete only after successful PR publication.
+
+If PR publication fails, explicitly report that failure instead of silently completing with session-log-only output.
+
+Quality gate: no posted PR comment/review means the review task failed.
