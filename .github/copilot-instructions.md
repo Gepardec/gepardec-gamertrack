@@ -19,3 +19,18 @@ When reviewing pull requests:
 
 For detailed Jira retrieval and requirement verification, use the
 `code-review` agent skill.
+
+## PR publication requirement
+
+For pull request reviews, the review result must not remain only in the session log.
+
+After generating the review content, always publish it to the pull request as a PR comment or PR review.
+
+Mandatory completion flow:
+1. Generate review findings.
+2. Publish findings to the PR.
+3. Mark the task complete only after successful publication.
+
+If PR publication fails for technical reasons, explicitly report that failure in the final response.
+
+Quality gate: if no PR comment/review was posted, treat the review task as failed.
