@@ -189,52 +189,9 @@ Focus on actionable findings.
 Avoid purely stylistic comments unless they violate established project conventions.
 
 ---
-
 # Required review output
 
-Always produce one consolidated pull request review summary.
-
-The summary MUST contain:
-
-## PR Overview
-
-Summarize:
-
-- the purpose of the pull request
-- the main functional changes
-- the affected architectural areas
-
-Keep this section concise.
-
-### Technical review findings
-
-Summarize the actionable technical findings discovered during the review.
-
-Focus on:
-
-- functional correctness
-- security
-- data integrity
-- regression risks
-- architecture violations
-- persistence issues
-- missing or incorrect tests
-
-Do not duplicate all inline review comments verbatim.
-
-Summarize the important findings.
-
-### Reviewed Changes
-
-Provide an overview of the relevant changed files.
-
-Use a table:
-
-| File | Description |
-|---|---|
-| `path/to/file` | Short description of the change |
-
-Do not include unchanged files.
+Always include:
 
 ## Jira requirement verification
 
@@ -255,74 +212,12 @@ Use a table:
 | AC3 | FAIL | Required audit logging could not be found |
 | AC4 | NOT VERIFIABLE | Depends on external configuration |
 
-Use only these statuses:
-
-- `PASS`
-- `PARTIAL`
-- `FAIL`
-- `NOT VERIFIABLE`
-
 If Jira retrieval failed:
 
 `Jira requirement verification could not be completed.`
 
 Do not invent acceptance criteria.
 
-The consolidated summary must reflect the same findings as the detailed
-review comments.
-
----
-
-# Publish consolidated review summary
-
-After generating the consolidated review summary, publish it as one
-top-level pull request comment using the available comment publishing
-capability.
-
-The consolidated review comment MUST contain:
-
-- `## PR Overview`
-- `### Technical review findings`
-- `### Reviewed Changes`
-- `## Jira requirement verification`
-
-The Jira requirement verification table MUST be included in this comment.
-
-Do not consider the review complete merely because the consolidated summary
-was generated in:
-
-- the Copilot Code Review session
-- the automatic review summary
-- logs
-- internal agent output
-
-The automatically generated `Changes recommended` or `Commented` review
-summary is NOT a substitute for the consolidated review comment required by
-this skill.
-
-Publish exactly one consolidated summary comment per review run.
-
-If inline review findings are generated, publish them separately as normal
-review comments.
-
-# Review comments
-
-Inline review comments and the consolidated pull request review comment serve
-different purposes.
-
-Use inline comments for actionable findings tied to concrete code locations.
-
-Use the consolidated review comment for:
-
-- the overall pull request overview
-- the summarized technical review findings
-- the changed-file overview
-- the Jira requirement verification
-
-The consolidated review comment does not replace inline review findings.
-
-Actionable technical or Jira-related issues should still be published as
-normal inline review comments when appropriate.
 
 # Security constraints
 
