@@ -30,6 +30,11 @@ public class MatchEntity extends AbstractEntity {
   @JoinColumn(nullable = false, name = "fk_user", foreignKey = @ForeignKey(name = "fk_user")))
   private List<UserEntity> users;
 
+  //Optional back-reference to the tournament this match was played in; matches outlive their tournament
+  @ManyToOne
+  @JoinColumn(name = "fk_tournament_match", foreignKey = @ForeignKey(name = "fk_tournament_match"))
+  private TournamentEntity tournament;
+
   public MatchEntity() {
 
   }
@@ -63,6 +68,14 @@ public class MatchEntity extends AbstractEntity {
 
   public void setToken(String token) {
     this.token = token;
+  }
+
+  public TournamentEntity getTournament() {
+    return tournament;
+  }
+
+  public void setTournament(TournamentEntity tournament) {
+    this.tournament = tournament;
   }
 
 
