@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Perform pull request code reviews with Jira requirement verification through the configured Atlassian Rovo MCP server. Use for PR reviews referencing LAKWYC Jira issues.
+description: Perform complete pull request code reviews for this repository, including Jira requirement verification for LAKWYC issues, technical review, and validation against repository-specific coding guidelines. Use for all pull request code reviews.
 ---
 
 # Code Review with Jira Requirement Verification
@@ -9,10 +9,42 @@ Use this skill for pull request reviews in this repository.
 
 Perform:
 
-1. Jira requirement verification.
-2. Normal technical code review.
+1. Repository coding-guideline discovery.
+2. Jira requirement verification when applicable.
+3. Technical code review.
 
 The Jira issue is the source of truth for functional requirements.
+
+---
+
+# Repository coding guidelines
+
+Before performing the technical review, locate the repository-specific
+coding guidelines.
+
+Search in this order:
+
+1. `coding_guidelines.md` in the repository root.
+2. Files named `coding_guidelines.md` or `CODING_CONVENTIONS.md`
+   elsewhere in the repository.
+3. `CONTRIBUTING.md` only if it explicitly defines coding or
+   architecture conventions.
+
+Do not infer project conventions from unrelated documentation.
+
+If repository-specific coding guidelines are found:
+
+- Read them before performing the technical review.
+- Treat them as the source of truth for repository-specific conventions.
+- Review changed code against all relevant rules.
+- Report concrete violations as actionable findings.
+
+If no coding-guideline document can be found, continue the technical review
+and state:
+
+`Repository-specific coding guidelines could not be found.`
+
+Do not invent repository-specific conventions.
 
 ---
 
@@ -170,8 +202,12 @@ Also check for:
 
 Perform a normal technical review in addition to Jira verification.
 
+When repository-specific coding guidelines were found, treat them as the
+source of truth for established project conventions.
+
 Check for:
 
+- violations of repository-specific coding guidelines
 - functional correctness
 - bugs
 - error handling
@@ -186,8 +222,9 @@ Check for:
 
 Focus on actionable findings.
 
-Avoid purely stylistic comments unless they violate established project conventions.
-
+Avoid purely stylistic comments unless they violate the discovered
+repository coding guidelines or materially affect correctness,
+maintainability, or readability.
 ---
 
 # Required review output
