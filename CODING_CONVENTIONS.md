@@ -19,17 +19,17 @@ gepardec-gamertrack
 
 ### Module Boundaries
 - **`gamertrack-domain`**:
-    - Independent of framework-specific persistence (no JPA / Hibernate imports) and web layers.
-    - Contains core domain models (`com.gepardec.model`), repository contracts (`com.gepardec.core.repository`), service contracts (`com.gepardec.core.services`), and service implementations (`com.gepardec.impl.service`).
-    - Contains core security utilities (`com.gepardec.security`).
+  - Independent of framework-specific persistence (no JPA / Hibernate imports) and web layers.
+  - Contains core domain models (`com.gepardec.model`), repository contracts (`com.gepardec.core.repository`), service contracts (`com.gepardec.core.services`), and service implementations (`com.gepardec.impl.service`).
+  - Contains core security utilities (`com.gepardec.security`).
 - **`gamertrack-db`**:
-    - Implements the persistence output ports defined in `gamertrack-domain`.
-    - Contains JPA entities (`com.gepardec.adapter.output.persistence.entity`), repository implementations (`com.gepardec.adapter.output.persistence.repository`), and entity mappers (`com.gepardec.adapter.output.persistence.repository.mapper`).
+  - Implements the persistence output ports defined in `gamertrack-domain`.
+  - Contains JPA entities (`com.gepardec.adapter.output.persistence.entity`), repository implementations (`com.gepardec.adapter.output.persistence.repository`), and entity mappers (`com.gepardec.adapter.output.persistence.repository.mapper`).
 - **`gamertrack-application`**:
-    - Exposes HTTP REST interfaces (`com.gepardec.rest.api`) and implementations (`com.gepardec.rest.impl`).
-    - Contains immutable REST DTOs (`com.gepardec.rest.model.dto`), Commands (`com.gepardec.rest.model.command`), request mappers (`com.gepardec.rest.model.mapper`), and security/interceptor infrastructure (`com.gepardec.rest.config`).
+  - Exposes HTTP REST interfaces (`com.gepardec.rest.api`) and implementations (`com.gepardec.rest.impl`).
+  - Contains immutable REST DTOs (`com.gepardec.rest.model.dto`), Commands (`com.gepardec.rest.model.command`), request mappers (`com.gepardec.rest.model.mapper`), and security/interceptor infrastructure (`com.gepardec.rest.config`).
 - **`gamertrack-IntegrationTest`**:
-    - Dedicated module for black-box integration tests verifying end-to-end functionality across HTTP endpoints.
+  - Dedicated module for black-box integration tests verifying end-to-end functionality across HTTP endpoints.
 
 ---
 
@@ -86,12 +86,12 @@ Consistency across naming eliminates ambiguity and facilitates rapid comprehensi
 ## 4. CDI & Transaction Management
 
 - **Scope Annotations**:
-    - Use `@ApplicationScoped` for stateful/stateless shared components: Services (`*ServiceImpl`), Repositories (`*RepositoryImpl`), and Mappers (`*Mapper`, `*RestMapper`).
-    - Use `@RequestScoped` for JAX-RS Resource implementations (`*ResourceImpl`).
+  - Use `@ApplicationScoped` for stateful/stateless shared components: Services (`*ServiceImpl`), Repositories (`*RepositoryImpl`), and Mappers (`*Mapper`, `*RestMapper`).
+  - Use `@RequestScoped` for JAX-RS Resource implementations (`*ResourceImpl`).
 - **Dependency Injection**:
-    - Use Jakarta `@Inject` for injecting dependencies.
+  - Use Jakarta `@Inject` for injecting dependencies.
 - **Transactions**:
-    - Annotate service implementations and repository implementations with `@Transactional` from `jakarta.transaction.Transactional`.
+  - Annotate service implementations and repository implementations with `@Transactional` from `jakarta.transaction.Transactional`.
 
 ---
 
@@ -124,10 +124,10 @@ Consistency across naming eliminates ambiguity and facilitates rapid comprehensi
 ### Mappers
 - Keep mapping logic separated into dedicated `@ApplicationScoped` mapper classes (`*RestMapper` and `*Mapper`).
 - Implement methods for:
-    - `commandToModel(...)`
-    - `entityToModel(...)`
-    - `modelToEntity(...)`
-    - `modelToExistingEntity(...)`
+  - `commandToModel(...)`
+  - `entityToModel(...)`
+  - `modelToEntity(...)`
+  - `modelToExistingEntity(...)`
 
 ---
 
@@ -136,8 +136,8 @@ Consistency across naming eliminates ambiguity and facilitates rapid comprehensi
 ### Strict Secret Protection
 - **Rule**: NEVER log passwords, plain authentication tokens, Authorization headers, or JWT strings.
 - Always sanitize before logging:
-    - Use `TokenLogUtil.categorize(exception)` to log error categories without exposing tokens.
-    - Use `TokenLogUtil.fingerprint(token)` when a non-reversible correlation ID is required.
+  - Use `TokenLogUtil.categorize(exception)` to log error categories without exposing tokens.
+  - Use `TokenLogUtil.fingerprint(token)` when a non-reversible correlation ID is required.
 - Mark authenticated endpoints with `@Secure`, which is intercepted and validated by `AuthFilter`.
 
 ### Logging Standards
@@ -153,11 +153,11 @@ Consistency across naming eliminates ambiguity and facilitates rapid comprehensi
 ## 7. Error Handling & Functional Patterns
 
 - **`Optional<T>` over `null`**:
-    - Repository and Service methods returning single values must return `Optional<T>`.
-    - Handle missing data functionally via `.map(...)`, `.orElseGet(...)`, `.ifPresentOrElse(...)`.
+  - Repository and Service methods returning single values must return `Optional<T>`.
+  - Handle missing data functionally via `.map(...)`, `.orElseGet(...)`, `.ifPresentOrElse(...)`.
 - **Collections**:
-    - Never return `null` for list results; return empty lists (e.g., `List.of()` or empty `ArrayList`).
-    - Use Java Stream API (`stream().map(...).toList()`, `filter(...)`, `collect(...)`).
+  - Never return `null` for list results; return empty lists (e.g., `List.of()` or empty `ArrayList`).
+  - Use Java Stream API (`stream().map(...).toList()`, `filter(...)`, `collect(...)`).
 
 ---
 
@@ -184,21 +184,21 @@ Consistency across naming eliminates ambiguity and facilitates rapid comprehensi
 - Annotate with `@QuarkusTest`.
 - Use REST Assured (`given()`, `when()`, `then()`) for black-box endpoint validation.
 - Standard test lifecycle:
-    - `@BeforeAll`: Configure REST Assured logging (`enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL)`).
-    - `@BeforeEach`: Perform authentication setup and obtain test JWT bearer tokens.
-    - `@AfterEach`: Clean up generated resources using their tokens.
-    - `@AfterAll`: Call `RestAssured.reset()`.
+  - `@BeforeAll`: Configure REST Assured logging (`enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL)`).
+  - `@BeforeEach`: Perform authentication setup and obtain test JWT bearer tokens.
+  - `@AfterEach`: Clean up generated resources using their tokens.
+  - `@AfterAll`: Call `RestAssured.reset()`.
 
 ### Test Fixtures
 - Centralize test entity and model generation in `TestFixtures` (unit tests) and `RestTestFixtures` (integration tests).
 - Provide overloaded methods for creating single instances and collections:
-    - `TestFixtures.game()`, `TestFixtures.game(Long id)`, `TestFixtures.games(int count)`.
+  - `TestFixtures.game()`, `TestFixtures.game(Long id)`, `TestFixtures.games(int count)`.
 
 ### Test Method Naming Structure
 - All test methods must follow the naming pattern:
   `ensure<Action><Condition><ExpectedResult>()`
-    - Examples:
-        - `ensureSavingValidGameWorksAndReturnsValidGame()`
-        - `ensureSavingAlreadyExistingGameFailsAndReturnsOptionalEmpty()`
-        - `ensureGetGameWithExistingGameReturnsGame()`
-        - `ensureDeleteNotExistingGameReturns404NotFound()`
+  - Examples:
+    - `ensureSavingValidGameWorksAndReturnsValidGame()`
+    - `ensureSavingAlreadyExistingGameFailsAndReturnsOptionalEmpty()`
+    - `ensureGetGameWithExistingGameReturnsGame()`
+    - `ensureDeleteNotExistingGameReturns404NotFound()`
