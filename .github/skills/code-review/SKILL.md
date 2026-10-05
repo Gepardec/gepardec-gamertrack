@@ -256,6 +256,36 @@ If Jira retrieval failed:
 
 Do not invent acceptance criteria.
 
+## Coding convention verification
+
+Always include a coding convention verification section.
+
+If repository-specific coding guidelines were found, list every concrete
+violation found in the changed code using this table:
+
+| Convention | Status | Evidence | Recommendation |
+|---|---|---|---|
+| `<violated rule>` | FAIL | `<file, class, method, or changed code>` | `<actionable fix>` |
+
+Rules:
+
+- Include only actual violations in this table.
+- Use the concrete rule from the discovered coding guidelines.
+- Use `FAIL` for every listed violation.
+- Cite concrete evidence from the pull request whenever possible.
+- Keep recommendations concise and actionable.
+- Do not invent conventions that are not defined in the discovered guidelines.
+
+If the changed code does not violate any applicable coding convention,
+output:
+
+`No coding convention violations found.`
+
+If repository-specific coding guidelines could not be found, output:
+
+`Coding convention verification could not be performed because
+repository-specific coding guidelines were not available.`
+
 
 # Security constraints
 
