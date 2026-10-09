@@ -370,6 +370,53 @@ public class MatchResourceImplIT {
     }
 
     @Test
+    void ensureMatchUsersAreReturnedInCreationOrderOnEveryFreshRead() {
+        GameRestDto createdGame = createGame();
+        UserRestDto userC = createUser("Charlie");
+        UserRestDto userA = createUser("Alice");
+        UserRestDto userB = createUser("Bob");
+        UserRestDto userD = createUser("Dora");
+
+        MatchRestDto createdMatch1 = createMatch(List.of(userC, userA, userB, userD), createdGame);
+        MatchRestDto createdMatch2 = createMatch(List.of(userD, userB, userC, userA), createdGame);
+
+        List<String> expectedOrder1 = List.of(
+                userC.token(), userA.token(), userB.token(), userD.token());
+        List<String> expectedOrder2 = List.of(
+                userD.token(), userB.token(), userC.token(), userA.token());
+
+        assertEquals(expectedOrder1,
+                createdMatch1.users().stream().map(UserRestDto::token).toList());
+        assertEquals(expectedOrder2,
+                createdMatch2.users().stream().map(UserRestDto::token).toList());
+
+        // every fresh request returns the creation order of the respective match
+        for (int i = 0; i < 2; i++) {
+            MatchRestDto foundMatch1 = given()
+                    .pathParam("token", createdMatch1.token())
+                    .when()
+                    .get("%s/{token}".formatted(MATCH_PATH))
+                    .then()
+                    .statusCode(Status.OK.getStatusCode())
+                    .extract()
+                    .as(MatchRestDto.class);
+            MatchRestDto foundMatch2 = given()
+                    .pathParam("token", createdMatch2.token())
+                    .when()
+                    .get("%s/{token}".formatted(MATCH_PATH))
+                    .then()
+                    .statusCode(Status.OK.getStatusCode())
+                    .extract()
+                    .as(MatchRestDto.class);
+
+            assertEquals(expectedOrder1,
+                    foundMatch1.users().stream().map(UserRestDto::token).toList());
+            assertEquals(expectedOrder2,
+                    foundMatch2.users().stream().map(UserRestDto::token).toList());
+        }
+    }
+
+    @Test
     void ensureUpdateMatchForExistingMatchReturns200OkWithUpdatedMatch() {
         MatchRestDto existingMatch = createMatch();
         UserRestDto userRestDto = createUser();
@@ -471,6 +518,10 @@ public class MatchResourceImplIT {
 
     //-------------------HELPER METHODS -------------------------//
     public UserRestDto createUser() {
+        return createUser("max");
+    }
+
+    public UserRestDto createUser(String firstname) {
         UserRestDto userRestDto =
                 with()
                         .contentType("application/json")
@@ -481,7 +532,7 @@ public class MatchResourceImplIT {
                                 ContentType.JSON,
                                 "Accept",
                                 ContentType.JSON)
-                        .body(new CreateUserCommand("max", "Muster"))
+                        .body(new CreateUserCommand(firstname, "Muster"))
                         .post(USER_PATH)
                         .then()
                         .statusCode(Status.CREATED.getStatusCode())
@@ -521,12 +572,16 @@ public class MatchResourceImplIT {
     }
 
     public MatchRestDto createMatch(UserRestDto userRestDto1, UserRestDto userRestDto2, GameRestDto gameRestDto) {
+        return createMatch(List.of(userRestDto1, userRestDto2), gameRestDto);
+    }
+
+    public MatchRestDto createMatch(List<UserRestDto> userRestDtos, GameRestDto gameRestDto) {
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
                 new Game(null, gameRestDto.token(), gameRestDto.name(), gameRestDto.rules()),
-                List.of(new User(null, userRestDto1.firstname(), userRestDto1.lastname(),
-                                userRestDto1.deactivated(), userRestDto1.token()),
-                        new User(null, userRestDto2.firstname(), userRestDto2.lastname(),
-                                userRestDto2.deactivated(), userRestDto2.token())));
+                userRestDtos.stream()
+                        .map(urd -> new User(null, urd.firstname(), urd.lastname(),
+                                urd.deactivated(), urd.token()))
+                        .toList());
 
         MatchRestDto createdMatch =
                 with()
