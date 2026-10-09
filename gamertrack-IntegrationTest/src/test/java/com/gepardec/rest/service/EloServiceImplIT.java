@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
 import static io.restassured.RestAssured.with;
@@ -166,12 +167,14 @@ public class EloServiceImplIT {
                 new Game(null, gameToken1, "4Gewinnt", "Nicht schummeln"),
                 List.of(new User(0L, "Max","Muster",
                        false, userToken1),new User(0L, "Jakob","Mayer",
-                        false, userToken2)));
+                        false, userToken2)),
+                Map.of(userToken1, 1, userToken2, 2));
 
         CreateMatchCommand createMatchCommandUser2Wins = new CreateMatchCommand(
                 new Game(null, gameToken1, "4Gewinnt", "Nicht schummeln"),
                 List.of(new User(0L, "Jakob","Mayer",false, userToken2)
-                        , new User(0L, "Max","Muster",false, userToken1)));
+                        , new User(0L, "Max","Muster",false, userToken1)),
+                Map.of(userToken2, 1, userToken1, 2));
 
         with()
                 .headers(

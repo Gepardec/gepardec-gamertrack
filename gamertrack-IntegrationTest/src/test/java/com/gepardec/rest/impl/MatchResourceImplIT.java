@@ -9,6 +9,7 @@ import com.gepardec.rest.model.dto.UserRestDto;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
 import jakarta.ws.rs.core.Response.Status;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterAll;
@@ -18,7 +19,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 import static java.lang.Math.ceil;
@@ -319,7 +322,8 @@ public class MatchResourceImplIT {
                 List.of(new User(userRestDto1.id(), userRestDto1.firstname(), userRestDto1.lastname(),
                                 userRestDto1.deactivated(), userRestDto1.token()),
                         new User(userRestDto2.id(), userRestDto2.firstname(), userRestDto2.lastname(),
-                                userRestDto2.deactivated(), userRestDto2.token())));
+                                userRestDto2.deactivated(), userRestDto2.token())),
+                Map.of(userRestDto1.token(), 1, userRestDto2.token(), 2));
 
         MatchRestDto createdMatch =
                 with()
@@ -342,6 +346,7 @@ public class MatchResourceImplIT {
 
         assertEquals(createdMatch.game().token(), createMatchCommand.game().getToken());
         assertTrue(createdMatch.users().containsAll(createMatchCommand.users().stream().map(UserRestDto::new).toList()));
+        assertEquals(createMatchCommand.outcome(), createdMatch.outcome());
         usesMatchTokens.add(createdMatch.token());
     }
 
@@ -352,7 +357,8 @@ public class MatchResourceImplIT {
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
                 new Game(null, null, "anything", "should fail"),
                 List.of(new User(null, userRestDto.firstname(), userRestDto.lastname(),
-                        userRestDto.deactivated(), userRestDto.token())));
+                        userRestDto.deactivated(), userRestDto.token())),
+                Map.of(userRestDto.token(), 1));
 
         with()
                 .headers(
@@ -383,7 +389,8 @@ public class MatchResourceImplIT {
                         new User(null, userRestDto.firstname(), userRestDto.lastname(),
                                 userRestDto.deactivated(), userRestDto.token()),
                         new User(null, userRestDto.firstname(), userRestDto.lastname(),
-                                userRestDto.deactivated(), userRestDto.token())));
+                                userRestDto.deactivated(), userRestDto.token())),
+                Map.of(existingMatch.users().getFirst().token(), 1, userRestDto.token(), 2));
 
         var updatedMatch =
                 given()
@@ -469,6 +476,227 @@ public class MatchResourceImplIT {
                 .statusCode(Status.NOT_FOUND.getStatusCode());
     }
 
+    @Test
+    void ensureCreateMatchWithFourPlayersStoresAllPlacements() {
+        GameRestDto createdGame = createGame();
+        List<UserRestDto> createdUsers = List.of(createUser(), createUser(), createUser(), createUser());
+
+        Map<String, Integer> outcome = new HashMap<>();
+        for (int i = 0; i < createdUsers.size(); i++) {
+            outcome.put(createdUsers.get(i).token(), i + 1);
+        }
+
+        MatchRestDto createdMatch = postMatch(createMatchCommand(createdGame, createdUsers, outcome))
+                .statusCode(Status.CREATED.getStatusCode())
+                .extract()
+                .as(MatchRestDto.class);
+        usesMatchTokens.add(createdMatch.token());
+
+        assertEquals(outcome, createdMatch.outcome());
+    }
+
+    @Test
+    void ensureCreateMatchWithDrawReturnsDrawOutcomeAndKeepsEqualRatingsUnchanged() {
+        GameRestDto createdGame = createGame();
+        UserRestDto createdUser1 = createUser();
+        UserRestDto createdUser2 = createUser();
+
+        MatchRestDto createdMatch = createMatch(createdUser1, createdUser2, createdGame,
+                Map.of(createdUser1.token(), 1, createdUser2.token(), 1));
+
+        assertEquals(Map.of(createdUser1.token(), 1, createdUser2.token(), 1), createdMatch.outcome());
+
+        //both users started with the same default rating, so a draw must not change it
+        with()
+                .contentType("application/json")
+                .request("GET", "/scores/?game=" + createdGame.token())
+                .then()
+                .statusCode(Status.OK.getStatusCode())
+                .body("score", everyItem(equalTo(1500.0f)));
+    }
+
+    @Test
+    void ensureCreateMatchWithPlacementsDifferingFromUserOrderFollowsThePlacements() {
+        GameRestDto createdGame = createGame();
+        UserRestDto createdUser1 = createUser();
+        UserRestDto createdUser2 = createUser();
+
+        //the first user in the list is NOT the winner - the placements decide
+        MatchRestDto createdMatch = createMatch(createdUser1, createdUser2, createdGame,
+                Map.of(createdUser1.token(), 2, createdUser2.token(), 1));
+
+        assertEquals(2, createdMatch.outcome().get(createdUser1.token()));
+        assertEquals(1, createdMatch.outcome().get(createdUser2.token()));
+
+        var foundScores = with()
+                .contentType("application/json")
+                .request("GET", "/scores/?game=" + createdGame.token())
+                .then()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .jsonPath();
+
+        assertEquals(1516.0f, foundScores.getFloat(
+                "find { it.user.token == '%s' }.score".formatted(createdUser2.token())));
+        assertEquals(1484.0f, foundScores.getFloat(
+                "find { it.user.token == '%s' }.score".formatted(createdUser1.token())));
+    }
+
+    @Test
+    void ensureGetMatchByTokenReturnsExactlyTheEnteredPlacements() {
+        GameRestDto createdGame = createGame();
+        UserRestDto createdUser1 = createUser();
+        UserRestDto createdUser2 = createUser();
+
+        MatchRestDto createdMatch = createMatch(createdUser1, createdUser2, createdGame,
+                Map.of(createdUser1.token(), 2, createdUser2.token(), 1));
+
+        MatchRestDto foundMatch = given()
+                .pathParam("token", createdMatch.token())
+                .when()
+                .get("%s/{token}".formatted(MATCH_PATH))
+                .then()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(MatchRestDto.class);
+
+        assertEquals(Map.of(createdUser1.token(), 2, createdUser2.token(), 1), foundMatch.outcome());
+    }
+
+    @Test
+    void ensureCreateMatchWithInvalidOutcomeReturns400BadRequest() {
+        GameRestDto createdGame = createGame();
+        UserRestDto createdUser1 = createUser();
+        UserRestDto createdUser2 = createUser();
+        List<UserRestDto> createdUsers = List.of(createdUser1, createdUser2);
+
+        //no outcome at all
+        postMatch(createMatchCommand(createdGame, createdUsers, null))
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+
+        //participant without placement
+        postMatch(createMatchCommand(createdGame, createdUsers,
+                Map.of(createdUser1.token(), 1)))
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+
+        //placement for a user that is not part of the match
+        postMatch(createMatchCommand(createdGame, createdUsers,
+                Map.of(createdUser1.token(), 1, "notAParticipant", 2)))
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+
+        //gap that is not caused by a tie
+        postMatch(createMatchCommand(createdGame, createdUsers,
+                Map.of(createdUser1.token(), 1, createdUser2.token(), 3)))
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+
+        //placement below 1
+        postMatch(createMatchCommand(createdGame, createdUsers,
+                Map.of(createdUser1.token(), 0, createdUser2.token(), 1)))
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    void ensureCreateMatchWithTieNotSkippingFollowingPlacementReturns400BadRequest() {
+        GameRestDto createdGame = createGame();
+        UserRestDto createdUser1 = createUser();
+        UserRestDto createdUser2 = createUser();
+        UserRestDto createdUser3 = createUser();
+        List<UserRestDto> createdUsers = List.of(createdUser1, createdUser2, createdUser3);
+
+        //two players share first place, so the next placement has to be 3 - not 2
+        postMatch(createMatchCommand(createdGame, createdUsers,
+                Map.of(createdUser1.token(), 1, createdUser2.token(), 1, createdUser3.token(), 2)))
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+
+        MatchRestDto createdMatch = postMatch(createMatchCommand(createdGame, createdUsers,
+                Map.of(createdUser1.token(), 1, createdUser2.token(), 1, createdUser3.token(), 3)))
+                .statusCode(Status.CREATED.getStatusCode())
+                .extract()
+                .as(MatchRestDto.class);
+        usesMatchTokens.add(createdMatch.token());
+
+        assertEquals(Map.of(createdUser1.token(), 1, createdUser2.token(), 1, createdUser3.token(), 3),
+                createdMatch.outcome());
+    }
+
+    @Test
+    void ensureUpdateMatchCorrectingTheOutcomeStoresTheNewOutcome() {
+        GameRestDto createdGame = createGame();
+        UserRestDto createdUser1 = createUser();
+        UserRestDto createdUser2 = createUser();
+
+        MatchRestDto existingMatch = createMatch(createdUser1, createdUser2, createdGame,
+                Map.of(createdUser1.token(), 1, createdUser2.token(), 2));
+
+        //the wrong winner was entered - swap the placements
+        UpdateMatchCommand matchToUpdate = new UpdateMatchCommand(
+                new Game(null, createdGame.token(), createdGame.name(), createdGame.rules()),
+                List.of(new User(null, createdUser1.firstname(), createdUser1.lastname(),
+                                createdUser1.deactivated(), createdUser1.token()),
+                        new User(null, createdUser2.firstname(), createdUser2.lastname(),
+                                createdUser2.deactivated(), createdUser2.token())),
+                Map.of(createdUser1.token(), 2, createdUser2.token(), 1));
+
+        given()
+                .pathParam("token", existingMatch.token())
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(matchToUpdate)
+                .put("%s/{token}".formatted(MATCH_PATH))
+                .then()
+                .statusCode(Status.OK.getStatusCode());
+
+        MatchRestDto foundMatch = given()
+                .pathParam("token", existingMatch.token())
+                .when()
+                .get("%s/{token}".formatted(MATCH_PATH))
+                .then()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(MatchRestDto.class);
+
+        assertEquals(matchToUpdate.outcome(), foundMatch.outcome());
+    }
+
+    @Test
+    void ensureUpdateMatchWithInvalidOutcomeReturns400BadRequest() {
+        GameRestDto createdGame = createGame();
+        UserRestDto createdUser1 = createUser();
+        UserRestDto createdUser2 = createUser();
+
+        MatchRestDto existingMatch = createMatch(createdUser1, createdUser2, createdGame,
+                Map.of(createdUser1.token(), 1, createdUser2.token(), 2));
+
+        UpdateMatchCommand matchToUpdate = new UpdateMatchCommand(
+                new Game(null, createdGame.token(), createdGame.name(), createdGame.rules()),
+                List.of(new User(null, createdUser1.firstname(), createdUser1.lastname(),
+                                createdUser1.deactivated(), createdUser1.token()),
+                        new User(null, createdUser2.firstname(), createdUser2.lastname(),
+                                createdUser2.deactivated(), createdUser2.token())),
+                Map.of(createdUser1.token(), 1, createdUser2.token(), 3));
+
+        given()
+                .pathParam("token", existingMatch.token())
+                .contentType("application/json")
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(matchToUpdate)
+                .put("%s/{token}".formatted(MATCH_PATH))
+                .then()
+                .statusCode(Status.BAD_REQUEST.getStatusCode());
+    }
+
     //-------------------HELPER METHODS -------------------------//
     public UserRestDto createUser() {
         UserRestDto userRestDto =
@@ -520,13 +748,45 @@ public class MatchResourceImplIT {
         return createMatch(createUser(),createUser(), createGame());
     }
 
+    public CreateMatchCommand createMatchCommand(GameRestDto gameRestDto, List<UserRestDto> userRestDtos,
+                                                 Map<String, Integer> outcome) {
+        return new CreateMatchCommand(
+                new Game(null, gameRestDto.token(), gameRestDto.name(), gameRestDto.rules()),
+                userRestDtos.stream()
+                        .map(u -> new User(null, u.firstname(), u.lastname(), u.deactivated(), u.token()))
+                        .toList(),
+                outcome);
+    }
+
+    public ValidatableResponse postMatch(CreateMatchCommand createMatchCommand) {
+        return with()
+                .headers(
+                        "Authorization",
+                        "Bearer " + bearerToken,
+                        "Content-Type",
+                        ContentType.JSON,
+                        "Accept",
+                        ContentType.JSON)
+                .body(createMatchCommand)
+                .contentType("application/json")
+                .post(MATCH_PATH)
+                .then();
+    }
+
     public MatchRestDto createMatch(UserRestDto userRestDto1, UserRestDto userRestDto2, GameRestDto gameRestDto) {
+        return createMatch(userRestDto1, userRestDto2, gameRestDto,
+                Map.of(userRestDto1.token(), 1, userRestDto2.token(), 2));
+    }
+
+    public MatchRestDto createMatch(UserRestDto userRestDto1, UserRestDto userRestDto2, GameRestDto gameRestDto,
+                                    Map<String, Integer> outcome) {
         CreateMatchCommand createMatchCommand = new CreateMatchCommand(
                 new Game(null, gameRestDto.token(), gameRestDto.name(), gameRestDto.rules()),
                 List.of(new User(null, userRestDto1.firstname(), userRestDto1.lastname(),
                                 userRestDto1.deactivated(), userRestDto1.token()),
                         new User(null, userRestDto2.firstname(), userRestDto2.lastname(),
-                                userRestDto2.deactivated(), userRestDto2.token())));
+                                userRestDto2.deactivated(), userRestDto2.token())),
+                outcome);
 
         MatchRestDto createdMatch =
                 with()

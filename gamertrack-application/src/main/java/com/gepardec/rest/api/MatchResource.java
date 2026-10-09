@@ -44,7 +44,7 @@ public interface MatchResource {
   Response getMatchByToken(@PathParam("token") String token);
 
 
-  @Operation(summary = "Creates a match", description = "Match must be valid")
+  @Operation(summary = "Creates a match", description = "Match must be valid and carry a complete outcome: every participating user needs a placement (1-based, tied users share a placement, the following placement skips the tied users). The Elo rating changes are derived from the outcome.")
   @RequestBody(content = @Content(schema = @Schema(implementation = CreateMatchCommand.class)))
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Created", content = {
@@ -58,7 +58,7 @@ public interface MatchResource {
   Response createMatch(CreateMatchCommand matchCmd);
 
 
-  @Operation(summary = "Updates a match", description = "Match must be valid and exist, specified user and game ids that make up the match have to exist")
+  @Operation(summary = "Updates a match", description = "Match must be valid and exist, specified user and game ids that make up the match have to exist. The outcome must be complete for the specified users and follows the same validation as on create.")
   @RequestBody(content = @Content(schema = @Schema(implementation = UpdateMatchCommand.class)))
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Match has been updated", content = {

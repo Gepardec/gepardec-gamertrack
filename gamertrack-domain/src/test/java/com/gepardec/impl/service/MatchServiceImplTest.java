@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.gepardec.TestFixtures.match;
@@ -68,6 +70,99 @@ class MatchServiceImplTest {
 
         assertEquals(matchService.saveMatch(match).get().getId(),
                 match().getId());
+    }
+
+    @Test
+    void ensureSavingMatchWithoutOutcomeReturnsEmptyOptional() {
+        Match match = match();
+        match.setOutcome(new HashMap<>());
+
+        stubExistingGameAndUsers(match);
+
+        assertEquals(Optional.empty(), matchService.saveMatch(match));
+    }
+
+    @Test
+    void ensureSavingMatchWithPlacementGapReturnsEmptyOptional() {
+        Match match = match(1L, TestFixtures.game(), TestFixtures.usersWithId(1));
+        match.setOutcome(Map.of(
+                match.getUsers().get(0).getToken(), 1,
+                match.getUsers().get(1).getToken(), 3));
+
+        stubExistingGameAndUsers(match);
+
+        assertEquals(Optional.empty(), matchService.saveMatch(match));
+    }
+
+    @Test
+    void ensureSavingMatchWithOutcomeForUnknownUserReturnsEmptyOptional() {
+        Match match = match(1L, TestFixtures.game(), TestFixtures.usersWithId(1));
+        match.setOutcome(Map.of(
+                match.getUsers().get(0).getToken(), 1,
+                "unknownUserToken", 2));
+
+        stubExistingGameAndUsers(match);
+
+        assertEquals(Optional.empty(), matchService.saveMatch(match));
+    }
+
+    @Test
+    void ensureSavingMatchWithParticipantWithoutPlacementReturnsEmptyOptional() {
+        Match match = match(1L, TestFixtures.game(), TestFixtures.usersWithId(1));
+        match.setOutcome(Map.of(match.getUsers().get(0).getToken(), 1));
+
+        stubExistingGameAndUsers(match);
+
+        assertEquals(Optional.empty(), matchService.saveMatch(match));
+    }
+
+    @Test
+    void ensureSavingMatchWithNonPositivePlacementReturnsEmptyOptional() {
+        Match match = match(1L, TestFixtures.game(), TestFixtures.usersWithId(1));
+        match.setOutcome(Map.of(
+                match.getUsers().get(0).getToken(), 0,
+                match.getUsers().get(1).getToken(), 1));
+
+        stubExistingGameAndUsers(match);
+
+        assertEquals(Optional.empty(), matchService.saveMatch(match));
+    }
+
+    @Test
+    void ensureSavingMatchWithTieNotSkippingFollowingPlacementReturnsEmptyOptional() {
+        Match match = match(1L, TestFixtures.game(), TestFixtures.usersWithId(2));
+        match.setOutcome(Map.of(
+                match.getUsers().get(0).getToken(), 1,
+                match.getUsers().get(1).getToken(), 1,
+                match.getUsers().get(2).getToken(), 2));
+
+        stubExistingGameAndUsers(match);
+
+        assertEquals(Optional.empty(), matchService.saveMatch(match));
+    }
+
+    @Test
+    void ensureSavingMatchWithTieSkippingFollowingPlacementWorks() {
+        Match match = match(1L, TestFixtures.game(), TestFixtures.usersWithId(2));
+        match.setOutcome(Map.of(
+                match.getUsers().get(0).getToken(), 1,
+                match.getUsers().get(1).getToken(), 1,
+                match.getUsers().get(2).getToken(), 3));
+
+        stubExistingGameAndUsers(match);
+        when(tokenService.generateToken()).thenReturn(match.getToken());
+        when(matchRepository.saveMatch(any())).thenReturn(Optional.of(match));
+
+        assertEquals(match.getId(), matchService.saveMatch(match).get().getId());
+    }
+
+    private void stubExistingGameAndUsers(Match match) {
+        when(gameRepository.findGameByToken(anyString())).thenReturn(
+                Optional.of(match.getGame()));
+        when(userRepository.findUserByToken(anyString())).thenAnswer(
+                invocation -> match.getUsers().stream()
+                        .filter(user -> user.getToken().equals(invocation.getArgument(0)))
+                        .findFirst());
     }
 
     @Test
@@ -168,6 +263,25 @@ class MatchServiceImplTest {
 
         //Then
         assertEquals(matchNew.getId(), updatedMatch.get().getId());
+    }
+
+    @Test
+    void ensureUpdateMatchWithInvalidOutcomeReturnsEmptyOptional() {
+        //Given
+        Match matchNew = match(1L);
+        matchNew.setOutcome(Map.of(matchNew.getUsers().getFirst().getToken(), 1));
+
+        //When
+        when(gameRepository.findGameByToken(anyString())).thenReturn(Optional.of(matchNew.getGame()));
+        when(userRepository.findUserByToken(anyString())).thenAnswer(
+                invocation -> matchNew.getUsers().stream()
+                        .filter(user -> user.getToken().equals(invocation.getArgument(0))).findFirst());
+        when(matchRepository.findMatchByToken(anyString())).thenReturn(Optional.of(matchNew));
+
+        var updatedMatch = matchService.updateMatch(matchNew);
+
+        //Then
+        assertEquals(Optional.empty(), updatedMatch);
     }
 
     @Test

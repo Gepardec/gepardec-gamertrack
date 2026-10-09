@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -86,9 +87,14 @@ public class EloServiceImplTest {
         Score score5 = new Score(0L,user5,game,1500,"",true);
 
         List<Score> scoresList = List.of(score1,score2, score3, score4, score5);
-        List<User> usersList = List.of(user1,user2, user3, user4, user5);
+        Map<String, Integer> placements = Map.of(
+                user1.getToken(), 1,
+                user2.getToken(), 2,
+                user3.getToken(), 3,
+                user4.getToken(), 4,
+                user5.getToken(), 5);
 
-        List<Score> updatedScoresList = eloService.updateElo(game, scoresList,usersList);
+        List<Score> updatedScoresList = eloService.updateElo(game, scoresList, placements);
 
         assertEquals(1516, updatedScoresList.get(0).getScorePoints());
         assertEquals(1508, updatedScoresList.get(1).getScorePoints());
@@ -97,6 +103,61 @@ public class EloServiceImplTest {
         assertEquals(1484, updatedScoresList.get(4).getScorePoints());
 
 
+    }
+
+    @Test
+    void ensureUpdatingEloFollowsPlacementsInsteadOfListOrder(){
+        Game game = TestFixtures.game();
+
+        User user1 = TestFixtures.user(0L);
+        User user2 = TestFixtures.user(1L);
+
+        Score score1 = new Score(0L,user1,game,1500,"",true);
+        Score score2 = new Score(0L,user2,game,1500,"",true);
+
+        List<Score> updatedScoresList = eloService.updateElo(game, List.of(score1, score2),
+                Map.of(user1.getToken(), 2, user2.getToken(), 1));
+
+        assertEquals(1484, updatedScoresList.get(0).getScorePoints());
+        assertEquals(1516, updatedScoresList.get(1).getScorePoints());
+    }
+
+    @Test
+    void ensureUpdatingEloForDrawWithEqualRatingsChangesNothing(){
+        Game game = TestFixtures.game();
+
+        User user1 = TestFixtures.user(0L);
+        User user2 = TestFixtures.user(1L);
+
+        Score score1 = new Score(0L,user1,game,1500,"",true);
+        Score score2 = new Score(0L,user2,game,1500,"",true);
+
+        List<Score> updatedScoresList = eloService.updateElo(game, List.of(score1, score2),
+                Map.of(user1.getToken(), 1, user2.getToken(), 1));
+
+        assertEquals(1500, updatedScoresList.get(0).getScorePoints());
+        assertEquals(1500, updatedScoresList.get(1).getScorePoints());
+    }
+
+    @Test
+    void ensureUpdatingEloWithSharedFirstPlaceGivesTiedPlayersTheSharedResult(){
+        Game game = TestFixtures.game();
+
+        User user1 = TestFixtures.user(0L);
+        User user2 = TestFixtures.user(1L);
+        User user3 = TestFixtures.user(2L);
+
+        Score score1 = new Score(0L,user1,game,1500,"",true);
+        Score score2 = new Score(0L,user2,game,1500,"",true);
+        Score score3 = new Score(0L,user3,game,1500,"",true);
+
+        //tied first place shares the results of positions 1 and 2 -> (1.0 + 0.5) / 2 = 0.75 each
+        List<Score> updatedScoresList = eloService.updateElo(game, List.of(score1, score2, score3),
+                Map.of(user1.getToken(), 1, user2.getToken(), 1, user3.getToken(), 3));
+
+        assertEquals(1508, updatedScoresList.get(0).getScorePoints());
+        assertEquals(1508, updatedScoresList.get(1).getScorePoints());
+        assertEquals(1484, updatedScoresList.get(2).getScorePoints());
     }
 
 }
