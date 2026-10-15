@@ -12,7 +12,6 @@ including Jira access and validation of ticket requirements.
 | `.aiignore` | AI Assistant | Files that are never sent to a model |
 | `CLAUDE.md` | Claude Agent | Pointer to the rules |
 | `.junie/guidelines.md` | Junie | Pointer to the rules |
-| `docs/ai/mcp.example.json` | IntelliJ settings | Template for the Atlassian MCP server |
 
 The Atlassian MCP server is configured **only in the IntelliJ settings**, not in a project file
 (there is intentionally no `.mcp.json` in this repository).
