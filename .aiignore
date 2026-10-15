@@ -1,0 +1,16 @@
+# Files the JetBrains AI Assistant must not read or send to a model.
+# Syntax is the same as .gitignore.
+
+# Secrets and local environment
+.env
+*.env
+secret.env
+*.pem
+*.key
+*.p12
+*.jks
+
+# Local IDE state and build output
+.idea/workspace.xml
+target/
+/wildfly
