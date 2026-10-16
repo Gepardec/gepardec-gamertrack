@@ -30,6 +30,10 @@ The `.env` file in the project root is picked up automatically:
 
 Alternatively, export the variables as regular environment variables in your shell — they always take precedence over the `.env` file.
 
+## Contributing & Coding Conventions
+
+For detailed guidelines on architecture, naming standards, REST API contracts, CDI scopes, and testing patterns, see [CODING_CONVENTIONS.md](CODING_CONVENTIONS.md).
+
 ## Building and Starting the Application
 
 ### Backend (Quarkus)
