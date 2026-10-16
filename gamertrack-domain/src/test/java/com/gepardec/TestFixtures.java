@@ -4,6 +4,8 @@ import com.gepardec.impl.service.TokenServiceImpl;
 import com.gepardec.model.Game;
 import com.gepardec.model.Match;
 import com.gepardec.model.Score;
+import com.gepardec.model.Tournament;
+import com.gepardec.model.TournamentState;
 import com.gepardec.model.User;
 
 import java.util.ArrayList;
@@ -99,5 +101,19 @@ public class TestFixtures {
     return scores;
   }
 
+  public static Tournament tournament() {
+    return tournament(1L);
+  }
+
+  public static Tournament tournament(Long id) {
+    return new Tournament(id, tokenService.generateToken(), "Tournament Fixture", game(1L),
+        usersWithId(3), TournamentState.CREATED);
+  }
+
+  public static Tournament tournament(Long id, TournamentState state) {
+    Tournament tournament = tournament(id);
+    tournament.setState(state);
+    return tournament;
+  }
 
 }
