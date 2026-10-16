@@ -1,6 +1,7 @@
 package com.gepardec.rest.config;
 
 import com.gepardec.security.JwtUtil;
+import com.gepardec.security.TokenLogUtil;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
@@ -37,7 +38,10 @@ public class AuthFilter implements ContainerRequestFilter {
 
         String authHeader = reqCtx.getHeaderString(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER)) {
-            log.info("Authorization header is invalid {}", authHeader);
+            // Never log the header value itself, it may contain a valid credential
+            log.info("Authorization rejected: {}", authHeader == null
+                    ? "no Authorization header provided"
+                    : "Authorization header does not use the Bearer scheme");
 
             throw new NotAuthorizedException("No authorization header provided");
         }
@@ -72,7 +76,10 @@ public class AuthFilter implements ContainerRequestFilter {
             log.info("Successfully authenticated user");
 
         } catch (Exception e) {
-            log.error("Invalid JWT token {}", token, e);
+            // Log only the failure category and a non-reversible fingerprint,
+            // never the token itself
+            log.error("Invalid JWT token ({}), fingerprint {}",
+                    TokenLogUtil.categorize(e), TokenLogUtil.fingerprint(token));
             reqCtx.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         }
     }

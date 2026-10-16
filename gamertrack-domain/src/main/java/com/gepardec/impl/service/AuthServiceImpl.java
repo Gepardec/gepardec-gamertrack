@@ -5,6 +5,7 @@ import com.gepardec.core.services.AuthService;
 import com.gepardec.core.services.TokenService;
 import com.gepardec.model.AuthCredential;
 import com.gepardec.security.JwtUtil;
+import com.gepardec.security.TokenLogUtil;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -41,7 +42,8 @@ public class AuthServiceImpl implements AuthService {
 
             if (dbCredential.isPresent()){
                 if(jwtUtil.passwordsMatches(dbCredential.get().getPassword(), dbCredential.get().getSalt(), credential.getPassword())){
-                    log.info("Credential {} authenticated", credential.getUsername());
+                    // The admin username is a configured secret, never log it
+                    log.info("Credential authenticated");
                     return true;
                 }
                 log.error("Invalid credential: Credential dont match");
@@ -77,7 +79,8 @@ public class AuthServiceImpl implements AuthService {
             Jwts.parser().setSigningKey(jwtUtil.generateKey()).build().parseClaimsJws(token);
             isValid = true;
         } catch (JwtException e) {
-            log.error("Token validation failed {}", e.getMessage());
+            log.error("Token validation failed ({}), fingerprint {}",
+                    TokenLogUtil.categorize(e), TokenLogUtil.fingerprint(token));
         }
         return isValid;
     }
